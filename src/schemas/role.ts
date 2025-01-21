@@ -1,0 +1,43 @@
+import {optionalDate, optionalNumber, optionalString} from '@/utilities/string-convert';
+import {XER} from '@/xer';
+import {RoleRate} from './role-rate';
+
+export class Role {
+	public xer: XER;
+	public roleId: number;
+	public parentRoleId?: number;
+	public seqNum: number;
+	public roleName: string;
+	public roleShortName: string;
+	public pobsId?: number;
+	public defCostQtyLinkFlag: boolean;
+	public costQtyType: string;
+	public roleDescr?: string;
+	public lastChecksum: number;
+
+	constructor(_xer: XER, header: string[], row: string[]) {
+		this.xer = _xer;
+		this.roleId = Number(row[header.indexOf('role_id')]);
+		this.parentRoleId = optionalNumber(row[header.indexOf('parent_role_id')]);
+		this.seqNum = Number(row[header.indexOf('seq_num')]);
+		this.roleName = row[header.indexOf('role_name')];
+		this.roleShortName = row[header.indexOf('role_short_name')];
+		this.pobsId = optionalNumber(row[header.indexOf('pobs_id')]);
+		this.defCostQtyLinkFlag = row[header.indexOf('def_cost_qty_link_flag')] === 'Y';
+		this.costQtyType = row[header.indexOf('cost_qty_type')];
+		this.roleDescr = optionalString(row[header.indexOf('role_descr')]);
+		this.lastChecksum = Number(row[header.indexOf('last_checksum')]);
+	}
+
+	public get parentRole(): Role {
+		return this.xer.roles.find((role) => role.roleId === this.parentRoleId)!;
+	}
+
+	public get childrenRoles(): Role[] {
+		return this.xer.roles.filter((role) => role.parentRoleId === this.roleId);
+	}
+
+	public get roleRates(): RoleRate[] {
+		return this.xer.roleRates.filter((roleRate) => roleRate.roleId === this.roleId);
+	}
+}

@@ -1,0 +1,167 @@
+import {optionalDate, optionalNumber, optionalString} from '@/utilities/string-convert';
+import {XER} from '@/xer';
+import {Task} from './task';
+import {ScheduleOption} from './schedule-option';
+import {ProjWBS} from './proj-wbs';
+
+export class Project {
+	public xer: XER;
+	public projId: number;
+	public fyStartMonthNum: number;
+	public rsrcSelfAddFlag: boolean;
+	public allowCompleteFlag: boolean;
+	public rsrcMultiAssignFlag: boolean;
+	public checkoutFlag: boolean;
+	public projectFlag: boolean;
+	public stepCompleteFlag: boolean;
+	public costQtyRecalcFlag: boolean;
+	public batchSumFlag: boolean;
+	public nameSepChar: number;
+	public defCompletePctType: string;
+	public projShortName: string;
+	public acctId?: number;
+	public origProjId?: number;
+	public sourceProjId?: number;
+	public baseTypeId?: number;
+	public clndrId: number;
+	public sumBaseProjId?: number;
+	public taskCodeBase: string;
+	public taskCodeStep: string;
+	public priorityNum: number;
+	public wbsMaxSumLevel: number;
+	public strgyPriorityNum: number;
+	public lastChecksum?: number;
+	public criticalDrtnHrCnt: number;
+	public defCostPerQty: number;
+	public lastRecalcDate: Date;
+	public planStartDate: Date;
+	public planEndDate?: Date;
+	public scdEndDate?: Date;
+	public addDate: Date;
+	public lastTasksumDate?: Date;
+	public fcstStartDate?: Date;
+	public defDurationType: string;
+	public taskCodePrefix: string;
+	public guid: string;
+	public defQtyType: string;
+	public addByName: string;
+	public webLocalRootPath?: string;
+	public projUrl?: string;
+	public defRateType: string;
+	public addActRemainFlag: boolean;
+	public actThisPerLinkFlag: boolean;
+	public defTaskType: string;
+	public actPctLinkFlag: boolean;
+	public criticalPathType: string;
+	public taskCodePrefixFlag: boolean;
+	public defRollupDatesFlag: boolean;
+	public useProjectBaselineFlag: boolean;
+	public remTargetLinkFlag: boolean;
+	public resetPlannedFlag: boolean;
+	public allowNegActFlag: boolean;
+	public sumAssignLevel: string;
+	public lastFinDatesId?: number;
+	public fintmplDd: number;
+	public lastBaselineUpdateDate?: Date;
+	public crExternalKey?: string;
+	public applyActualsDate?: Date;
+	public locationId?: number;
+	public lastScheduleDate?: Date;
+	public loadedScopeLevel: string;
+	public exportFlag: boolean;
+	public newFinDatesId: number;
+	public baselinesToExport: string;
+	public baselineNamesToExport: string;
+	public nextDataDate: Date;
+	public closePeriodFlag: boolean;
+	public sumRefreshDate: Date;
+	public trsrcsumLoaded: boolean;
+	public sumtaskLoaded: boolean;
+
+	constructor(_xer: XER, header: string[], row: string[]) {
+		this.xer = _xer;
+		this.projId = Number(row[header.indexOf('proj_id')]);
+		this.fyStartMonthNum = Number(row[header.indexOf('fy_start_month_num')]);
+		this.rsrcSelfAddFlag = row[header.indexOf('rsrc_self_add_flag')] === 'Y';
+		this.allowCompleteFlag = row[header.indexOf('allow_complete_flag')] === 'Y';
+		this.rsrcMultiAssignFlag = row[header.indexOf('rsrc_multi_assign_flag')] === 'Y';
+		this.checkoutFlag = row[header.indexOf('checkout_flag')] === 'Y';
+		this.projectFlag = row[header.indexOf('project_flag')] === 'Y';
+		this.stepCompleteFlag = row[header.indexOf('step_complete_flag')] === 'Y';
+		this.costQtyRecalcFlag = row[header.indexOf('cost_qty_recalc_flag')] === 'Y';
+		this.batchSumFlag = row[header.indexOf('batch_sum_flag')] === 'Y';
+		this.nameSepChar = Number(row[header.indexOf('name_sep_char')]);
+		this.defCompletePctType = row[header.indexOf('def_complete_pct_type')];
+		this.projShortName = row[header.indexOf('proj_short_name')];
+		this.acctId = optionalNumber(row[header.indexOf('acct_id')]);
+		this.origProjId = optionalNumber(row[header.indexOf('orig_proj_id')]);
+		this.sourceProjId = optionalNumber(row[header.indexOf('source_proj_id')]);
+		this.baseTypeId = optionalNumber(row[header.indexOf('base_type_id')]);
+		this.clndrId = Number(row[header.indexOf('clndr_id')]);
+		this.sumBaseProjId = optionalNumber(row[header.indexOf('sum_base_proj_id')]);
+		this.taskCodeBase = row[header.indexOf('task_code_base')];
+		this.taskCodeStep = row[header.indexOf('task_code_step')];
+		this.priorityNum = Number(row[header.indexOf('priority_num')]);
+		this.wbsMaxSumLevel = Number(row[header.indexOf('wbs_max_sum_level')]);
+		this.strgyPriorityNum = Number(row[header.indexOf('strgy_priority_num')]);
+		this.lastChecksum = optionalNumber(row[header.indexOf('last_checksum')]);
+		this.criticalDrtnHrCnt = Number(row[header.indexOf('critical_drtn_hr_cnt')]);
+		this.defCostPerQty = Number(row[header.indexOf('def_cost_per_qty')]);
+		this.lastRecalcDate = new Date(row[header.indexOf('last_recalc_date')]);
+		this.planStartDate = new Date(row[header.indexOf('plan_start_date')]);
+		this.planEndDate = optionalDate(row[header.indexOf('plan_end_date')]);
+		this.scdEndDate = optionalDate(row[header.indexOf('scd_end_date')]);
+		this.addDate = new Date(row[header.indexOf('add_date')]);
+		this.lastTasksumDate = optionalDate(row[header.indexOf('last_tasksum_date')]);
+		this.fcstStartDate = optionalDate(row[header.indexOf('fcst_start_date')]);
+		this.defDurationType = row[header.indexOf('def_duration_type')];
+		this.taskCodePrefix = row[header.indexOf('task_code_prefix')];
+		this.guid = row[header.indexOf('guid')];
+		this.defQtyType = row[header.indexOf('def_qty_type')];
+		this.addByName = row[header.indexOf('add_by_name')];
+		this.webLocalRootPath = optionalString(row[header.indexOf('web_local_root_path')]);
+		this.projUrl = optionalString(row[header.indexOf('proj_url')]);
+		this.defRateType = row[header.indexOf('def_rate_type')];
+		this.addActRemainFlag = row[header.indexOf('add_act_remain_flag')] === 'Y';
+		this.actThisPerLinkFlag = row[header.indexOf('act_this_per_link_flag')] === 'Y';
+		this.defTaskType = row[header.indexOf('def_task_type')];
+		this.actPctLinkFlag = row[header.indexOf('act_pct_link_flag')] === 'Y';
+		this.criticalPathType = row[header.indexOf('critical_path_type')];
+		this.taskCodePrefixFlag = row[header.indexOf('task_code_prefix_flag')] === 'Y';
+		this.defRollupDatesFlag = row[header.indexOf('def_rollup_dates_flag')] === 'Y';
+		this.useProjectBaselineFlag = row[header.indexOf('use_project_baseline_flag')] === 'Y';
+		this.remTargetLinkFlag = row[header.indexOf('rem_target_link_flag')] === 'Y';
+		this.resetPlannedFlag = row[header.indexOf('reset_planned_flag')] === 'Y';
+		this.allowNegActFlag = row[header.indexOf('allow_neg_act_flag')] === 'Y';
+		this.sumAssignLevel = row[header.indexOf('sum_assign_level')];
+		this.lastFinDatesId = optionalNumber(row[header.indexOf('last_fin_dates_id')]);
+		this.fintmplDd = Number(row[header.indexOf('fintmpl_id')]);
+		this.lastBaselineUpdateDate = optionalDate(row[header.indexOf('last_baseline_update_date')]);
+		this.crExternalKey = optionalString(row[header.indexOf('cr_external_key')]);
+		this.applyActualsDate = optionalDate(row[header.indexOf('apply_actuals_date')]);
+		this.locationId = optionalNumber(row[header.indexOf('location_id')]);
+		this.lastScheduleDate = optionalDate(row[header.indexOf('last_schedule_date')]);
+		this.loadedScopeLevel = row[header.indexOf('loaded_scope_level')];
+		this.exportFlag = row[header.indexOf('export_flag')] === 'Y';
+		this.newFinDatesId = Number(row[header.indexOf('new_fin_dates_id')]);
+		this.baselinesToExport = row[header.indexOf('baselines_to_export')];
+		this.baselineNamesToExport = row[header.indexOf('baseline_names_to_export')];
+		this.nextDataDate = new Date(row[header.indexOf('next_data_date')]);
+		this.closePeriodFlag = row[header.indexOf('close_period_flag')] === 'Y';
+		this.sumRefreshDate = new Date(row[header.indexOf('sum_refresh_date')]);
+		this.trsrcsumLoaded = row[header.indexOf('trsrcsum_loaded')] === 'Y';
+		this.sumtaskLoaded = row[header.indexOf('sumtask_loaded')] === 'Y';
+	}
+
+	public get tasks(): Task[] {
+		return this.xer.tasks.filter((task) => task.projId === this.projId);
+	}
+
+	public get wbs(): ProjWBS[] {
+		return this.xer.projWBS.filter((projWBS) => projWBS.projId === this.projId);
+	}
+
+	public get scheduleOptions(): ScheduleOption {
+		return this.xer.scheduleOptions.find((scheduleOption) => scheduleOption.projId === this.projId)!;
+	}
+}

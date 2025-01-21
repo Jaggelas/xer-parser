@@ -1,36 +1,40 @@
 {
-  "name": "pkg-name",
-  "type": "module",
-  "version": "0.0.0",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "description": "",
-  "exports": {
-    "types": "./dist/index.d.ts",
-    "import": "./dist/index.js",
-    "require": "./dist/index.cjs"
-  },
-  "scripts": {
-    "build": "bun run build.ts",
-    "prepublishOnly": "bun run build"
-  },
-  "files": [
-    "dist"
-  ],
-  "keywords": [
-    "bun"
-  ],
-  "license": "MIT",
-  "homepage": "https://github.com/wobsoriano/pkg-name#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/wobsoriano/pkg-name.git"
-  },
-  "bugs": "https://github.com/wobsoriano/pkg-name/issues",
-  "author": "Robert Soriano <sorianorobertc@gmail.com>",
-  "devDependencies": {
-    "bun-plugin-dts": "^0.3.0",
-    "@types/bun": "^1.1.10"
-  }
+	"name": "xer-parser",
+	"type": "module",
+	"version": "1.0.7",
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"description": "",
+	"exports": {
+		"types": "./dist/index.d.ts",
+		"import": "./dist/index.js",
+		"require": "./dist/index.cjs"
+	},
+	"scripts": {
+		"build": "bun run build.ts",
+		"prepublishOnly": "bun run build"
+	},
+	"files": [
+		"dist"
+	],
+	"keywords": [
+		"bun"
+	],
+	"license": "MIT",
+	"homepage": "https://github.com/Jaggelas/xer-parser/blob/main/README.md",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Jaggelas/xer-parser.git"
+	},
+	"bugs": "https://github.com/Jaggelas/xer-parser/issues",
+	"author": "Jaco van der Merwe <jaco.jaggelas@gmail.com>",
+	"funding": {
+		"type": "individual",
+		"url": "https://www.paypal.me/vandermerweJaco"
+	},
+	"devDependencies": {
+		"@types/bun": "^1.1.17",
+		"bun-plugin-dts": "^0.3.0"
+	}
 }
