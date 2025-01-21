@@ -1,30 +1,64 @@
-import {parse} from './utilities/parser';
-import {ActivityCode} from './schemas/activity-code';
-import {ActivityCodeType} from './schemas/activity-code-type';
-import {Calendar} from './schemas/calendar';
-import {CurrencyType} from './schemas/currency-type';
-import {FinancialTemplate} from './schemas/financial-template';
-import {MemoType} from './schemas/memo-type';
-import {OBS} from './schemas/obs';
-import {ProjWBS} from './schemas/proj-wbs';
-import {Project} from './schemas/project';
-import {Resource} from './schemas/resource';
-import {ResourceLevelList} from './schemas/resource-level-list';
-import {ResourceRate} from './schemas/resource-rate';
-import {ResourceRole} from './schemas/resource-role';
-import {Role} from './schemas/role';
-import {RoleRate} from './schemas/role-rate';
-import {ScheduleOption} from './schemas/schedule-option';
-import {Task} from './schemas/task';
-import {TaskActivityCode} from './schemas/task-activity-code';
-import {TaskMemo} from './schemas/task-memo';
-import {TaskPredecessor} from './schemas/task-predecessor';
-import {TaskResource} from './schemas/task-resource';
-import {UdfType} from './schemas/udf-type';
-import {UdfValue} from './schemas/udf-value';
-import {XERData} from './types/schema';
-import {Table} from './types/table';
+import { parse } from './utilities/parser';
+import { ActivityCode } from './schemas/activity-code';
+import { ActivityCodeType } from './schemas/activity-code-type';
+import { Calendar } from './schemas/calendar';
+import { CurrencyType } from './schemas/currency-type';
+import { FinancialTemplate } from './schemas/financial-template';
+import { MemoType } from './schemas/memo-type';
+import { OBS } from './schemas/obs';
+import { ProjWBS } from './schemas/proj-wbs';
+import { Project } from './schemas/project';
+import { Resource } from './schemas/resource';
+import { ResourceLevelList } from './schemas/resource-level-list';
+import { ResourceRate } from './schemas/resource-rate';
+import { ResourceRole } from './schemas/resource-role';
+import { Role } from './schemas/role';
+import { RoleRate } from './schemas/role-rate';
+import { ScheduleOption } from './schemas/schedule-option';
+import { Task } from './schemas/task';
+import { TaskActivityCode } from './schemas/task-activity-code';
+import { TaskMemo } from './schemas/task-memo';
+import { TaskPredecessor } from './schemas/task-predecessor';
+import { TaskResource } from './schemas/task-resource';
+import { UdfType } from './schemas/udf-type';
+import { UdfValue } from './schemas/udf-value';
+import { XERData } from './types/schema';
+import { Table } from './types/table';
 
+/**
+ * Represents a Primavera XER file parser and data container.
+ * This class implements the XERData interface and manages all entities found in an XER file.
+ *
+ * @class XER
+ * @implements {XERData}
+ *
+ * @property {Table[]} tables - Raw tables extracted from the XER file
+ * @property {CurrencyType[]} currencyTypes - Currency types defined in the project
+ * @property {FinancialTemplate[]} financialTemplates - Financial templates configurations
+ * @property {MemoType[]} memoTypes - Types of memos that can be attached to tasks
+ * @property {OBS[]} obs - Organizational Breakdown Structure elements
+ * @property {UdfType[]} udfTypes - User Defined Field type definitions
+ * @property {Role[]} roles - Project roles definitions
+ * @property {Project[]} projects - Project data
+ * @property {RoleRate[]} roleRates - Rate definitions for roles
+ * @property {Calendar[]} calendars - Calendar definitions
+ * @property {ScheduleOption[]} scheduleOptions - Schedule configuration options
+ * @property {ProjWBS[]} projWBS - Project Work Breakdown Structure elements
+ * @property {Resource[]} resources - Resource definitions
+ * @property {ActivityCodeType[]} activityCodeTypes - Activity code type definitions
+ * @property {ResourceLevelList[]} resourceLevelLists - Resource level assignments
+ * @property {ResourceRate[]} resourceRates - Resource rate definitions
+ * @property {ResourceRole[]} resourceRoles - Resource role assignments
+ * @property {Task[]} tasks - Project tasks
+ * @property {ActivityCode[]} activityCodes - Activity code assignments
+ * @property {TaskMemo[]} taskMemos - Task memo assignments
+ * @property {TaskPredecessor[]} taskPredecessors - Task dependency relationships
+ * @property {TaskResource[]} taskResources - Task resource assignments
+ * @property {TaskActivityCode[]} taskActivityCodes - Task activity code assignments
+ * @property {UdfValue[]} udfValues - User Defined Field values
+ *
+ * @throws {Error} If XER file parsing fails
+ */
 export class XER implements XERData {
 	public tables: Table[] = [];
 	public currencyTypes: CurrencyType[] = [];
@@ -63,41 +97,73 @@ export class XER implements XERData {
 	}
 
 	private loadEntities() {
-		this.currencyTypes = this.createCurrencyTypes(this.getTable('CURRTYPE'));
-		this.financialTemplates = this.createFinancialTemplates(this.getTable('FINTMPL'));
+		this.currencyTypes = this.createCurrencyTypes(
+			this.getTable('CURRTYPE')
+		);
+		this.financialTemplates = this.createFinancialTemplates(
+			this.getTable('FINTMPL')
+		);
 		this.memoTypes = this.createMemoTypes(this.getTable('MEMOTYPE'));
 		this.obs = this.createObs(this.getTable('OBS'));
 		this.udfTypes = this.createUDFTypes(this.getTable('UDFTYPE'));
 		this.roles = this.createRoles(this.getTable('ROLES'));
 		this.roleRates = this.createRoleRates(this.getTable('ROLERATE'));
 		this.calendars = this.createCalendars(this.getTable('CALENDAR'));
-		this.scheduleOptions = this.createScheduleOptions(this.getTable('SCHEDOPTIONS'));
+		this.scheduleOptions = this.createScheduleOptions(
+			this.getTable('SCHEDOPTIONS')
+		);
 		this.projWBS = this.createProjWBS(this.getTable('PROJWBS'));
 		this.resources = this.createResources(this.getTable('RSRC'));
-		this.activityCodeTypes = this.createActivityCodeTypes(this.getTable('ACTVTYPE'));
-		this.resourceLevelLists = this.createResourceLevelLists(this.getTable('RSRCLEVELLIST'));
-		this.resourceRates = this.createResourceRates(this.getTable('RSRCRATE'));
-		this.resourceRoles = this.createResourceRoles(this.getTable('RSRCROLE'));
-		this.activityCodes = this.createActivityCodes(this.getTable('ACTVCODE'));
+		this.activityCodeTypes = this.createActivityCodeTypes(
+			this.getTable('ACTVTYPE')
+		);
+		this.resourceLevelLists = this.createResourceLevelLists(
+			this.getTable('RSRCLEVELLIST')
+		);
+		this.resourceRates = this.createResourceRates(
+			this.getTable('RSRCRATE')
+		);
+		this.resourceRoles = this.createResourceRoles(
+			this.getTable('RSRCROLE')
+		);
+		this.activityCodes = this.createActivityCodes(
+			this.getTable('ACTVCODE')
+		);
 		this.taskMemos = this.createTaskMemos(this.getTable('TASKMEMO'));
-		this.taskPredecessors = this.createTaskPredecessors(this.getTable('TASKPRED'));
-		this.taskResources = this.createTaskResources(this.getTable('TASKRSRC'));
-		this.taskActivityCodes = this.createTaskActivityCodes(this.getTable('TASKACTV'));
+		this.taskPredecessors = this.createTaskPredecessors(
+			this.getTable('TASKPRED')
+		);
+		this.taskResources = this.createTaskResources(
+			this.getTable('TASKRSRC')
+		);
+		this.taskActivityCodes = this.createTaskActivityCodes(
+			this.getTable('TASKACTV')
+		);
 		this.udfValues = this.createUDFValues(this.getTable('UDFVALUE'));
 		this.tasks = this.createTasks(this.getTable('TASK'));
 		this.projects = this.createProjects(this.getTable('PROJECT'));
 	}
 
 	private getTable(name: string): Table {
-		return this.tables.find((table) => table.name === name) || {name: '', header: [], rows: []};
+		return (
+			this.tables.find((table) => table.name === name) || {
+				name: '',
+				header: [],
+				rows: []
+			}
+		);
 	}
 
 	private createCurrencyTypes(table: Table): CurrencyType[] {
-		return table.rows.map((row) => new CurrencyType(this, table.header, row));
+		return table.rows.map(
+			(row) => new CurrencyType(this, table.header, row)
+		);
 	}
 
 	private createFinancialTemplates(table: Table): FinancialTemplate[] {
-		return table.rows.map((row) => new FinancialTemplate(this, table.header, row));
+		return table.rows.map(
+			(row) => new FinancialTemplate(this, table.header, row)
+		);
 	}
 
 	private createMemoTypes(table: Table): MemoType[] {
@@ -125,7 +191,9 @@ export class XER implements XERData {
 	}
 
 	private createScheduleOptions(table: Table): ScheduleOption[] {
-		return table.rows.map((row) => new ScheduleOption(this, table.header, row));
+		return table.rows.map(
+			(row) => new ScheduleOption(this, table.header, row)
+		);
 	}
 
 	private createProjWBS(table: Table): ProjWBS[] {
@@ -137,19 +205,27 @@ export class XER implements XERData {
 	}
 
 	private createActivityCodeTypes(table: Table): ActivityCodeType[] {
-		return table.rows.map((row) => new ActivityCodeType(this, table.header, row));
+		return table.rows.map(
+			(row) => new ActivityCodeType(this, table.header, row)
+		);
 	}
 
 	private createResourceLevelLists(table: Table): ResourceLevelList[] {
-		return table.rows.map((row) => new ResourceLevelList(this, table.header, row));
+		return table.rows.map(
+			(row) => new ResourceLevelList(this, table.header, row)
+		);
 	}
 
 	private createResourceRates(table: Table): ResourceRate[] {
-		return table.rows.map((row) => new ResourceRate(this, table.header, row));
+		return table.rows.map(
+			(row) => new ResourceRate(this, table.header, row)
+		);
 	}
 
 	private createResourceRoles(table: Table): ResourceRole[] {
-		return table.rows.map((row) => new ResourceRole(this, table.header, row));
+		return table.rows.map(
+			(row) => new ResourceRole(this, table.header, row)
+		);
 	}
 
 	private createTasks(table: Table): Task[] {
@@ -157,7 +233,9 @@ export class XER implements XERData {
 	}
 
 	private createActivityCodes(table: Table): ActivityCode[] {
-		return table.rows.map((row) => new ActivityCode(this, table.header, row));
+		return table.rows.map(
+			(row) => new ActivityCode(this, table.header, row)
+		);
 	}
 
 	private createTaskMemos(table: Table): TaskMemo[] {
@@ -165,15 +243,21 @@ export class XER implements XERData {
 	}
 
 	private createTaskPredecessors(table: Table): TaskPredecessor[] {
-		return table.rows.map((row) => new TaskPredecessor(this, table.header, row));
+		return table.rows.map(
+			(row) => new TaskPredecessor(this, table.header, row)
+		);
 	}
 
 	private createTaskResources(table: Table): TaskResource[] {
-		return table.rows.map((row) => new TaskResource(this, table.header, row));
+		return table.rows.map(
+			(row) => new TaskResource(this, table.header, row)
+		);
 	}
 
 	private createTaskActivityCodes(table: Table): TaskActivityCode[] {
-		return table.rows.map((row) => new TaskActivityCode(this, table.header, row));
+		return table.rows.map(
+			(row) => new TaskActivityCode(this, table.header, row)
+		);
 	}
 
 	private createUDFValues(table: Table): UdfValue[] {

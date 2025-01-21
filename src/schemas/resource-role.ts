@@ -1,5 +1,19 @@
-import {XER} from '@/xer';
+import { XER } from '../xer';
 
+/**
+ * Represents a resource role entity in an XER file.
+ * @class
+ * @property {XER} xer - The parent XER instance this resource role belongs to
+ * @property {number} rsrcId - The unique identifier of the resource
+ * @property {number} roleId - The unique identifier of the role
+ * @property {number} skillLevel - The skill level associated with this resource role
+ * @property {string} roleShortName - The abbreviated name of the role
+ * @property {string} roleName - The full name of the role
+ * @property {string} rsrcShortName - The abbreviated name of the resource
+ * @property {string} rsrcName - The full name of the resource
+ * @property {string} rsrcType - The type of the resource
+ * @property {number} rsrcRoleId - The unique identifier of the resource role combination
+ */
 export class ResourceRole {
 	public xer: XER;
 	public rsrcId: number;

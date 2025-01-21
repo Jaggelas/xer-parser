@@ -1,6 +1,20 @@
-import {optionalDate, optionalNumber, optionalString} from '@/utilities/string-convert';
-import {XER} from '@/xer';
+import { optionalNumber } from '../utilities/string-convert';
+import { XER } from '../xer';
 
+/**
+ * Represents a role rate entity from XER file.
+ * @class
+ * @property {XER} xer - The parent XER instance.
+ * @property {number} roleRateId - Unique identifier for the role rate.
+ * @property {number} roleId - Reference to the associated role.
+ * @property {number} costPerQty - Primary cost per quantity.
+ * @property {number} [costPerQty2] - Optional secondary cost per quantity.
+ * @property {number} [costPerQty3] - Optional tertiary cost per quantity.
+ * @property {number} [costPerQty4] - Optional quaternary cost per quantity.
+ * @property {number} [costPerQty5] - Optional quinary cost per quantity.
+ * @property {Date} startDate - The date when this rate becomes effective.
+ * @property {number} maxQtyPerHr - Maximum quantity allowed per hour.
+ */
 export class RoleRate {
 	public xer: XER;
 	public roleRateId: number;

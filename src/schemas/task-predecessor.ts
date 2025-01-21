@@ -1,8 +1,24 @@
-import {optionalDate, optionalNumber, optionalString} from '@/utilities/string-convert';
-import {XER} from '@/xer';
-import {Task} from './task';
-import {Project} from './project';
+import { optionalString } from '../utilities/string-convert';
+import { XER } from '../xer';
+import { Task } from './task';
+import { Project } from './project';
 
+/**
+ * Represents a predecessor relationship between tasks in a project schedule
+ * @class
+ * @property {XER} xer - The parent XER object containing all project data
+ * @property {number} taskPredId - Unique identifier for the predecessor relationship
+ * @property {number} taskId - Identifier of the task that has the predecessor
+ * @property {number} predTaskId - Identifier of the predecessor task
+ * @property {number} projId - Identifier of the project containing the task
+ * @property {number} predProjId - Identifier of the project containing the predecessor task
+ * @property {string} predType - Type of predecessor relationship (e.g., Finish-to-Start, Start-to-Start)
+ * @property {number} lagHrCnt - Lag time in hours between the predecessor and successor tasks
+ * @property {string} [comments] - Optional comments about the predecessor relationship
+ * @property {string} floatPath - Float path indicator
+ * @property {string} aref - Activity reference
+ * @property {string} arls - Activity relationship line style
+ */
 export class TaskPredecessor {
 	public xer: XER;
 	public taskPredId: number;
@@ -33,7 +49,9 @@ export class TaskPredecessor {
 	}
 
 	public get project(): Project {
-		return this.xer.projects.find((project) => project.projId === this.predProjId)!;
+		return this.xer.projects.find(
+			(project) => project.projId === this.predProjId
+		)!;
 	}
 
 	public get task(): Task | undefined {

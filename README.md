@@ -1,26 +1,49 @@
-# bun starter
+# XER Parser
 
-## Getting Started
+XER Parser is a library for parsing Primavera P6 XER files. It provides a set of tools to read and manipulate data from XER files.
 
-Click the [Use this template](https://github.com/wobsoriano/bun-lib-starter/generate) button to create a new repository with the contents starter.
+## Table of Contents
 
-OR
+- [XER Parser](#xer-parser)
+  - [Table of Contents](#table-of-contents)
+  - [Installation](#installation)
+  - [Usage](#usage)
+  - [Contributing](#contributing)
+  - [License](#license)
 
-Run `bun create wobsoriano/bun-lib-starter ./my-lib`.
+## Installation
 
-## Setup
+You can install the library using npm:
 
-```bash
-# install dependencies
-bun install
-
-# test the app
-bun test
-
-# build the app, available under dist
-bun run build
+```sh
+npm install xer-parser
 ```
+
+## Usage
+
+Here's a basic example of how to use the XER Parser:
+
+```sh
+import { XER } from 'xer-parser';
+import { readXER } from 'xer-parser';
+
+const fileURL = 'path/to/your/file.xer';
+
+const file = Bun.file(fileURL)
+
+const xer = new XER(file.text())
+
+console.log(xer.projects);
+console.log(xer.tasks);
+
+```
+
+## Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request on GitHub.
 
 ## License
 
-MIT
+This project is licensed under the MIT License.
+
+Feel free to adjust the content as needed to better fit your project.
