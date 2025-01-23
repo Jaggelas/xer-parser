@@ -1,3 +1,5 @@
+import { XER } from './xer';
+
 export { XER } from './xer';
 
 export { ActivityCodeType } from './schemas/activity-code-type';
@@ -22,3 +24,9 @@ export { TaskResource } from './schemas/task-resource';
 export { Task } from './schemas/task';
 export { UdfType } from './schemas/udf-type';
 export { UdfValue } from './schemas/udf-value';
+
+const file = Bun.file(
+	'C:\\Users\\jvandermerwe\\OneDrive - Base Toliara SARL\\Desktop\\Primavera Migrate\\10001_2025-01-15.xer'
+);
+const fileText = await file.text();
+const xer = new XER(fileText);

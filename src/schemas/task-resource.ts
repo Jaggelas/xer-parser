@@ -1,3 +1,4 @@
+import { Duration } from '../classes/duration.class';
 import {
 	optionalDate,
 	optionalNumber,
@@ -114,7 +115,7 @@ export class TaskResource {
 	/**
 	 * Target lag duration in hours
 	 */
-	public targetLagDrtnHrCnt: number;
+	public targetLag: Duration;
 	/**
 	 * Target quantity per hour
 	 */
@@ -130,7 +131,7 @@ export class TaskResource {
 	/**
 	 * Remaining lag duration in hours
 	 */
-	public relagDrtnHrCnt: number;
+	public relag: Duration;
 	/**
 	 * Optional overtime factor
 	 */
@@ -267,13 +268,17 @@ export class TaskResource {
 		this.remainQty = Number(row[header.indexOf('remain_qty')]);
 		this.targetQty = Number(row[header.indexOf('target_qty')]);
 		this.remainQtyPerHr = Number(row[header.indexOf('remain_qty_per_hr')]);
-		this.targetLagDrtnHrCnt = Number(
-			row[header.indexOf('target_lag_drtn_hr_cnt')]
+		this.targetLag = new Duration(
+			row[header.indexOf('target_lag_drtn_hr_cnt')],
+			'H'
 		);
 		this.targetQtyPerHr = Number(row[header.indexOf('target_qty_per_hr')]);
 		this.actOtQty = Number(row[header.indexOf('act_ot_qty')]);
 		this.actRegQty = Number(row[header.indexOf('act_reg_qty')]);
-		this.relagDrtnHrCnt = Number(row[header.indexOf('relag_drtn_hr_cnt')]);
+		this.relag = new Duration(
+			row[header.indexOf('relag_drtn_hr_cnt')],
+			'H'
+		);
 		this.otFactor = optionalNumber(row[header.indexOf('ot_factor')]);
 		this.costPerQty = Number(row[header.indexOf('cost_per_qty')]);
 		this.targetCost = Number(row[header.indexOf('target_cost')]);

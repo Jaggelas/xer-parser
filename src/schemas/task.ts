@@ -10,51 +10,13 @@ import { ProjWBS } from './proj-wbs';
 import { TaskMemo } from './task-memo';
 import { Calendar } from './calendar';
 import { TaskActivityCode } from './task-activity-code';
+import { Unit } from '../types/unit.type';
+import { Duration } from '../classes/duration.class';
+import { Project } from './project';
 
 /**
  * Represents a Task entity from an XER file.
  * This class contains all task-related information including dates, resource allocations, and relationships.
- *
- * @property {XER} xer - Reference to the parent XER object
- * @property {number} taskId - Unique identifier for the task
- * @property {number} projId - Project identifier this task belongs to
- * @property {number} wbsId - Work Breakdown Structure identifier
- * @property {number} clndrId - Calendar identifier associated with this task
- * @property {number} physCompletePct - Physical completion percentage of the task
- * @property {boolean} revFdbk - Indicates if feedback is revised
- * @property {number} estWt - Estimated weight of the task
- * @property {boolean} lockPlan - Indicates if the task plan is locked
- * @property {boolean} autoComputeAct - Indicates if actual values are automatically computed
- * @property {string} completePctType - Type of completion percentage calculation
- * @property {string} taskType - Type of task
- * @property {string} durationType - Type of duration
- * @property {string} statusCode - Current status of the task
- * @property {string} taskCode - Task code identifier
- * @property {string} taskName - Name of the task
- * @property {number} [rsrcId] - Optional resource identifier
- * @property {number} totalFloatHrCnt - Total float in hours
- * @property {number} freeFloatHrCnt - Free float in hours
- * @property {number} remainDrtnHrCnt - Remaining duration in hours
- * @property {number} actWorkQty - Actual work quantity
- * @property {number} remainWorkQty - Remaining work quantity
- * @property {number} targetWorkQty - Target work quantity
- * @property {Date} [cstrDate] - Constraint date
- * @property {Date} [actStartDate] - Actual start date
- * @property {Date} [actEndDate] - Actual end date
- * @property {Date} lateStartDate - Late start date
- * @property {Date} lateEndDate - Late end date
- * @property {Date} [expectEndDate] - Expected end date
- * @property {string} [cstrType] - Constraint type
- * @property {string} priorityType - Priority type
- * @property {string} guid - Global unique identifier
- * @property {boolean} drivingPath - Indicates if task is on the driving path
- *
- * @method TaskResources - Gets all resources assigned to this task
- * @method taskPredecessors - Gets all predecessor relationships for this task
- * @method wbs - Gets the WBS element this task belongs to
- * @method TaskMemos - Gets all memos associated with this task
- * @method calendar - Gets the calendar associated with this task
- * @method taskActivityCodes - Gets all activity codes associated with this task
  */
 export class Task {
 	/**
@@ -128,15 +90,15 @@ export class Task {
 	/**
 	 * Total float in hours
 	 */
-	public totalFloatHrCnt: number;
+	public totalFloat: Duration;
 	/**
 	 * Free float in hours
 	 */
-	public freeFloatHrCnt: number;
+	public freeFloat: Duration;
 	/**
 	 * Remaining duration in hours
 	 */
-	public remainDrtnHrCnt: number;
+	public remainDrtn: Duration;
 	/**
 	 * Actual work quantity
 	 */
@@ -152,7 +114,7 @@ export class Task {
 	/**
 	 * Target duration in hours
 	 */
-	public targetDrtnHrCnt: number;
+	public targetDrtn: Duration;
 	/**
 	 * Target equipment quantity
 	 */
@@ -325,18 +287,24 @@ export class Task {
 		this.taskCode = row[header.indexOf('task_code')];
 		this.taskName = row[header.indexOf('task_name')];
 		this.rsrcId = optionalNumber(row[header.indexOf('rsrc_id')]);
-		this.totalFloatHrCnt = Number(
-			row[header.indexOf('total_float_hr_cnt')]
+		this.totalFloat = new Duration(
+			row[header.indexOf('total_float_hr_cnt')],
+			'H'
 		);
-		this.freeFloatHrCnt = Number(row[header.indexOf('free_float_hr_cnt')]);
-		this.remainDrtnHrCnt = Number(
-			row[header.indexOf('remain_drtn_hr_cnt')]
+		this.freeFloat = new Duration(
+			row[header.indexOf('free_float_hr_cnt')],
+			'H'
+		);
+		this.remainDrtn = new Duration(
+			row[header.indexOf('remain_drtn_hr_cnt')],
+			'H'
 		);
 		this.actWorkQty = Number(row[header.indexOf('act_work_qty')]);
 		this.remainWorkQty = Number(row[header.indexOf('remain_work_qty')]);
 		this.targetWorkQty = Number(row[header.indexOf('target_work_qty')]);
-		this.targetDrtnHrCnt = Number(
-			row[header.indexOf('target_drtn_hr_cnt')]
+		this.targetDrtn = new Duration(
+			row[header.indexOf('target_drtn_hr_cnt')],
+			'H'
 		);
 		this.targetEquipQty = Number(row[header.indexOf('target_equip_qty')]);
 		this.actEquipQty = Number(row[header.indexOf('act_equip_qty')]);
@@ -394,6 +362,12 @@ export class Task {
 		this.updateUser = row[header.indexOf('update_user')];
 		this.locationId = optionalNumber(row[header.indexOf('location_id')]);
 		this.crtPathNum = optionalNumber(row[header.indexOf('crt_path_num')]);
+	}
+
+	public get project(): Project {
+		return this.xer.projects.find(
+			(project) => project.projId === this.projId
+		)!;
 	}
 
 	public get TaskResources(): TaskResource[] {

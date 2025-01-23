@@ -2,6 +2,7 @@ import { optionalString } from '../utilities/string-convert';
 import { XER } from '../xer';
 import { Task } from './task';
 import { Project } from './project';
+import { Duration } from '../classes/duration.class';
 
 /**
  * Represents a predecessor relationship between tasks in a project schedule
@@ -51,7 +52,7 @@ export class TaskPredecessor {
 	/**
 	 * Lag time in hours between the predecessor and successor tasks
 	 */
-	public lagHrCnt: number;
+	public lag: Duration;
 	/**
 	 * Optional comments about the predecessor relationship
 	 */
@@ -77,7 +78,7 @@ export class TaskPredecessor {
 		this.projId = Number(row[header.indexOf('proj_id')]);
 		this.predProjId = Number(row[header.indexOf('pred_proj_id')]);
 		this.predType = row[header.indexOf('pred_type')];
-		this.lagHrCnt = Number(row[header.indexOf('lag_hr_cnt')]);
+		this.lag = new Duration(row[header.indexOf('lag_hr_cnt')], 'H');
 		this.comments = optionalString(row[header.indexOf('comments')]);
 		this.floatPath = row[header.indexOf('float_path')];
 		this.aref = row[header.indexOf('aref')];

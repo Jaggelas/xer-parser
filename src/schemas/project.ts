@@ -7,87 +7,13 @@ import { XER } from '../xer';
 import { Task } from './task';
 import { ScheduleOption } from './schedule-option';
 import { ProjWBS } from './proj-wbs';
+import { Duration } from '../classes/duration.class';
+import { Calendar } from './calendar';
 
 /**
  * Represents a project in Primavera P6 XER format
  * Contains project-level settings, dates, and configuration
  *
- * @property xer - Reference to parent XER object containing all project data
- * @property projId - Unique identifier for the project
- * @property fyStartMonthNum - Fiscal year start month (1-12)
- * @property rsrcSelfAddFlag - Whether resources can add themselves to the project
- * @property allowCompleteFlag - Whether activities can be marked as complete
- * @property rsrcMultiAssignFlag - Whether multiple resources can be assigned to activities
- * @property checkoutFlag - Whether project is checked out
- * @property projectFlag - Whether this is an active project
- * @property stepCompleteFlag - Whether step completion is enabled
- * @property costQtyRecalcFlag - Whether costs/quantities are recalculated
- * @property batchSumFlag - Whether batch summarization is enabled
- * @property nameSepChar - Character used to separate activity names
- * @property defCompletePctType - Default percent complete type
- * @property projShortName - Project short name/code
- * @property acctId - Account ID (optional)
- * @property origProjId - Original project ID if copied (optional)
- * @property sourceProjId - Source project ID if imported (optional)
- * @property baseTypeId - Baseline type ID (optional)
- * @property clndrId - Calendar ID
- * @property sumBaseProjId - Summary base project ID (optional)
- * @property taskCodeBase - Base for activity codes
- * @property taskCodeStep - Step increment for activity codes
- * @property priorityNum - Project priority number
- * @property wbsMaxSumLevel - Maximum WBS summary level
- * @property strgyPriorityNum - Strategic priority number
- * @property lastChecksum - Last checksum value (optional)
- * @property criticalDrtnHrCnt - Critical duration in hours
- * @property defCostPerQty - Default cost per quantity
- * @property lastRecalcDate - Last recalculation date
- * @property planStartDate - Planned start date
- * @property planEndDate - Planned end date (optional)
- * @property scdEndDate - Scheduled end date (optional)
- * @property addDate - Date project was added
- * @property lastTasksumDate - Last task summarization date (optional)
- * @property fcstStartDate - Forecast start date (optional)
- * @property defDurationType - Default duration type
- * @property taskCodePrefix - Prefix for activity codes
- * @property guid - Globally unique identifier
- * @property defQtyType - Default quantity type
- * @property addByName - Name of user who added project
- * @property webLocalRootPath - Local web root path (optional)
- * @property projUrl - Project URL (optional)
- * @property defRateType - Default rate type
- * @property addActRemainFlag - Whether to add actual and remaining units
- * @property actThisPerLinkFlag - Whether actuals this period are linked
- * @property defTaskType - Default task type
- * @property actPctLinkFlag - Whether actual percent complete is linked
- * @property criticalPathType - Type of critical path calculation
- * @property taskCodePrefixFlag - Whether activity code prefix is used
- * @property defRollupDatesFlag - Whether dates roll up by default
- * @property useProjectBaselineFlag - Whether project baseline is used
- * @property remTargetLinkFlag - Whether remaining and target are linked
- * @property resetPlannedFlag - Whether planned dates reset
- * @property allowNegActFlag - Whether negative actuals are allowed
- * @property sumAssignLevel - Resource assignment summary level
- * @property lastFinDatesId - Last financial dates ID (optional)
- * @property fintmplDd - Financial period template ID
- * @property lastBaselineUpdateDate - Last baseline update date (optional)
- * @property crExternalKey - External key for integration (optional)
- * @property applyActualsDate - Date actuals were applied (optional)
- * @property locationId - Location ID (optional)
- * @property lastScheduleDate - Last schedule calculation date (optional)
- * @property loadedScopeLevel - Level of loaded scope
- * @property exportFlag - Whether project is flagged for export
- * @property newFinDatesId - New financial dates ID
- * @property baselinesToExport - Baselines marked for export
- * @property baselineNamesToExport - Names of baselines to export
- * @property nextDataDate - Next data date
- * @property closePeriodFlag - Whether period is closed
- * @property sumRefreshDate - Summary refresh date
- * @property trsrcsumLoaded - Whether resource summaries are loaded
- * @property sumtaskLoaded - Whether summary tasks are loaded
- *
- * @method tasks - Gets all tasks associated with this project
- * @method wbs - Gets all WBS elements associated with this project
- * @method scheduleOptions - Gets schedule options associated with this project
  */
 export class Project {
 	/**
@@ -200,11 +126,11 @@ export class Project {
 	/**
 	 * Critical duration in hours (e.g. 40)
 	 */
-	public criticalDrtnHrCnt: number;
+	public criticalDrtn: Duration;
 	/**
 	 * Default cost per quantity
 	 */
-	public defCostPerQty: number;
+	public defCostPerHr: number;
 	/**
 	 * Last recalculation date
 	 */
@@ -424,10 +350,11 @@ export class Project {
 		this.lastChecksum = optionalNumber(
 			row[header.indexOf('last_checksum')]
 		);
-		this.criticalDrtnHrCnt = Number(
-			row[header.indexOf('critical_drtn_hr_cnt')]
+		this.criticalDrtn = new Duration(
+			row[header.indexOf('critical_drtn_hr_cnt')],
+			'H'
 		);
-		this.defCostPerQty = Number(row[header.indexOf('def_cost_per_qty')]);
+		this.defCostPerHr = Number(row[header.indexOf('def_cost_per_qty')]);
 		this.lastRecalcDate = new Date(row[header.indexOf('last_recalc_date')]);
 		this.planStartDate = new Date(row[header.indexOf('plan_start_date')]);
 		this.planEndDate = optionalDate(row[header.indexOf('plan_end_date')]);
@@ -513,5 +440,11 @@ export class Project {
 		return this.xer.scheduleOptions.find(
 			(scheduleOption) => scheduleOption.projId === this.projId
 		)!;
+	}
+
+	public get calendar(): Calendar | undefined {
+		return this.xer.calendars.find(
+			(calendar) => calendar.clndrId === this.clndrId
+		);
 	}
 }

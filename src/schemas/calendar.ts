@@ -1,3 +1,6 @@
+import { CalendarProperties } from '../types/calendar-properties';
+import { Unit } from '../types/unit.type';
+import { parseCalendarData } from '../utilities/calendar-data-parser';
 import { optionalDate, optionalNumber } from '../utilities/string-convert';
 import { XER } from '../xer';
 import { Project } from './project';
@@ -76,6 +79,8 @@ export class Calendar {
 	 */
 	public clndrData: string;
 
+	public properties: CalendarProperties;
+
 	/**
 	 * Constructs a new Calendar instance.
 	 *
@@ -98,6 +103,7 @@ export class Calendar {
 		this.yearHrCnt = Number(row[header.indexOf('year_hr_cnt')]);
 		this.rsrcPrivate = row[header.indexOf('rsrc_private')] === 'Y';
 		this.clndrData = row[header.indexOf('clndr_data')];
+		this.properties = parseCalendarData(this.clndrData);
 	}
 
 	/**
@@ -109,5 +115,16 @@ export class Calendar {
 		return this.xer.projects.find(
 			(project) => project.projId === this.projId
 		)!;
+	}
+
+	/**
+	 * Get the difference between two dates taking in account the calendar properties and exceptions
+	 * This takes in account the Shift Hours to calculate the hours difference
+	 *
+	 * @param {Task} task Other task to compare to
+	 */
+	public dif(from: Date, to: Date, unit: Unit): number {
+		if (unit === 'Year' || unit === 'Years' || unit === 'Y') {
+		}
 	}
 }
