@@ -58,7 +58,12 @@ export class Duration {
 	 * @returns {number} The duration value in minutes.
 	 */
 	get minutes(): number {
-		return this.unitConvert(this._unit, 'M', this.value);
+		return this.unitConvert(this._unit, 'm', this.value);
+	}
+
+	add(val: Duration | number): Duration {
+		const v = typeof val === 'number' ? val : val.hours;
+		return new Duration(this.hours + v, this._calendar, 'H');
 	}
 
 	//Converts the value from one unit to another
@@ -75,7 +80,7 @@ export class Duration {
 						return value;
 					case 'Month':
 					case 'Months':
-					case 'm':
+					case 'M':
 						return (
 							(value * (this._calendar?.monthHrCnt || 80)) /
 							(this._calendar?.yearHrCnt || 2000)
@@ -100,14 +105,14 @@ export class Duration {
 						return value * (this._calendar?.yearHrCnt || 2000);
 					case 'Minute':
 					case 'Minutes':
-					case 'M':
+					case 'm':
 						return value * (this._calendar?.yearHrCnt || 2000) * 60;
 					default:
 						throw new Error('Invalid unit');
 				}
-			case 'Month':
-			case 'Months':
-			case 'm':
+				case 'Month':
+					case 'Months':
+					case 'M':
 				switch (to) {
 					case 'Year':
 					case 'Years':
@@ -116,9 +121,9 @@ export class Duration {
 							(value * (this._calendar?.yearHrCnt || 2000)) /
 							(this._calendar?.monthHrCnt || 80)
 						);
-					case 'Month':
-					case 'Months':
-					case 'm':
+						case 'Month':
+							case 'Months':
+							case 'M':
 						return value;
 					case 'Week':
 					case 'Weeks':
@@ -140,7 +145,7 @@ export class Duration {
 						return value * (this._calendar?.monthHrCnt || 80);
 					case 'Minute':
 					case 'Minutes':
-					case 'M':
+						case 'm':
 						return value * (this._calendar?.monthHrCnt || 80) * 60;
 					default:
 						throw new Error('Invalid unit');
@@ -158,7 +163,7 @@ export class Duration {
 						);
 					case 'Month':
 					case 'Months':
-					case 'm':
+						case 'M':
 						return (
 							(value * (this._calendar?.monthHrCnt || 80)) /
 							(this._calendar?.weekHrCnt || 40)
@@ -180,7 +185,7 @@ export class Duration {
 						return value * (this._calendar?.weekHrCnt || 40);
 					case 'Minute':
 					case 'Minutes':
-					case 'M':
+						case 'm':
 						return value * (this._calendar?.weekHrCnt || 40) * 60;
 					default:
 						throw new Error('Invalid unit');
@@ -198,7 +203,7 @@ export class Duration {
 						);
 					case 'Month':
 					case 'Months':
-					case 'm':
+						case 'M':
 						return (
 							(value * (this._calendar?.monthHrCnt || 80)) /
 							(this._calendar?.dayHrCnt || 8)
@@ -220,7 +225,7 @@ export class Duration {
 						return value * (this._calendar?.dayHrCnt || 8);
 					case 'Minute':
 					case 'Minutes':
-					case 'M':
+						case 'm':
 						return value * (this._calendar?.dayHrCnt || 8) * 60;
 					default:
 						throw new Error('Invalid unit');
@@ -235,7 +240,7 @@ export class Duration {
 						return value / (this._calendar?.yearHrCnt || 2000);
 					case 'Month':
 					case 'Months':
-					case 'm':
+						case 'M':
 						return value / (this._calendar?.monthHrCnt || 80);
 					case 'Week':
 					case 'Weeks':
@@ -251,14 +256,14 @@ export class Duration {
 						return value;
 					case 'Minute':
 					case 'Minutes':
-					case 'M':
+						case 'm':
 						return value * 60;
 					default:
 						throw new Error('Invalid unit');
 				}
 			case 'Minute':
 			case 'Minutes':
-			case 'M':
+				case 'm':
 				switch (to) {
 					case 'Year':
 					case 'Years':
@@ -268,7 +273,7 @@ export class Duration {
 						);
 					case 'Month':
 					case 'Months':
-					case 'm':
+						case 'M':
 						return (
 							value / ((this._calendar?.monthHrCnt || 80) * 60)
 						);
@@ -286,7 +291,7 @@ export class Duration {
 						return value / 60;
 					case 'Minute':
 					case 'Minutes':
-					case 'M':
+						case 'm':
 						return value;
 					default:
 						throw new Error('Invalid unit');

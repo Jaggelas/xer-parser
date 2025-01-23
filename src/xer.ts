@@ -97,6 +97,7 @@ export class XER implements XERData {
 	}
 
 	private loadEntities() {
+		this.projects = this.createProjects(this.getTable('PROJECT'));
 		this.currencyTypes = this.createCurrencyTypes(
 			this.getTable('CURRTYPE')
 		);
@@ -141,7 +142,6 @@ export class XER implements XERData {
 		);
 		this.udfValues = this.createUDFValues(this.getTable('UDFVALUE'));
 		this.tasks = this.createTasks(this.getTable('TASK'));
-		this.projects = this.createProjects(this.getTable('PROJECT'));
 	}
 
 	private getTable(name: string): Table {

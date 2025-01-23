@@ -1,4 +1,5 @@
 import { CalendarProperties } from '../types/calendar-properties';
+import moment from 'moment';
 
 /**
  * Parses calendar data string into a structured CalendarProperties object.
@@ -20,7 +21,7 @@ import { CalendarProperties } from '../types/calendar-properties';
  * const data = "DaysOfWeek()(0||1())s|09:00f|17:00";
  * const result = parseCalendarData(data);
  *  Result: {
- *    shifts: { 1: [{start: "09:00", finish: "17:00"}], 2: [], ... },
+ *    shifts: { 1: [{start: "09:00", finish: "17:00", durationHrs: 8}], 2: [], ... },
  *    exceptions: []
  *  }
  * ```
@@ -29,7 +30,7 @@ export const parseCalendarData = (data: string): CalendarProperties => {
 	const lines = data.replaceAll(' ', '').replaceAll('()', '()/n').split('/n');
 
 	const properties: CalendarProperties = {
-		shifts: [[], [], [], [], [], [], []],
+		weekdays: [[], [], [], [], [], [], []],
 		exceptions: []
 	};
 
@@ -58,9 +59,15 @@ export const parseCalendarData = (data: string): CalendarProperties => {
 				const start = line.match(/s\|[0-9]{2}:[0-9]{2}/);
 				const finish = line.match(/f\|[0-9]{2}:[0-9]{2}/);
 				if (start && finish) {
-					properties.shifts[activeDayIndex].push({
-						start: start[0].split('|')[1],
-						finish: finish[0].split('|')[1]
+					const startTime = start[0].split('|')[1];
+					const finishTime = finish[0].split('|')[1];
+					properties.weekdays[activeDayIndex-1].push({
+						start: startTime,
+						finish: finishTime,
+						durationHrs: moment(finishTime, 'HH:mm').diff(
+							moment(startTime, 'HH:mm'),
+							'hours'
+						)
 					});
 				}
 			}

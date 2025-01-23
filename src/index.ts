@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { XER } from './xer';
 
 export { XER } from './xer';
@@ -30,3 +31,8 @@ const file = Bun.file(
 );
 const fileText = await file.text();
 const xer = new XER(fileText);
+
+
+const calendar = xer.calendars[0];
+//console.dir(calendar.properties.weekdays, { depth: null });
+console.log(calendar.duration(moment('2025-02-25 08:00').toDate(), moment('2025-03-01 19:00').toDate()).days)

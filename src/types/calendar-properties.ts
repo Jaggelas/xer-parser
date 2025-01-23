@@ -1,10 +1,11 @@
 export type Shift = {
 	start: string;
 	finish: string;
+	durationHrs: number;
 };
 
 export type CalendarProperties = {
-	shifts: Array<Shift>[];
+	weekdays: Array<Shift>[];
 	exceptions: Array<{
 		date: Date;
 		shifts: Array<Shift> | null;

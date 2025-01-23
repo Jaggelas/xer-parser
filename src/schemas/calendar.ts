@@ -1,9 +1,10 @@
+import { Duration } from '../classes/duration.class';
 import { CalendarProperties } from '../types/calendar-properties';
-import { Unit } from '../types/unit.type';
 import { parseCalendarData } from '../utilities/calendar-data-parser';
 import { optionalDate, optionalNumber } from '../utilities/string-convert';
 import { XER } from '../xer';
 import { Project } from './project';
+import moment from 'moment';
 
 /**
  * Represents a Calendar in the XER schema.
@@ -118,13 +119,57 @@ export class Calendar {
 	}
 
 	/**
-	 * Get the difference between two dates taking in account the calendar properties and exceptions
-	 * This takes in account the Shift Hours to calculate the hours difference
+	 * Get the duration between two dates taking in account the calendar properties and exceptions
+	 * This takes in account the shift hours in a day and the exceptions which are non working days to calculate the hours difference
+	 * The duration is returned in hours new Duration(hrs, this, 'H')
 	 *
 	 * @param {Task} task Other task to compare to
 	 */
-	public dif(from: Date, to: Date, unit: Unit): number {
-		if (unit === 'Year' || unit === 'Years' || unit === 'Y') {
+	public duration(from: Date, to: Date): Duration {
+
+		if (from === to) {
+			return new Duration(0, this, 'H');
 		}
+
+		const current = moment(from).isBefore(to) ? moment(from) : moment(to);
+		const finish = moment(to).isAfter(from) ? moment(to) : moment(from);
+		
+		let hours = 0;
+
+		while (current.isSameOrBefore(finish, 'days')) {
+			const day = current.day();
+			const shifts = this.properties.weekdays[day];
+
+			const exceptions = this.properties.exceptions.filter((exception) => {
+				return moment(exception.date).isSame(current, 'date');
+			});
+
+			if (shifts.length === 0 || exceptions.length > 0) {
+				current.add(1, 'days');
+				continue;
+			}
+
+			shifts.forEach((shift) => {
+				const shiftStart = moment(`${current.format('YYYY-MM-DD')} ${shift.start}`, 'YYYY-MM-DD HH:mm');
+				const shiftFinish = moment(`${current.format('YYYY-MM-DD')} ${shift.finish}`, 'YYYY-MM-DD HH:mm');
+
+				if (current.isSameOrBefore(shiftStart, 'hours') && finish.isSameOrAfter(shiftFinish, 'hours')) {
+					hours += shiftFinish.diff(shiftStart, 'hours');
+				} else if (current.isSameOrBefore(shiftStart, 'hours') && finish.isSameOrBefore(shiftFinish, 'hours') && finish.isSameOrAfter(shiftStart, 'hours')) {
+					hours += finish.diff(shiftStart, 'hours');
+				} else if (current.isSameOrAfter(shiftStart, 'hours') && finish.isSameOrAfter(shiftFinish, 'hours') && current.isSameOrBefore(shiftFinish, 'hours')) {
+					hours += shiftFinish.diff(current, 'hours');
+				} else if (current.isSameOrAfter(shiftStart, 'hours') && finish.isSameOrBefore(shiftFinish, 'hours')) {
+					hours += finish.diff(current, 'hours');
+				} else {}
+
+			})
+
+			current.add(1, 'days');
+
+		}
+
+		return new Duration(hours, this, 'H');
+
 	}
 }

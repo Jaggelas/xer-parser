@@ -91,7 +91,7 @@ export class TaskPredecessor {
 
 	public get project(): Project {
 		return this.xer.projects.find(
-			(project) => project.projId === this.predProjId
+			(project) => project.projId === this.projId
 		)!;
 	}
 
