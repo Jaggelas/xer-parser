@@ -17,16 +17,49 @@ import { XER } from '../xer';
  * @property {number} [costPerQty5] - Optional fifth cost rate per quantity.
  */
 export class ResourceRate {
+	/**
+	 * The XER object containing all project data.
+	 */
 	public xer: XER;
+	/**
+	 * Unique identifier for the resource rate.
+	 */
 	public rsrcRateId: number;
+	/**
+	 * Identifier of the resource this rate applies to.
+	 */
 	public rsrcId: number;
+	/**
+	 * Maximum quantity of the resource that can be used per hour.
+	 */
 	public maxQtyPerHr: number;
+	/**
+	 * Standard cost per quantity unit of the resource.
+	 */
 	public costPerQty: number;
+	/**
+	 * Date from which this rate becomes effective.
+	 */
 	public startDate: Date;
+	/**
+	 * Optional identifier for the shift period.
+	 */
 	public shiftPeriodId?: number;
+	/**
+	 * Optional second cost rate per quantity.
+	 */
 	public costPerQty2?: number;
+	/**
+	 * Optional third cost rate per quantity.
+	 */
 	public costPerQty3?: number;
+	/**
+	 * Optional fourth cost rate per quantity.
+	 */
 	public costPerQty4?: number;
+	/**
+	 * Optional fifth cost rate per quantity.
+	 */
 	public costPerQty5?: number;
 
 	constructor(_xer: XER, header: string[], row: string[]) {

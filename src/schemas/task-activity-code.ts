@@ -19,10 +19,25 @@ import { ActivityCode } from './activity-code';
  * @property {Task} task - Gets the associated task object
  */
 export class TaskActivityCode {
+	/**
+	 * The parent XER instance containing all data
+	 */
 	public xer: XER;
+	/**
+	 * The unique identifier of the associated task
+	 */
 	public taskId: number;
+	/**
+	 * The unique identifier of the activity code type
+	 */
 	public actvCodeTypeId: number;
+	/**
+	 * The unique identifier of the activity code
+	 */
 	public actvCodeId: number;
+	/**
+	 * The unique identifier of the project
+	 */
 	public projId: number;
 
 	constructor(_xer: XER, header: string[], row: string[]) {

@@ -11,9 +11,21 @@ import { XER } from '../xer';
  * @property {number} rsrcId - Resource identifier this level list belongs to
  */
 export class ResourceLevelList {
+	/**
+	 * Creates an instance of ResourceLevelList.
+	 */
 	public xer: XER;
+	/**
+	 * Unique identifier for the resource level list
+	 */
 	public rsrcLevelListId: number;
+	/**
+	 * Associated schedule options identifier
+	 */
 	public schedoptionsId: number;
+	/**
+	 * Resource identifier this level list belongs to
+	 */
 	public rsrcId: number;
 
 	constructor(_xer: XER, header: string[], row: string[]) {

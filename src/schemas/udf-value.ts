@@ -20,13 +20,37 @@ import { XER } from '../xer';
  * @property {number} [udfCodeId] - Optional code identifier value for the UDF
  */
 export class UdfValue {
+	/**
+	 * Reference to the parent XER object
+	 */
 	public xer: XER;
+	/**
+	 * The unique identifier for the UDF type
+	 */
 	public udfTypeId: number;
+	/**
+	 * Foreign key ID referencing the associated project element
+	 */
 	public fkId: number;
+	/**
+	 * The project identifier this UDF belongs to
+	 */
 	public projId: number;
+	/**
+	 * Optional date value for the UDF
+	 */
 	public udfDate?: Date;
+	/**
+	 * Optional numeric value for the UDF
+	 */
 	public udfNumber?: number;
+	/**
+	 * Optional text value for the UDF
+	 */
 	public udfText?: string;
+	/**
+	 * Optional code identifier value for the UDF
+	 */
 	public udfCodeId?: number;
 
 	constructor(_xer: XER, header: string[], row: string[]) {

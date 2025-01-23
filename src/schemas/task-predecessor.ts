@@ -20,17 +20,53 @@ import { Project } from './project';
  * @property {string} arls - Activity relationship line style
  */
 export class TaskPredecessor {
+	/**
+	 * The parent XER object containing all project data
+	 */
 	public xer: XER;
+	/**
+	 * Unique identifier for the predecessor relationship
+	 */
 	public taskPredId: number;
+	/**
+	 * Identifier of the task that has the predecessor
+	 */
 	public taskId: number;
+	/**
+	 * Identifier of the predecessor task
+	 */
 	public predTaskId: number;
+	/**
+	 * Identifier of the project containing the task
+	 */
 	public projId: number;
+	/**
+	 * Identifier of the project containing the predecessor task
+	 */
 	public predProjId: number;
+	/**
+	 * Type of predecessor relationship (e.g., Finish-to-Start, Start-to-Start)
+	 */
 	public predType: string;
+	/**
+	 * Lag time in hours between the predecessor and successor tasks
+	 */
 	public lagHrCnt: number;
+	/**
+	 * Optional comments about the predecessor relationship
+	 */
 	public comments?: string;
+	/**
+	 * Float path indicator
+	 */
 	public floatPath: string;
+	/**
+	 * Activity reference
+	 */
 	public aref: string;
+	/**
+	 * Activity relationship line style
+	 */
 	public arls: string;
 
 	constructor(_xer: XER, header: string[], row: string[]) {

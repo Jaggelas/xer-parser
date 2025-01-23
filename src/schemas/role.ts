@@ -23,16 +23,49 @@ import { RoleRate } from './role-rate';
  * @method roleRates - Gets an array of RoleRate objects associated with this role
  */
 export class Role {
+	/**
+	 * The parent XER instance containing this role
+	 */
 	public xer: XER;
+	/**
+	 * Unique identifier for the role
+	 */
 	public roleId: number;
+	/**
+	 * Optional reference to a parent role's ID
+	 */
 	public parentRoleId?: number;
+	/**
+	 * Sequence number for ordering
+	 */
 	public seqNum: number;
+	/**
+	 * Full name of the role
+	 */
 	public roleName: string;
+	/**
+	 * Abbreviated name of the role
+	 */
 	public roleShortName: string;
+	/**
+	 * Optional Project Object Breakdown Structure ID
+	 */
 	public pobsId?: number;
+	/**
+	 * Flag indicating if cost quantity linking is enabled
+	 */
 	public defCostQtyLinkFlag: boolean;
+	/**
+	 * Type of cost quantity measurement
+	 */
 	public costQtyType: string;
+	/**
+	 * Optional description of the role
+	 */
 	public roleDescr?: string;
+	/**
+	 * Checksum value for data integrity
+	 */
 	public lastChecksum: number;
 
 	constructor(_xer: XER, header: string[], row: string[]) {

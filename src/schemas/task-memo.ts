@@ -18,11 +18,29 @@ import { MemoType } from './memo-type';
  * @property {MemoType} memoType - Gets the associated MemoType object (getter)
  */
 export class TaskMemo {
+	/**
+	 * Reference to the parent XER object containing all data
+	 */
 	public xer: XER;
+	/**
+	 * Unique identifier for the memo
+	 */
 	public memoId: number;
+	/**
+	 * ID of the task this memo is associated with
+	 */
 	public taskId: number;
+	/**
+	 * ID of the memo type
+	 */
 	public memoTypeId: number;
+	/**
+	 * ID of the project this memo belongs to
+	 */
 	public projId: number;
+	/**
+	 * The actual memo text content
+	 */
 	public taskMemo: string;
 
 	constructor(_xer: XER, header: string[], row: string[]) {

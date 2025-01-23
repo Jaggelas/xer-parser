@@ -40,37 +40,133 @@ import { Calendar } from './calendar';
  * @property lastChecksum - Optional checksum for data integrity
  */
 export class Resource {
+	/**
+	 * Reference to the parent XER object
+	 */
 	public xer: XER;
+	/**
+	 * Unique identifier for the resource
+	 */
 	public rsrcId: number;
+	/**
+	 * Optional ID of the parent resource if hierarchical
+	 */
 	public parentRsrcId?: number;
+	/**
+	 * ID of the calendar associated with this resource
+	 */
 	public clndrId: number;
+	/**
+	 * Optional role ID assigned to this resource
+	 */
 	public roleId?: number;
+	/**
+	 * Optional shift ID assigned to this resource
+	 */
 	public shiftId?: number;
+	/**
+	 * Optional user ID linked to this resource
+	 */
 	public userId?: number;
+	/**
+	 * Optional position business structure ID
+	 */
 	public pobsId?: number;
+	/**
+	 * Globally unique identifier for the resource
+	 */
 	public guid: string;
+	/**
+	 * Sequence number for the resource
+	 */
 	public rsrcSeqNum: number;
+	/**
+	 * Optional email address of the resource
+	 */
 	public emailAddr?: string;
+	/**
+	 * Optional employee code/number
+	 */
 	public employeeCode?: string;
+	/**
+	 * Optional office phone number
+	 */
 	public officePhone?: string;
+	/**
+	 * Optional alternative phone number
+	 */
 	public otherPhone?: string;
+	/**
+	 * Full name of the resource
+	 */
 	public rsrcName: string;
+	/**
+	 * Abbreviated name of the resource
+	 */
 	public rsrcShortName: string;
+	/**
+	 * Optional title/position name
+	 */
 	public rsrcTitleName?: string;
+	/**
+	 * Default quantity per hour for the resource
+	 */
 	public defQtyPerHr: number;
+	/**
+	 * Type of cost quantity measurement
+	 */
 	public costQtyType: string;
+	/**
+	 * Optional overtime factor
+	 */
 	public otFactor?: number;
+	/**
+	 * Indicates if the resource is active
+	 */
 	public activeFlag: boolean;
+	/**
+	 * Indicates if actuals are automatically computed
+	 */
 	public autoComputeActFlag: boolean;
+	/**
+	 * Indicates if cost quantity is linked by default
+	 */
 	public defCostQtyLinkFlag: boolean;
+	/**
+	 * Indicates if overtime is allowed
+	 */
 	public otFlag: boolean;
+	/**
+	 * Currency ID for resource costs
+	 */
 	public currId: number;
+	/**
+	 * Optional unit of measurement ID
+	 */
 	public unitId?: number;
+	/**
+	 * Type of resource (e.g., labor, material, equipment)
+	 */
 	public rsrcType: string;
+	/**
+	 * Optional location ID for the resource
+	 */
 	public locationId?: number;
+	/**
+	 * Optional notes about the resource
+	 */
 	public rsrcNotes?: string;
+	/**
+	 * Indicates if tasks can be loaded to this resource
+	 */
 	public loadTasksFlag: boolean;
+	/**
+	 * Indicates if resource leveling is enabled
+	 */
 	public levelFlag: boolean;
+	/**
+	 * Optional checksum for data integrity
+	 */
 	public lastChecksum?: number;
 
 	constructor(_xer: XER, header: string[], row: string[]) {

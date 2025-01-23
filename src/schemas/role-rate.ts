@@ -16,15 +16,45 @@ import { XER } from '../xer';
  * @property {number} maxQtyPerHr - Maximum quantity allowed per hour.
  */
 export class RoleRate {
+	/**
+	 * The parent XER instance.
+	 */
 	public xer: XER;
+	/**
+	 * Unique identifier for the role rate.
+	 */
 	public roleRateId: number;
+	/**
+	 * Reference to the associated role.
+	 */
 	public roleId: number;
+	/**
+	 * Primary cost per quantity.
+	 */
 	public costPerQty: number;
+	/**
+	 * Optional secondary cost per quantity.
+	 */
 	public costPerQty2?: number;
+	/**
+	 * Optional tertiary cost per quantity.
+	 */
 	public costPerQty3?: number;
+	/**
+	 * Optional quaternary cost per quantity.
+	 */
 	public costPerQty4?: number;
+	/**
+	 * Optional quinary cost per quantity.
+	 */
 	public costPerQty5?: number;
+	/**
+	 * The date when this rate becomes effective.
+	 */
 	public startDate: Date;
+	/**
+	 * Maximum quantity allowed per hour.
+	 */
 	public maxQtyPerHr: number;
 
 	constructor(_xer: XER, header: string[], row: string[]) {

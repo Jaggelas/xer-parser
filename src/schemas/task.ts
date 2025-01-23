@@ -57,67 +57,253 @@ import { TaskActivityCode } from './task-activity-code';
  * @method taskActivityCodes - Gets all activity codes associated with this task
  */
 export class Task {
+	/**
+	 * Reference to the parent XER object
+	 */
 	public xer: XER;
+	/**
+	 * Unique identifier for the task
+	 */
 	public taskId: number;
+	/**
+	 * Project identifier this task belongs to
+	 */
 	public projId: number;
+	/**
+	 * Work Breakdown Structure identifier
+	 */
 	public wbsId: number;
+	/**
+	 * Calendar identifier associated with this task
+	 */
 	public clndrId: number;
+	/**
+	 * Physical completion percentage of the task
+	 */
 	public physCompletePct: number;
+	/**
+	 * Indicates if feedback is revised
+	 */
 	public revFdbk: boolean;
+	/**
+	 * Estimated weight of the task
+	 */
 	public estWt: number;
+	/**
+	 * Indicates if the task plan is locked
+	 */
 	public lockPlan: boolean;
+	/**
+	 * Indicates if actual values are automatically computed
+	 */
 	public autoComputeAct: boolean;
+	/**
+	 * Type of completion percentage calculation
+	 */
 	public completePctType: string;
+	/**
+	 * Type of task
+	 */
 	public taskType: string;
+	/**
+	 * Type of duration
+	 */
 	public durationType: string;
+	/**
+	 * Current status of the task
+	 */
 	public statusCode: string;
+	/**
+	 * Task code identifier
+	 */
 	public taskCode: string;
+	/**
+	 * Name of the task
+	 */
 	public taskName: string;
+	/**
+	 * Optional resource identifier
+	 */
 	public rsrcId?: number;
+	/**
+	 * Total float in hours
+	 */
 	public totalFloatHrCnt: number;
+	/**
+	 * Free float in hours
+	 */
 	public freeFloatHrCnt: number;
+	/**
+	 * Remaining duration in hours
+	 */
 	public remainDrtnHrCnt: number;
+	/**
+	 * Actual work quantity
+	 */
 	public actWorkQty: number;
+	/**
+	 * Remaining work quantity
+	 */
 	public remainWorkQty: number;
+	/**
+	 * Target work quantity
+	 */
 	public targetWorkQty: number;
+	/**
+	 * Target duration in hours
+	 */
 	public targetDrtnHrCnt: number;
+	/**
+	 * Target equipment quantity
+	 */
 	public targetEquipQty: number;
+	/**
+	 * Actual equipment quantity
+	 */
 	public actEquipQty: number;
+	/**
+	 * Remaining equipment quantity
+	 */
 	public remainEquipQty: number;
+	/**
+	 * Constraint date
+	 */
 	public cstrDate?: Date;
+	/**
+	 * Actual start date
+	 */
 	public actStartDate?: Date;
+	/**
+	 * Actual end date
+	 */
 	public actEndDate?: Date;
+	/**
+	 * Late start date
+	 */
 	public lateStartDate: Date;
+	/**
+	 * Late end date
+	 */
 	public lateEndDate: Date;
+	/**
+	 * Expected end date
+	 */
 	public expectEndDate?: Date;
+	/**
+	 * Early start date
+	 */
 	public earlyStartDate: Date;
+	/**
+	 * Early end date
+	 */
 	public earlyEndDate: Date;
+	/**
+	 * Restart date
+	 */
 	public restartDate: Date;
+	/**
+	 * Reend date
+	 */
 	public reendDate: Date;
+	/**
+	 * Target start date
+	 */
 	public targetStartDate: Date;
+	/**
+	 * Target end date
+	 */
 	public targetEndDate: Date;
+	/**
+	 * Remaining late start date
+	 */
 	public remLateStartDate: Date;
+	/**
+	 * Remaining late end date
+	 */
 	public remLateEndDate: Date;
+	/**
+	 * Constraint type
+	 */
 	public cstrType?: string;
+	/**
+	 * Priority type
+	 */
 	public priorityType: string;
+	/**
+	 * Suspend date
+	 */
 	public suspendDate?: Date;
+	/**
+	 * Resume date
+	 */
 	public resumeDate?: Date;
+	/**
+	 * Float path
+	 */
 	public floatPath?: number;
+	/**
+	 * Float path order
+	 */
 	public floatPathOrder?: number;
+	/**
+	 * Global unique identifier
+	 */
 	public guid: string;
+	/**
+	 * Template global unique identifier
+	 */
 	public tmplGuid?: string;
+	/**
+	 * Constraint date 2
+	 */
 	public cstrDate2?: Date;
+	/**
+	 * Constraint type 2
+	 */
 	public cstrType2?: string;
+	/**
+	 * Indicates if task is on the driving path
+	 */
 	public drivingPath: boolean;
+	/**
+	 * Actual this period work quantity
+	 */
 	public actThisPerWorkQty: number;
+	/**
+	 * Actual this period equipment quantity
+	 */
 	public actThisPerEquipQty: number;
+	/**
+	 * External early start date
+	 */
 	public externalEarlyStartDate?: Date;
+	/**
+	 * External late end date
+	 */
 	public externalLateEndDate?: Date;
+	/**
+	 * Create date of the task
+	 */
 	public createDate: Date;
+	/**
+	 * Update date of the task
+	 */
 	public updateDate: Date;
+	/**
+	 * User who created the task
+	 */
 	public createUser: string;
+	/**
+	 * User who updated the task
+	 */
 	public updateUser: string;
+	/**
+	 * Location identifier
+	 */
 	public locationId?: number;
+	/**
+	 * Critical path number
+	 */
 	public crtPathNum?: number;
 
 	constructor(_xer: XER, header: string[], row: string[]) {

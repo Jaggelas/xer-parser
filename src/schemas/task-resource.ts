@@ -59,53 +59,197 @@ import { Resource } from './resource';
  * @property {number} taskrsrcSumId - Task resource summary ID
  */
 export class TaskResource {
+	/**
+	 * Reference to the parent XER object
+	 */
 	public xer: XER;
+	/**
+	 * Unique identifier for the task resource assignment
+	 */
 	public taskrsrcId: number;
+	/**
+	 * ID of the task this resource is assigned to
+	 */
 	public taskId: number;
+	/**
+	 * ID of the project this assignment belongs to
+	 */
 	public projId: number;
+	/**
+	 * Indicates if cost and quantity are linked
+	 */
 	public costQtyLinkFlag: boolean;
+	/**
+	 * ID of the role assigned
+	 */
 	public roleId: number;
+	/**
+	 * Optional account ID associated with this assignment
+	 */
 	public acctId?: number;
+	/**
+	 * ID of the resource assigned
+	 */
 	public rsrcId: number;
+	/**
+	 * Optional project WBS ID
+	 */
 	public pobsId?: number;
+	/**
+	 * Skill level of the resource for this assignment
+	 */
 	public skillLevel: number;
+	/**
+	 * Remaining quantity of work
+	 */
 	public remainQty: number;
+	/**
+	 * Target quantity of work
+	 */
 	public targetQty: number;
+	/**
+	 * Remaining quantity per hour
+	 */
 	public remainQtyPerHr: number;
+	/**
+	 * Target lag duration in hours
+	 */
 	public targetLagDrtnHrCnt: number;
+	/**
+	 * Target quantity per hour
+	 */
 	public targetQtyPerHr: number;
+	/**
+	 * Actual overtime quantity
+	 */
 	public actOtQty: number;
+	/**
+	 * Actual regular time quantity
+	 */
 	public actRegQty: number;
+	/**
+	 * Remaining lag duration in hours
+	 */
 	public relagDrtnHrCnt: number;
+	/**
+	 * Optional overtime factor
+	 */
 	public otFactor?: number;
+	/**
+	 * Cost per quantity unit
+	 */
 	public costPerQty: number;
+	/**
+	 * Target cost for the assignment
+	 */
 	public targetCost: number;
+	/**
+	 * Actual regular time cost
+	 */
 	public actRegCost: number;
+	/**
+	 * Actual overtime cost
+	 */
 	public actOtCost: number;
+	/**
+	 * Remaining cost
+	 */
 	public remainCost: number;
+	/**
+	 * Optional actual start date
+	 */
 	public actStartDate?: Date;
+	/**
+	 * Optional actual end date
+	 */
 	public actEndDate?: Date;
+	/**
+	 * Remaining start date
+	 */
 	public restartDate: Date;
+	/**
+	 * Remaining end date
+	 */
 	public reendDate: Date;
+	/**
+	 * Target start date
+	 */
 	public targetStartDate: Date;
+	/**
+	 * Target end date
+	 */
 	public targetEndDate: Date;
+	/**
+	 * Remaining late start date
+	 */
 	public remLateStartDate: Date;
+	/**
+	 * Remaining late end date
+	 */
 	public remLateEndDate: Date;
+	/**
+	 * Indicates if dates should roll up
+	 */
 	public rollupDatesFlag: boolean;
+	/**
+	 * Optional target curve value
+	 */
 	public targetCrv?: number;
+	/**
+	 * Optional remaining curve value
+	 */
 	public remainCrv?: number;
+	/**
+	 * Optional actual curve value
+	 */
 	public actualCrv?: number;
+	/**
+	 * Optional timesheet pending actual end flag
+	 */
 	public tsPendActEndFlag?: boolean;
+	/**
+	 * Globally unique identifier
+	 */
 	public guid: string;
+	/**
+	 * Type of rate applied
+	 */
 	public rateType: string;
+	/**
+	 * Actual cost this period
+	 */
 	public actThisPerCost: number;
+	/**
+	 * Actual quantity this period
+	 */
 	public actThisPerQty: number;
+	/**
+	 * Optional curve ID
+	 */
 	public curvId?: number;
+	/**
+	 * Resource type
+	 */
 	public rsrcType: string;
+	/**
+	 * Source type for cost per quantity unit value
+	 */
 	public costPerQtySourceType: string;
+	/**
+	 * User who created the assignment
+	 */
 	public createUser: string;
+	/**
+	 * Date when assignment was created
+	 */
 	public createDate: Date;
+	/**
+	 * Indicates if resource has hours
+	 */
 	public hasRsrchours: boolean;
+	/**
+	 * Task resource summary ID
+	 */
 	public taskrsrcSumId: number;
 
 	constructor(_xer: XER, header: string[], row: string[]) {
