@@ -78,11 +78,15 @@ export class TaskPredecessor {
 		this.projId = Number(row[header.indexOf('proj_id')]);
 		this.predProjId = Number(row[header.indexOf('pred_proj_id')]);
 		this.predType = row[header.indexOf('pred_type')];
-		this.lag = new Duration(row[header.indexOf('lag_hr_cnt')], 'H');
 		this.comments = optionalString(row[header.indexOf('comments')]);
 		this.floatPath = row[header.indexOf('float_path')];
 		this.aref = row[header.indexOf('aref')];
 		this.arls = row[header.indexOf('arls')];
+		this.lag = new Duration(
+			row[header.indexOf('lag_hr_cnt')],
+			this.project.calendar,
+			'H'
+		);
 	}
 
 	public get project(): Project {

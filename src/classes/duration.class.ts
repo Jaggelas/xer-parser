@@ -4,56 +4,9 @@ import { Calendar } from '../schemas/calendar';
 export class Duration {
 	private value: number;
 
-	private conversions = {
-		Year: {
-			Year: (value: number) => value,
-			Month: (value: number) =>
-				(value * this._calendar.monthHrCnt) / this._calendar.yearHrCnt,
-			Week: (value: number) =>
-				(value * this._calendar.weekHrCnt) / this._calendar.yearHrCnt,
-			Day: (value: number) =>
-				(value * this._calendar.dayHrCnt) / this._calendar.yearHrCnt,
-			Hour: (value: number) => value * this._calendar.yearHrCnt,
-			Minute: (value: number) => value * this._calendar.yearHrCnt * 60
-		},
-		Month: {
-			Year: (value: number) =>
-				(value * this._calendar.yearHrCnt) / this._calendar.monthHrCnt,
-			Month: (value: number) => value,
-			Week: (value: number) =>
-				(value * this._calendar.weekHrCnt) / this._calendar.monthHrCnt,
-			Day: (value: number) =>
-				(value * this._calendar.dayHrCnt) / this._calendar.monthHrCnt,
-			Hour: (value: number) => value * this._calendar.monthHrCnt,
-			Minute: (value: number) => value * this._calendar.monthHrCnt * 60
-		},
-		Week: {
-			Year: (value: number) =>
-				(value * this._calendar.yearHrCnt) / this._calendar.weekHrCnt,
-			Month: (value: number) =>
-				(value * this._calendar.monthHrCnt) / this._calendar.weekHrCnt,
-			Week: (value: number) => value,
-			Day: (value: number) =>
-				(value * this._calendar.dayHrCnt) / this._calendar.weekHrCnt,
-			Hour: (value: number) => value * this._calendar.weekHrCnt,
-			Minute: (value: number) => value * this._calendar.weekHrCnt * 60
-		},
-		Day: {
-			Year: (value: number) =>
-				(value * this._calendar.yearHrCnt) / this._calendar.dayHrCnt,
-			Month: (value: number) =>
-				(value * this._calendar.monthHrCnt) / this._calendar.dayHrCnt,
-			Week: (value: number) =>
-				(value * this._calendar.weekHrCnt) / this._calendar.dayHrCnt,
-			Day: (value: number) => value,
-			Hour: (value: number) => value * this._calendar.dayHrCnt,
-			Minute: (value: number) => value * this._calendar.dayHrCnt * 60
-		}
-	};
-
 	constructor(
 		_value: number | string,
-		private _calendar: Calendar,
+		private _calendar: Calendar | undefined,
 		private _unit: Unit
 	) {
 		this.value = typeof _value === 'string' ? Number(_value) : _value;
@@ -124,31 +77,31 @@ export class Duration {
 					case 'Months':
 					case 'm':
 						return (
-							(value * this._calendar.monthHrCnt) /
-							this._calendar.yearHrCnt
+							(value * (this._calendar?.monthHrCnt || 80)) /
+							(this._calendar?.yearHrCnt || 2000)
 						);
 					case 'Week':
 					case 'Weeks':
 					case 'W':
 						return (
-							(value * this._calendar.weekHrCnt) /
-							this._calendar.yearHrCnt
+							(value * (this._calendar?.weekHrCnt || 40)) /
+							(this._calendar?.yearHrCnt || 2000)
 						);
 					case 'Day':
 					case 'Days':
 					case 'D':
 						return (
-							(value * this._calendar.dayHrCnt) /
-							this._calendar.yearHrCnt
+							(value * (this._calendar?.dayHrCnt || 8)) /
+							(this._calendar?.yearHrCnt || 2000)
 						);
 					case 'Hour':
 					case 'Hours':
 					case 'H':
-						return value * this._calendar.yearHrCnt;
+						return value * (this._calendar?.yearHrCnt || 2000);
 					case 'Minute':
 					case 'Minutes':
 					case 'M':
-						return value * this._calendar.yearHrCnt * 60;
+						return value * (this._calendar?.yearHrCnt || 2000) * 60;
 					default:
 						throw new Error('Invalid unit');
 				}
@@ -160,8 +113,8 @@ export class Duration {
 					case 'Years':
 					case 'Y':
 						return (
-							(value * this._calendar.yearHrCnt) /
-							this._calendar.monthHrCnt
+							(value * (this._calendar?.yearHrCnt || 2000)) /
+							(this._calendar?.monthHrCnt || 80)
 						);
 					case 'Month':
 					case 'Months':
@@ -171,24 +124,24 @@ export class Duration {
 					case 'Weeks':
 					case 'W':
 						return (
-							(value * this._calendar.weekHrCnt) /
-							this._calendar.monthHrCnt
+							(value * (this._calendar?.weekHrCnt || 40)) /
+							(this._calendar?.monthHrCnt || 80)
 						);
 					case 'Day':
 					case 'Days':
 					case 'D':
 						return (
-							(value * this._calendar.dayHrCnt) /
-							this._calendar.monthHrCnt
+							(value * (this._calendar?.dayHrCnt || 8)) /
+							(this._calendar?.monthHrCnt || 80)
 						);
 					case 'Hour':
 					case 'Hours':
 					case 'H':
-						return value * this._calendar.monthHrCnt;
+						return value * (this._calendar?.monthHrCnt || 80);
 					case 'Minute':
 					case 'Minutes':
 					case 'M':
-						return value * this._calendar.monthHrCnt * 60;
+						return value * (this._calendar?.monthHrCnt || 80) * 60;
 					default:
 						throw new Error('Invalid unit');
 				}
@@ -200,15 +153,15 @@ export class Duration {
 					case 'Years':
 					case 'Y':
 						return (
-							(value * this._calendar.yearHrCnt) /
-							this._calendar.weekHrCnt
+							(value * (this._calendar?.yearHrCnt || 2000)) /
+							(this._calendar?.weekHrCnt || 40)
 						);
 					case 'Month':
 					case 'Months':
 					case 'm':
 						return (
-							(value * this._calendar.monthHrCnt) /
-							this._calendar.weekHrCnt
+							(value * (this._calendar?.monthHrCnt || 80)) /
+							(this._calendar?.weekHrCnt || 40)
 						);
 					case 'Week':
 					case 'Weeks':
@@ -218,17 +171,17 @@ export class Duration {
 					case 'Days':
 					case 'D':
 						return (
-							(value * this._calendar.dayHrCnt) /
-							this._calendar.weekHrCnt
+							(value * (this._calendar?.dayHrCnt || 8)) /
+							(this._calendar?.weekHrCnt || 40)
 						);
 					case 'Hour':
 					case 'Hours':
 					case 'H':
-						return value * this._calendar.weekHrCnt;
+						return value * (this._calendar?.weekHrCnt || 40);
 					case 'Minute':
 					case 'Minutes':
 					case 'M':
-						return value * this._calendar.weekHrCnt * 60;
+						return value * (this._calendar?.weekHrCnt || 40) * 60;
 					default:
 						throw new Error('Invalid unit');
 				}
@@ -240,22 +193,22 @@ export class Duration {
 					case 'Years':
 					case 'Y':
 						return (
-							(value * this._calendar.yearHrCnt) /
-							this._calendar.dayHrCnt
+							(value * (this._calendar?.yearHrCnt || 2000)) /
+							(this._calendar?.dayHrCnt || 8)
 						);
 					case 'Month':
 					case 'Months':
 					case 'm':
 						return (
-							(value * this._calendar.monthHrCnt) /
-							this._calendar.dayHrCnt
+							(value * (this._calendar?.monthHrCnt || 80)) /
+							(this._calendar?.dayHrCnt || 8)
 						);
 					case 'Week':
 					case 'Weeks':
 					case 'W':
 						return (
-							(value * this._calendar.weekHrCnt) /
-							this._calendar.dayHrCnt
+							(value * (this._calendar?.weekHrCnt || 40)) /
+							(this._calendar?.dayHrCnt || 8)
 						);
 					case 'Day':
 					case 'Days':
@@ -264,11 +217,11 @@ export class Duration {
 					case 'Hour':
 					case 'Hours':
 					case 'H':
-						return value * this._calendar.dayHrCnt;
+						return value * (this._calendar?.dayHrCnt || 8);
 					case 'Minute':
 					case 'Minutes':
 					case 'M':
-						return value * this._calendar.dayHrCnt * 60;
+						return value * (this._calendar?.dayHrCnt || 8) * 60;
 					default:
 						throw new Error('Invalid unit');
 				}
@@ -279,19 +232,19 @@ export class Duration {
 					case 'Year':
 					case 'Years':
 					case 'Y':
-						return value / this._calendar.yearHrCnt;
+						return value / (this._calendar?.yearHrCnt || 2000);
 					case 'Month':
 					case 'Months':
 					case 'm':
-						return value / this._calendar.monthHrCnt;
+						return value / (this._calendar?.monthHrCnt || 80);
 					case 'Week':
 					case 'Weeks':
 					case 'W':
-						return value / this._calendar.weekHrCnt;
+						return value / (this._calendar?.weekHrCnt || 40);
 					case 'Day':
 					case 'Days':
 					case 'D':
-						return value / this._calendar.dayHrCnt;
+						return value / (this._calendar?.dayHrCnt || 8);
 					case 'Hour':
 					case 'Hours':
 					case 'H':
@@ -310,19 +263,23 @@ export class Duration {
 					case 'Year':
 					case 'Years':
 					case 'Y':
-						return value / (this._calendar.yearHrCnt * 60);
+						return (
+							value / ((this._calendar?.yearHrCnt || 2000) * 60)
+						);
 					case 'Month':
 					case 'Months':
 					case 'm':
-						return value / (this._calendar.monthHrCnt * 60);
+						return (
+							value / ((this._calendar?.monthHrCnt || 80) * 60)
+						);
 					case 'Week':
 					case 'Weeks':
 					case 'W':
-						return value / (this._calendar.weekHrCnt * 60);
+						return value / ((this._calendar?.weekHrCnt || 40) * 60);
 					case 'Day':
 					case 'Days':
 					case 'D':
-						return value / (this._calendar.dayHrCnt * 60);
+						return value / ((this._calendar?.dayHrCnt || 8) * 60);
 					case 'Hour':
 					case 'Hours':
 					case 'H':

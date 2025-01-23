@@ -5,6 +5,7 @@ import {
 	optionalString
 } from '../utilities/string-convert';
 import { XER } from '../xer';
+import { Project } from './project';
 import { Resource } from './resource';
 
 /**
@@ -268,17 +269,9 @@ export class TaskResource {
 		this.remainQty = Number(row[header.indexOf('remain_qty')]);
 		this.targetQty = Number(row[header.indexOf('target_qty')]);
 		this.remainQtyPerHr = Number(row[header.indexOf('remain_qty_per_hr')]);
-		this.targetLag = new Duration(
-			row[header.indexOf('target_lag_drtn_hr_cnt')],
-			'H'
-		);
 		this.targetQtyPerHr = Number(row[header.indexOf('target_qty_per_hr')]);
 		this.actOtQty = Number(row[header.indexOf('act_ot_qty')]);
 		this.actRegQty = Number(row[header.indexOf('act_reg_qty')]);
-		this.relag = new Duration(
-			row[header.indexOf('relag_drtn_hr_cnt')],
-			'H'
-		);
 		this.otFactor = optionalNumber(row[header.indexOf('ot_factor')]);
 		this.costPerQty = Number(row[header.indexOf('cost_per_qty')]);
 		this.targetCost = Number(row[header.indexOf('target_cost')]);
@@ -317,9 +310,25 @@ export class TaskResource {
 		this.createDate = new Date(row[header.indexOf('create_date')]);
 		this.hasRsrchours = row[header.indexOf('has_rsrchours')] === 'Y';
 		this.taskrsrcSumId = Number(row[header.indexOf('taskrsrc_sum_id')]);
+		this.targetLag = new Duration(
+			row[header.indexOf('target_lag_drtn_hr_cnt')],
+			this.project.calendar,
+			'H'
+		);
+		this.relag = new Duration(
+			row[header.indexOf('relag_drtn_hr_cnt')],
+			this.project.calendar,
+			'H'
+		);
 	}
 
 	public get resource(): Resource | undefined {
 		return this.xer.resources.find((r) => r.rsrcId === this.rsrcId);
+	}
+
+	public get project(): Project {
+		return this.xer.projects.find(
+			(project) => project.projId === this.projId
+		)!;
 	}
 }

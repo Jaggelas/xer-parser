@@ -350,10 +350,6 @@ export class Project {
 		this.lastChecksum = optionalNumber(
 			row[header.indexOf('last_checksum')]
 		);
-		this.criticalDrtn = new Duration(
-			row[header.indexOf('critical_drtn_hr_cnt')],
-			'H'
-		);
 		this.defCostPerHr = Number(row[header.indexOf('def_cost_per_qty')]);
 		this.lastRecalcDate = new Date(row[header.indexOf('last_recalc_date')]);
 		this.planStartDate = new Date(row[header.indexOf('plan_start_date')]);
@@ -424,6 +420,11 @@ export class Project {
 		this.sumRefreshDate = new Date(row[header.indexOf('sum_refresh_date')]);
 		this.trsrcsumLoaded = row[header.indexOf('trsrcsum_loaded')] === 'Y';
 		this.sumtaskLoaded = row[header.indexOf('sumtask_loaded')] === 'Y';
+		this.criticalDrtn = new Duration(
+			row[header.indexOf('critical_drtn_hr_cnt')],
+			this.calendar,
+			'H'
+		);
 	}
 
 	public get tasks(): Task[] {
