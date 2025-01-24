@@ -10,7 +10,6 @@ import { ProjWBS } from './proj-wbs';
 import { TaskMemo } from './task-memo';
 import { Calendar } from './calendar';
 import { TaskActivityCode } from './task-activity-code';
-import { Unit } from '../types/unit.type';
 import { Duration } from '../classes/duration.class';
 import { Project } from './project';
 import moment, { Moment } from 'moment';

@@ -85,7 +85,7 @@ export class TaskPredecessor {
 		this.lag = new Duration(
 			row[header.indexOf('lag_hr_cnt')],
 			this.project.calendar,
-			'H'
+			'h'
 		);
 	}
 
