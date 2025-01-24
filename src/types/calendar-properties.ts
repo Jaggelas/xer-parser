@@ -1,13 +1,12 @@
-export type Shift = {
-	start: string;
-	finish: string;
-	durationHrs: number;
-};
+import { Moment } from "moment";
+import { Shift } from "../classes/shift.class";
+
+
 
 export type CalendarProperties = {
 	weekdays: Array<Shift>[];
 	exceptions: Array<{
-		date: Date;
+		date: Moment;
 		shifts: Array<Shift> | null;
 	}>;
 };

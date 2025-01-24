@@ -1,3 +1,4 @@
+import moment, { Moment } from 'moment';
 import { Duration } from '../classes/duration.class';
 import {
 	optionalDate,
@@ -160,35 +161,35 @@ export class TaskResource {
 	/**
 	 * Optional actual start date
 	 */
-	public actStartDate?: Date;
+	public actStartDate?: Moment;
 	/**
 	 * Optional actual end date
 	 */
-	public actEndDate?: Date;
+	public actEndDate?: Moment;
 	/**
 	 * Remaining start date
 	 */
-	public restartDate: Date;
+	public restartDate: Moment;
 	/**
 	 * Remaining end date
 	 */
-	public reendDate: Date;
+	public reendDate: Moment;
 	/**
 	 * Target start date
 	 */
-	public targetStartDate: Date;
+	public targetStartDate: Moment;
 	/**
 	 * Target end date
 	 */
-	public targetEndDate: Date;
+	public targetEndDate: Moment;
 	/**
 	 * Remaining late start date
 	 */
-	public remLateStartDate: Date;
+	public remLateStartDate: Moment;
 	/**
 	 * Remaining late end date
 	 */
-	public remLateEndDate: Date;
+	public remLateEndDate: Moment;
 	/**
 	 * Indicates if dates should roll up
 	 */
@@ -244,7 +245,7 @@ export class TaskResource {
 	/**
 	 * Date when assignment was created
 	 */
-	public createDate: Date;
+	public createDate: Moment;
 	/**
 	 * Indicates if resource has hours
 	 */
@@ -280,16 +281,16 @@ export class TaskResource {
 		this.remainCost = Number(row[header.indexOf('remain_cost')]);
 		this.actStartDate = optionalDate(row[header.indexOf('act_start_date')]);
 		this.actEndDate = optionalDate(row[header.indexOf('act_end_date')]);
-		this.restartDate = new Date(row[header.indexOf('restart_date')]);
-		this.reendDate = new Date(row[header.indexOf('reend_date')]);
-		this.targetStartDate = new Date(
+		this.restartDate = moment(row[header.indexOf('restart_date')]);
+		this.reendDate = moment(row[header.indexOf('reend_date')]);
+		this.targetStartDate = moment(
 			row[header.indexOf('target_start_date')]
 		);
-		this.targetEndDate = new Date(row[header.indexOf('target_end_date')]);
-		this.remLateStartDate = new Date(
+		this.targetEndDate = moment(row[header.indexOf('target_end_date')]);
+		this.remLateStartDate = moment(
 			row[header.indexOf('rem_late_start_date')]
 		);
-		this.remLateEndDate = new Date(
+		this.remLateEndDate = moment(
 			row[header.indexOf('rem_late_end_date')]
 		);
 		this.rollupDatesFlag = row[header.indexOf('rollup_dates_flag')] === 'Y';
@@ -307,18 +308,18 @@ export class TaskResource {
 		this.costPerQtySourceType =
 			row[header.indexOf('cost_per_qty_source_type')];
 		this.createUser = row[header.indexOf('create_user')];
-		this.createDate = new Date(row[header.indexOf('create_date')]);
+		this.createDate = moment(row[header.indexOf('create_date')]);
 		this.hasRsrchours = row[header.indexOf('has_rsrchours')] === 'Y';
 		this.taskrsrcSumId = Number(row[header.indexOf('taskrsrc_sum_id')]);
 		this.targetLag = new Duration(
 			row[header.indexOf('target_lag_drtn_hr_cnt')],
 			this.project.calendar,
-			'H'
+			'h'
 		);
 		this.relag = new Duration(
 			row[header.indexOf('relag_drtn_hr_cnt')],
 			this.project.calendar,
-			'H'
+			'h'
 		);
 	}
 

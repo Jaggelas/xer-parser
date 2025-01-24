@@ -1,19 +1,7 @@
 export type Unit =
-	| 'Year'
-	| 'Years'
-	| 'Y'
-	| 'Month'
-	| 'Months'
-	| 'm'
-	| 'Week'
-	| 'Weeks'
-	| 'W'
-	| 'Day'
-	| 'Days'
-	| 'D'
-	| 'Hour'
-	| 'Hours'
-	| 'H'
-	| 'Minute'
-	| 'Minutes'
-	| 'M';
+	"year" | "years" | "y" |
+    "month" | "months" | "M" |
+    "week" | "weeks" | "w" |
+    "day" | "days" | "d" |
+    "hour" | "hours" | "h" |
+    "minute" | "minutes" | "m"

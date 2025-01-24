@@ -1,3 +1,4 @@
+import { Shift } from '../classes/shift.class';
 import { CalendarProperties } from '../types/calendar-properties';
 import moment from 'moment';
 
@@ -61,14 +62,7 @@ export const parseCalendarData = (data: string): CalendarProperties => {
 				if (start && finish) {
 					const startTime = start[0].split('|')[1];
 					const finishTime = finish[0].split('|')[1];
-					properties.weekdays[activeDayIndex-1].push({
-						start: startTime,
-						finish: finishTime,
-						durationHrs: moment(finishTime, 'HH:mm').diff(
-							moment(startTime, 'HH:mm'),
-							'hours'
-						)
-					});
+					properties.weekdays[activeDayIndex-1].push(new Shift(startTime, finishTime));
 				}
 			}
 		}
@@ -78,7 +72,7 @@ export const parseCalendarData = (data: string): CalendarProperties => {
 			if (line.match(/\(d\|[0-9]*\)\(\)/)) {
 				const matchedString = line.match(/d\|[0-9]*/)?.[0]!;
 				properties.exceptions.push({
-					date: new Date(
+					date: moment(
 						Date.UTC(0, 0, Number(matchedString.split('|')[1]) - 1)
 					),
 					shifts: []

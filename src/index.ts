@@ -35,4 +35,6 @@ const xer = new XER(fileText);
 
 const calendar = xer.calendars[0];
 //console.dir(calendar.properties.weekdays, { depth: null });
-console.log(calendar.duration(moment('2025-02-25 08:00').toDate(), moment('2025-03-01 19:00').toDate()).days)
+console.log(calendar.duration(moment('2025-02-25 08:00'), moment('2025-03-01 19:00')).days)
+
+//console.log(calendar.addToDate(moment('2025-01-22 08:00'),1,'h'));

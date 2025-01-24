@@ -1,3 +1,5 @@
+import moment, { Moment } from "moment";
+
 /**
  * Converts a string to a number if the string is not empty.
  * If the string is empty, returns `undefined`.
@@ -16,8 +18,8 @@ export const optionalNumber = (string: string): number | undefined => {
  * @param string - The string to convert to a Date object.
  * @returns A Date object if the string is not empty, otherwise undefined.
  */
-export const optionalDate = (string: string): Date | undefined => {
-	return string === '' ? undefined : new Date(string);
+export const optionalDate = (string: string): Moment | undefined => {
+	return string === '' ? undefined : moment(string);
 };
 
 /**

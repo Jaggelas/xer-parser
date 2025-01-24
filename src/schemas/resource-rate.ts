@@ -1,3 +1,4 @@
+import moment, { Moment } from 'moment';
 import { optionalNumber } from '../utilities/string-convert';
 import { XER } from '../xer';
 
@@ -40,7 +41,7 @@ export class ResourceRate {
 	/**
 	 * Date from which this rate becomes effective.
 	 */
-	public startDate: Date;
+	public startDate: Moment;
 	/**
 	 * Optional identifier for the shift period.
 	 */
@@ -68,7 +69,7 @@ export class ResourceRate {
 		this.rsrcId = Number(row[header.indexOf('rsrc_id')]);
 		this.maxQtyPerHr = Number(row[header.indexOf('max_qty_per_hr')]);
 		this.costPerQty = Number(row[header.indexOf('cost_per_qty')]);
-		this.startDate = new Date(row[header.indexOf('start_date')]);
+		this.startDate = moment(row[header.indexOf('start_date')]);
 		this.shiftPeriodId = optionalNumber(
 			row[header.indexOf('shift_period_id')]
 		);

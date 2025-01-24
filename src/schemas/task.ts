@@ -13,6 +13,7 @@ import { TaskActivityCode } from './task-activity-code';
 import { Unit } from '../types/unit.type';
 import { Duration } from '../classes/duration.class';
 import { Project } from './project';
+import moment, { Moment } from 'moment';
 
 /**
  * Represents a Task entity from an XER file.
@@ -130,59 +131,59 @@ export class Task {
 	/**
 	 * Constraint date
 	 */
-	public cstrDate?: Date;
+	public cstrDate?: Moment;
 	/**
 	 * Actual start date
 	 */
-	public actStartDate?: Date;
+	public actStartDate?: Moment;
 	/**
 	 * Actual end date
 	 */
-	public actEndDate?: Date;
+	public actEndDate?: Moment;
 	/**
 	 * Late start date
 	 */
-	public lateStartDate: Date;
+	public lateStartDate: Moment;
 	/**
 	 * Late end date
 	 */
-	public lateEndDate: Date;
+	public lateEndDate: Moment;
 	/**
 	 * Expected end date
 	 */
-	public expectEndDate?: Date;
+	public expectEndDate?: Moment;
 	/**
 	 * Early start date
 	 */
-	public earlyStartDate: Date;
+	public earlyStartDate: Moment;
 	/**
 	 * Early end date
 	 */
-	public earlyEndDate: Date;
+	public earlyEndDate: Moment;
 	/**
 	 * Restart date
 	 */
-	public restartDate: Date;
+	public restartDate: Moment;
 	/**
 	 * Reend date
 	 */
-	public reendDate: Date;
+	public reendDate: Moment;
 	/**
 	 * Target start date
 	 */
-	public targetStartDate: Date;
+	public targetStartDate: Moment;
 	/**
 	 * Target end date
 	 */
-	public targetEndDate: Date;
+	public targetEndDate: Moment;
 	/**
 	 * Remaining late start date
 	 */
-	public remLateStartDate: Date;
+	public remLateStartDate: Moment;
 	/**
 	 * Remaining late end date
 	 */
-	public remLateEndDate: Date;
+	public remLateEndDate: Moment;
 	/**
 	 * Constraint type
 	 */
@@ -194,11 +195,11 @@ export class Task {
 	/**
 	 * Suspend date
 	 */
-	public suspendDate?: Date;
+	public suspendDate?: Moment;
 	/**
 	 * Resume date
 	 */
-	public resumeDate?: Date;
+	public resumeDate?: Moment;
 	/**
 	 * Float path
 	 */
@@ -218,7 +219,7 @@ export class Task {
 	/**
 	 * Constraint date 2
 	 */
-	public cstrDate2?: Date;
+	public cstrDate2?: Moment;
 	/**
 	 * Constraint type 2
 	 */
@@ -238,19 +239,19 @@ export class Task {
 	/**
 	 * External early start date
 	 */
-	public externalEarlyStartDate?: Date;
+	public externalEarlyStartDate?: Moment;
 	/**
 	 * External late end date
 	 */
-	public externalLateEndDate?: Date;
+	public externalLateEndDate?: Moment;
 	/**
 	 * Create date of the task
 	 */
-	public createDate: Date;
+	public createDate: Moment;
 	/**
 	 * Update date of the task
 	 */
-	public updateDate: Date;
+	public updateDate: Moment;
 	/**
 	 * User who created the task
 	 */
@@ -289,22 +290,26 @@ export class Task {
 		this.rsrcId = optionalNumber(row[header.indexOf('rsrc_id')]);
 		this.totalFloat = new Duration(
 			row[header.indexOf('total_float_hr_cnt')],
-			'H'
+			this.calendar,
+			'h'
 		);
 		this.freeFloat = new Duration(
 			row[header.indexOf('free_float_hr_cnt')],
-			'H'
+			this.calendar,
+			'h'
 		);
 		this.remainDrtn = new Duration(
 			row[header.indexOf('remain_drtn_hr_cnt')],
-			'H'
+			this.calendar,
+			'h'
 		);
 		this.actWorkQty = Number(row[header.indexOf('act_work_qty')]);
 		this.remainWorkQty = Number(row[header.indexOf('remain_work_qty')]);
 		this.targetWorkQty = Number(row[header.indexOf('target_work_qty')]);
 		this.targetDrtn = new Duration(
 			row[header.indexOf('target_drtn_hr_cnt')],
-			'H'
+			this.calendar,
+			'h'
 		);
 		this.targetEquipQty = Number(row[header.indexOf('target_equip_qty')]);
 		this.actEquipQty = Number(row[header.indexOf('act_equip_qty')]);
@@ -312,23 +317,23 @@ export class Task {
 		this.cstrDate = optionalDate(row[header.indexOf('cstr_date')]);
 		this.actStartDate = optionalDate(row[header.indexOf('act_start_date')]);
 		this.actEndDate = optionalDate(row[header.indexOf('act_end_date')]);
-		this.lateStartDate = new Date(row[header.indexOf('late_start_date')]);
-		this.lateEndDate = new Date(row[header.indexOf('late_end_date')]);
+		this.lateStartDate = moment(row[header.indexOf('late_start_date')]);
+		this.lateEndDate = moment(row[header.indexOf('late_end_date')]);
 		this.expectEndDate = optionalDate(
 			row[header.indexOf('expect_end_date')]
 		);
-		this.earlyStartDate = new Date(row[header.indexOf('early_start_date')]);
-		this.earlyEndDate = new Date(row[header.indexOf('early_end_date')]);
-		this.restartDate = new Date(row[header.indexOf('restart_date')]);
-		this.reendDate = new Date(row[header.indexOf('reend_date')]);
-		this.targetStartDate = new Date(
+		this.earlyStartDate = moment(row[header.indexOf('early_start_date')]);
+		this.earlyEndDate = moment(row[header.indexOf('early_end_date')]);
+		this.restartDate = moment(row[header.indexOf('restart_date')]);
+		this.reendDate = moment(row[header.indexOf('reend_date')]);
+		this.targetStartDate = moment(
 			row[header.indexOf('target_start_date')]
 		);
-		this.targetEndDate = new Date(row[header.indexOf('target_end_date')]);
-		this.remLateStartDate = new Date(
+		this.targetEndDate = moment(row[header.indexOf('target_end_date')]);
+		this.remLateStartDate = moment(
 			row[header.indexOf('rem_late_start_date')]
 		);
-		this.remLateEndDate = new Date(
+		this.remLateEndDate = moment(
 			row[header.indexOf('rem_late_end_date')]
 		);
 		this.cstrType = optionalString(row[header.indexOf('cstr_type')]);
@@ -356,8 +361,8 @@ export class Task {
 		this.externalLateEndDate = optionalDate(
 			row[header.indexOf('external_late_end_date')]
 		);
-		this.createDate = new Date(row[header.indexOf('create_date')]);
-		this.updateDate = new Date(row[header.indexOf('update_date')]);
+		this.createDate = moment(row[header.indexOf('create_date')]);
+		this.updateDate = moment(row[header.indexOf('update_date')]);
 		this.createUser = row[header.indexOf('create_user')];
 		this.updateUser = row[header.indexOf('update_user')];
 		this.locationId = optionalNumber(row[header.indexOf('location_id')]);

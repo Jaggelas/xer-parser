@@ -1,3 +1,4 @@
+import moment, { Moment } from 'moment';
 import {
 	optionalDate,
 	optionalNumber,
@@ -39,7 +40,7 @@ export class UdfValue {
 	/**
 	 * Optional date value for the UDF
 	 */
-	public udfDate?: Date;
+	public udfDate?: Moment;
 	/**
 	 * Optional numeric value for the UDF
 	 */

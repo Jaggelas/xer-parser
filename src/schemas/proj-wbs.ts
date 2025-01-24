@@ -1,3 +1,4 @@
+import { Moment } from 'moment';
 import {
 	optionalDate,
 	optionalNumber,
@@ -95,11 +96,11 @@ export class ProjWBS {
 	/**
 	 * Anticipated start date
 	 */
-	public anticipStartDate?: Date;
+	public anticipStartDate?: Moment;
 	/**
 	 * Anticipated end date
 	 */
-	public anticipEndDate?: Date;
+	public anticipEndDate?: Moment;
 	/**
 	 * Earned value computation type
 	 */

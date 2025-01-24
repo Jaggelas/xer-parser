@@ -1,3 +1,4 @@
+import moment, { Moment } from 'moment';
 import { optionalNumber } from '../utilities/string-convert';
 import { XER } from '../xer';
 
@@ -51,7 +52,7 @@ export class RoleRate {
 	/**
 	 * The date when this rate becomes effective.
 	 */
-	public startDate: Date;
+	public startDate: Moment;
 	/**
 	 * Maximum quantity allowed per hour.
 	 */
@@ -66,7 +67,7 @@ export class RoleRate {
 		this.costPerQty3 = optionalNumber(row[header.indexOf('cost_per_qty3')]);
 		this.costPerQty4 = optionalNumber(row[header.indexOf('cost_per_qty4')]);
 		this.costPerQty5 = optionalNumber(row[header.indexOf('cost_per_qty5')]);
-		this.startDate = new Date(row[header.indexOf('start_date')]);
+		this.startDate = moment(row[header.indexOf('start_date')]);
 		this.maxQtyPerHr = Number(row[header.indexOf('max_qty_per_hr')]);
 	}
 }
