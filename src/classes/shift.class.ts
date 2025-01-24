@@ -25,7 +25,7 @@ export class Shift {
      */
     inShift(date: Moment): boolean {
         const time = date.format('HH:mm');
-        return moment(time, 'HH:mm').isBetween(this.start, this.finish);
+        return moment(time, 'HH:mm').isBetween(this.start, this.finish, 'minute', '[)');
     }
 
     shiftStart(date: Moment): Moment {

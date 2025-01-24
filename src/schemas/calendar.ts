@@ -156,12 +156,12 @@ export class Calendar {
 	 */
 	public duration(from: Moment, to: Moment): Duration {
 
-		if (from === to) {
+		if (from.isSame(to, 'minute')) {
 			return new Duration(0, this, 'h');
 		}
 
 		const current = from.isBefore(to) ? from : to;
-		const finish = from.isAfter(from) ? to : from;
+		const finish = to.isAfter(from) ? to : from;
 
 		let hours = 0;
 
@@ -210,26 +210,52 @@ export class Calendar {
 	 * @param {Duration} duration The duration to add
 	 * @returns {Date} The new date after adding the duration
 	 */
-	public addToDate(from: Date | Moment, qty: number, unit: Unit): Moment {
-		const finish = moment(from);
-		console.log('Starting Date ', from);
-		let hoursLeft = this.unitConvert(unit, 'hour', qty);
+	public addToDate(from: Moment, qty: number, unit: Unit, ): Moment {
+		if (qty <= 0) return from.clone(); // No shift needed
+		
+		const exceptionStrings = this.properties.exceptions.map((exception) => exception.date.format("YYYY-MM-DD"));
+		let currentDate = from.clone();
+		let timeAdded = 0;
 
-		while (hoursLeft > 0) {
+		// Convert the quantity to hours
+		const qtyInHours = this.unitConvert(unit, 'hour', qty);
 
-			if(this.isWorkingHour(finish)) {
-				hoursLeft--;
+		while (timeAdded < qtyInHours) {
+			const currentDay = currentDate.isoWeekday() % 7;
+			const shifts = this.properties.weekdays[currentDay] || [];
+
+			if (!exceptionStrings.includes(currentDate.format("YYYY-MM-DD"))) {
+				for (const shift of shifts) {
+					const shiftStart = shift.shiftStart(currentDate);
+					const shiftFinish = shift.shiftFinish(currentDate);
+
+					if (timeAdded >= qtyInHours) {
+						break;
+					}
+
+					if (currentDate.isBefore(shiftFinish)) {
+						const overlapStart = moment.max(shiftStart, currentDate);
+						const remainingShiftTime = Math.min(shiftFinish.diff(overlapStart, 'hours', true), qtyInHours - timeAdded);
+						timeAdded += remainingShiftTime;
+						currentDate = overlapStart.clone().add(remainingShiftTime, 'hours');
+						if (timeAdded >= qtyInHours) {
+							break;
+						}
+					}
+
+				}
+
 			}
 
-			finish.add(1, 'hours');
-			console.log({
-				hoursLeft,
-				finish: finish.format('YYYY-MM-DD HH:mm')
-			})
+			if (timeAdded < qtyInHours) {
+				currentDate.add(1, 'days').startOf('day');
+			}
+
 		}
 
-		return finish;
+		return currentDate;
 	}
+	  
 
 	//Converts the value from one unit to another
 	//Taking in account the Hours / Day, Hours / Week, Hours / Month and Hours / Year from the calendar
