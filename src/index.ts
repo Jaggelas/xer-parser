@@ -37,10 +37,16 @@ const calendar = xer.calendars[0];
 //console.dir(calendar.properties.weekdays, { depth: null });
 console.log(calendar.duration(moment('2025-02-25 09:00'), moment('2025-03-01 19:00')).hours)
 
-const startTime = performance.now()
+let startTime = performance.now()
 console.log('Result 1h : ',calendar.addToDate(moment('2025-01-22 09:00'),1,'h'));
 console.log('Result 8h : ',calendar.addToDate(moment('2025-01-22 09:00'),8,'h'));
 console.log('Result 1d : ',calendar.addToDate(moment('2025-01-22 09:00'),1,'d'));
 console.log('Result 5d : ',calendar.addToDate(moment('2025-01-22 09:00'),5,'d'));
 console.log('Result 20d : ',calendar.addToDate(moment('2025-01-22 09:00'),20,'d'));
 console.log(`Call to addToDate took ${performance.now() - startTime} milliseconds`)
+
+
+const t1 = xer.tasks[3];
+startTime = performance.now()
+console.log('Distribution : ', t1.distributionHrs(t1.targetStartDate, t1.targetEndDate));
+console.log(`Call to calc distribution took ${performance.now() - startTime} milliseconds`)

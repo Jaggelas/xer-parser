@@ -406,4 +406,41 @@ export class Task {
 			(taskActivityCode) => taskActivityCode.taskId === this.taskId
 		);
 	}
+
+	/**
+	 * Returns the distribution of hours per day for the task between the start and finish dates.
+	 * @param start Start date
+	 * @param finish Finish date
+	 * @returns Object containing the start date and an array of hours per day
+	 */
+	public distributionHrs(start: Moment, finish: Moment): {start: Moment, distribution: number[]} {
+		
+		const calendar = this.calendar ?? this.project.calendar;
+		
+		if (!calendar) {
+			throw new Error('No calendar found for task or project');
+		}
+
+		const exceptionStrings = calendar.properties.exceptions.map((exception) => exception.date.format("YYYY-MM-DD"));
+		const distribution = new Array(Math.abs(start.diff(finish, 'days'))).fill(0);
+		const currentDate = start.clone();
+
+		let index = 0;
+		while (currentDate.isBefore(finish)) {
+			
+			if (exceptionStrings.includes(currentDate.format("YYYY-MM-DD"))) {
+				distribution[index] = 0;
+			} else {
+				const from = moment.max(currentDate.clone().startOf('day'), start);
+				const to = moment.min(currentDate.clone().endOf('day'), finish);
+
+				distribution[index] = calendar.duration(from, to).hours;
+			}
+
+			index++;
+			currentDate.add(1, 'day');
+		}
+
+		return {start, distribution};
+	}
 }
