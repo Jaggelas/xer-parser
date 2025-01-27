@@ -2,6 +2,8 @@
 // import { XER } from './xer';
 
 export { XER } from './xer';
+export { Duration } from './classes/duration.class';
+export { Tasks } from './classes/tasks.class';
 
 export { ActivityCodeType } from './schemas/activity-code-type';
 export { ActivityCode } from './schemas/activity-code';
