@@ -14,6 +14,11 @@ import { Duration } from '../classes/duration.class';
 import { Project } from './project';
 import moment, { Moment } from 'moment';
 
+
+export type TaskType = 'TT_Task' | 'TT_LOE' | 'TT_Mile' | 'TT_Rsrc' | 'TT_FinMile';
+
+export type TaskStatusCode = 'TK_Complete' | 'TK_Active' | 'TK_NotStart';
+
 /**
  * Represents a Task entity from an XER file.
  * This class contains all task-related information including dates, resource allocations, and relationships.
@@ -66,7 +71,7 @@ export class Task {
 	/**
 	 * Type of task
 	 */
-	public taskType: 'TT_Task' | 'TT_LOE' | 'TT_Mile' | 'TT_Rsrc' | 'TT_FinMile' ;
+	public taskType: TaskType;
 	/**
 	 * Type of duration
 	 */
@@ -74,7 +79,7 @@ export class Task {
 	/**
 	 * Current status of the task
 	 */
-	public statusCode: 'TK_Complete' | 'TK_Active' | 'TK_NotStart';
+	public statusCode: TaskStatusCode;
 	/**
 	 * Task code identifier
 	 */
@@ -281,9 +286,9 @@ export class Task {
 		this.autoComputeAct =
 			row[header.indexOf('auto_compute_act_flag')] === 'Y';
 		this.completePctType = row[header.indexOf('complete_pct_type')];
-		this.taskType = row[header.indexOf('task_type')] as any;
+		this.taskType = row[header.indexOf('task_type')] as TaskType;
 		this.durationType = row[header.indexOf('duration_type')];
-		this.statusCode = row[header.indexOf('status_code')];
+		this.statusCode = row[header.indexOf('status_code')] as TaskStatusCode;
 		this.taskCode = row[header.indexOf('task_code')];
 		this.taskName = row[header.indexOf('task_name')];
 		this.rsrcId = optionalNumber(row[header.indexOf('rsrc_id')]);
