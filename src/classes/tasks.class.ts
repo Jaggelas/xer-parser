@@ -69,12 +69,32 @@ export class Tasks extends Array<Task> {
         }, undefined);
     }
 
+    
     /**
-     * Gets a new Tasks instance containing only non-milestone tasks
-     * @returns {Tasks} A new Tasks collection excluding 'TT_FinMile' and 'TT_Mile' task types
+     * Gets all milestone tasks from the Tasks collection.
+     * Filters tasks based on task types 'TT_FinMile' and 'TT_Mile'.
+     * @returns {Tasks} A new Tasks collection containing only milestone tasks
      */
-    public get milestones(): Tasks {
-        return new Tasks(this.filter(task => task.taskType !== 'TT_FinMile' && task.taskType !== 'TT_Mile'));
+    public get milestoneTasks(): Tasks {
+        return new Tasks(this.filter(task => task.taskType === 'TT_FinMile' || task.taskType === 'TT_Mile'));
+    }
+
+    /**
+     * Gets a new Tasks instance containing only normal tasks.
+     * Normal tasks are those with task types 'TT_Task' or 'TT_Rsrc'.
+     * @returns {Tasks} A new Tasks collection containing only the filtered normal tasks
+     */
+    public get normalTasks(): Tasks {
+        return new Tasks(this.filter(task => task.taskType === 'TT_Task' || task.taskType === 'TT_Rsrc'));
+    }
+
+    /**
+     * Gets all Level of Effort (LOE) tasks from the current task collection.
+     * Level of Effort tasks represent ongoing work that cannot be measured in terms of discrete physical elements.
+     * @returns {Tasks} A new Tasks collection containing only Level of Effort tasks
+     */
+    public get levelOfEffortTasks(): Tasks {
+        return new Tasks(this.filter(task => task.taskType === 'TT_LOE'));
     }
 
     /**
