@@ -1,3 +1,4 @@
+import { Tasks } from './classes/tasks.class';
 import { parse } from './utilities/parser';
 import { ActivityCode } from './schemas/activity-code';
 import { ActivityCodeType } from './schemas/activity-code-type';
@@ -49,7 +50,7 @@ import { Table } from './types/table';
  * @property {ResourceLevelList[]} resourceLevelLists - Resource level assignments
  * @property {ResourceRate[]} resourceRates - Resource rate definitions
  * @property {ResourceRole[]} resourceRoles - Resource role assignments
- * @property {Task[]} tasks - Project tasks
+ * @property {Tasks} tasks - Project tasks
  * @property {ActivityCode[]} activityCodes - Activity code assignments
  * @property {TaskMemo[]} taskMemos - Task memo assignments
  * @property {TaskPredecessor[]} taskPredecessors - Task dependency relationships
@@ -77,7 +78,7 @@ export class XER implements XERData {
 	public resourceLevelLists: ResourceLevelList[] = [];
 	public resourceRates: ResourceRate[] = [];
 	public resourceRoles: ResourceRole[] = [];
-	public tasks: Task[] = [];
+	public tasks: Tasks = new Tasks([]);
 	public activityCodes: ActivityCode[] = [];
 	public taskMemos: TaskMemo[] = [];
 	public taskPredecessors: TaskPredecessor[] = [];
@@ -228,8 +229,8 @@ export class XER implements XERData {
 		);
 	}
 
-	private createTasks(table: Table): Task[] {
-		return table.rows.map((row) => new Task(this, table.header, row));
+	private createTasks(table: Table): Tasks {
+		return new Tasks(table.rows.map((row) => new Task(this, table.header, row)));
 	}
 
 	private createActivityCodes(table: Table): ActivityCode[] {

@@ -61,9 +61,62 @@ export class Duration {
 		return this._calendar ? this._calendar.unitConvert(this._unit, 'm', this.value) : 0;
 	}
 
+	/**
+	 * Adds the specified duration or number of hours to the current duration
+	 * @param val - The duration object or number of hours to add
+	 * @returns A new Duration object with the sum of the hours
+	 */
 	add(val: Duration | number): Duration {
 		const v = typeof val === 'number' ? val : val.hours;
 		return new Duration(this.hours + v, this._calendar, 'h');
 	}
+
+	/**
+	 * Checks if the current duration is less than another duration
+	 * @param val - Duration instance to compare against
+	 * @returns True if the current duration is less than the provided duration and calendar is set, false otherwise
+	 */
+	isLessThan(val: Duration): boolean {
+		return this._calendar ? this.minutes < val.minutes : false;
+	}
+
+	/**
+	 * Checks if the current duration is less than or equal to the provided duration.
+	 * Only performs the comparison if a calendar is set.
+	 * @param val - The duration to compare against
+	 * @returns {boolean} True if current duration is less than or equal and calendar is set, false otherwise
+	 */
+	isLessThanOrEqual(val: Duration): boolean {
+		return this._calendar ? this.minutes <= val.minutes : false;
+	}
+
+	/**
+	 * Checks if the current duration is greater than the provided duration.
+	 * 
+	 * @param {Duration} val - The duration to compare against
+	 * @returns {boolean} Returns true if the current duration is greater than the provided duration and calendar is set, false otherwise
+	 */
+	isGreaterThan(val: Duration): boolean {
+		return this._calendar ? this.minutes > val.minutes : false;
+	}
+
+	/**
+	 * Checks if the current duration is greater than or equal to the provided duration
+	 * @param val - The duration to compare against
+	 * @returns True if current duration is greater than or equal to the provided duration and calendar exists, false otherwise
+	 */
+	isGreaterThanOrEqual(val: Duration): boolean {
+		return this._calendar ? this.minutes >= val.minutes : false;
+	}
+
+	/**
+	 * Checks if the current duration is equal to the provided duration
+	 * @param val - The duration to compare against
+	 * @returns True if the current duration is equal to the provided duration and calendar exists, false otherwise
+	 */
+	isEqual(val: Duration): boolean {
+		return this._calendar ? this.minutes === val.minutes : false;
+	}
+
 	
 }

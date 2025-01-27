@@ -66,7 +66,7 @@ export class Task {
 	/**
 	 * Type of task
 	 */
-	public taskType: string;
+	public taskType: 'TT_Task' | 'TT_LOE' | 'TT_Mile' | 'TT_Rsrc' | 'TT_FinMile' ;
 	/**
 	 * Type of duration
 	 */
@@ -74,7 +74,7 @@ export class Task {
 	/**
 	 * Current status of the task
 	 */
-	public statusCode: string;
+	public statusCode: 'TK_Complete' | 'TK_Active' | 'TK_NotStart';
 	/**
 	 * Task code identifier
 	 */
@@ -281,7 +281,7 @@ export class Task {
 		this.autoComputeAct =
 			row[header.indexOf('auto_compute_act_flag')] === 'Y';
 		this.completePctType = row[header.indexOf('complete_pct_type')];
-		this.taskType = row[header.indexOf('task_type')];
+		this.taskType = row[header.indexOf('task_type')] as any;
 		this.durationType = row[header.indexOf('duration_type')];
 		this.statusCode = row[header.indexOf('status_code')];
 		this.taskCode = row[header.indexOf('task_code')];
@@ -442,4 +442,5 @@ export class Task {
 
 		return {start, distribution};
 	}
+
 }
