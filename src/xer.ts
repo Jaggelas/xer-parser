@@ -1,5 +1,6 @@
 import { Tasks } from './classes/tasks.class';
-import { parse } from './utilities/parser';
+import { parse, parseStream } from './utilities/parser';
+import { serializeXER } from './utilities/serializer';
 import { ActivityCode } from './schemas/activity-code';
 import { ActivityCodeType } from './schemas/activity-code-type';
 import { Calendar } from './schemas/calendar';
@@ -23,7 +24,7 @@ import { TaskPredecessor } from './schemas/task-predecessor';
 import { TaskResource } from './schemas/task-resource';
 import { UdfType } from './schemas/udf-type';
 import { UdfValue } from './schemas/udf-value';
-import { XERData } from './types/schema';
+import type { XERData, SchemaConstructor } from './types/schema';
 import { Table } from './types/table';
 
 /**
@@ -62,6 +63,7 @@ import { Table } from './types/table';
  */
 export class XER implements XERData {
 	public tables: Table[] = [];
+	private headerLine: string | undefined;
 	public currencyTypes: CurrencyType[] = [];
 	public financialTemplates: FinancialTemplate[] = [];
 	public memoTypes: MemoType[] = [];
@@ -90,80 +92,104 @@ export class XER implements XERData {
 		const parseResponse = parse(_ser_file);
 		if (parseResponse.error) {
 			throw new Error(parseResponse.error);
+		} else {
+			const ok = parseResponse as unknown as { tables: Table[]; headerLine?: string };
+			this.tables = ok.tables;
+			this.headerLine = ok.headerLine;
 		}
-
-		this.tables = parseResponse.tables!;
 
 		this.loadEntities();
 	}
 
+	/**
+	 * Build an XER instance from a streaming source (AsyncIterable of chunks), avoiding full-file buffering.
+	 */
+	static async fromStream(source: AsyncIterable<string | Uint8Array>): Promise<XER> {
+		const instance = Object.create(XER.prototype) as XER;
+		instance.tables = [];
+		instance.currencyTypes = [];
+		instance.financialTemplates = [];
+		instance.memoTypes = [];
+		instance.obs = [];
+		instance.udfTypes = [];
+		instance.roles = [];
+		instance.projects = [];
+		instance.roleRates = [];
+		instance.calendars = [];
+		instance.scheduleOptions = [];
+		instance.projWBS = [];
+		instance.resources = [];
+		instance.activityCodeTypes = [];
+		instance.resourceLevelLists = [];
+		instance.resourceRates = [];
+		instance.resourceRoles = [];
+		instance.tasks = new Tasks([]);
+		instance.activityCodes = [];
+		instance.taskMemos = [];
+		instance.taskPredecessors = [];
+		instance.taskResources = [];
+		instance.taskActivityCodes = [];
+		instance.udfValues = [];
+
+		const parseResponse = await parseStream(source);
+		if (parseResponse.error) {
+			throw new Error(parseResponse.error);
+		} else {
+			const ok = parseResponse as unknown as { tables: Table[]; headerLine?: string };
+			instance.tables = ok.tables;
+			instance.headerLine = ok.headerLine;
+		}
+		instance.loadEntities();
+		return instance;
+	}
+
+	/**
+	 * Serialize the current in-memory representation back to XER text.
+	 * Note: this reflects the raw tables; if you mutate entity objects, ensure corresponding table rows are updated.
+	 */
+	public toXERString(options?: { version?: number; lineEnding?: '\\r\\n' | '\\n' }): string {
+		return serializeXER(this.tables, { ...options, headerLine: this.headerLine });
+	}
+
+
+	// Type-safe helper to load a collection and assign to a property
+	private loadCollection<K extends keyof XER, Elem>(
+		this: XER,
+		tableName: string,
+		assignTo: K,
+		Ctor: SchemaConstructor<Elem>,
+		wrap?: (items: Elem[]) => XER[K]
+	): void {
+		const table = this.getTable(tableName);
+		const items = table.rows.map((row) => new Ctor(this, table.header, row));
+		const value = (wrap ? wrap(items) : (items as unknown as XER[K]));
+		this[assignTo] = value as XER[K];
+	}
+
 	private loadEntities() {
-		this.projects = this.createProjects(this.getTable('PROJECT'));
-		this.currencyTypes = this.createCurrencyTypes(
-			this.getTable('CURRTYPE')
-		);
-		this.financialTemplates = this.createFinancialTemplates(
-			this.getTable('FINTMPL')
-		);
-		this.memoTypes = this.createMemoTypes(
-			this.getTable('MEMOTYPE')
-		);
-		this.obs = this.createObs(
-			this.getTable('OBS')
-		);
-		this.udfTypes = this.createUDFTypes(
-			this.getTable('UDFTYPE')
-		);
-		this.roles = this.createRoles(
-			this.getTable('ROLES')
-		);
-		this.roleRates = this.createRoleRates(
-			this.getTable('ROLERATE')
-		);
-		this.calendars = this.createCalendars(
-			this.getTable('CALENDAR'));
-		this.scheduleOptions = this.createScheduleOptions(
-			this.getTable('SCHEDOPTIONS')
-		);
-		this.projWBS = this.createProjWBS(
-			this.getTable('PROJWBS')
-		);
-		this.resources = this.createResources(
-			this.getTable('RSRC')
-		);
-		this.activityCodeTypes = this.createActivityCodeTypes(
-			this.getTable('ACTVTYPE')
-		);
-		this.resourceLevelLists = this.createResourceLevelLists(
-			this.getTable('RSRCLEVELLIST')
-		);
-		this.resourceRates = this.createResourceRates(
-			this.getTable('RSRCRATE')
-		);
-		this.resourceRoles = this.createResourceRoles(
-			this.getTable('RSRCROLE')
-		);
-		this.activityCodes = this.createActivityCodes(
-			this.getTable('ACTVCODE')
-		);
-		this.taskMemos = this.createTaskMemos(
-			this.getTable('TASKMEMO')
-		);
-		this.taskPredecessors = this.createTaskPredecessors(
-			this.getTable('TASKPRED')
-		);
-		this.taskResources = this.createTaskResources(
-			this.getTable('TASKRSRC')
-		);
-		this.taskActivityCodes = this.createTaskActivityCodes(
-			this.getTable('TASKACTV')
-		);
-		this.udfValues = this.createUDFValues(
-			this.getTable('UDFVALUE')
-		);
-		this.tasks = this.createTasks(
-			this.getTable('TASK')
-		);
+		this.loadCollection('PROJECT', 'projects', Project);
+		this.loadCollection('CURRTYPE', 'currencyTypes', CurrencyType);
+		this.loadCollection('FINTMPL', 'financialTemplates', FinancialTemplate);
+		this.loadCollection('MEMOTYPE', 'memoTypes', MemoType);
+		this.loadCollection('OBS', 'obs', OBS);
+		this.loadCollection('UDFTYPE', 'udfTypes', UdfType);
+		this.loadCollection('ROLES', 'roles', Role);
+		this.loadCollection('ROLERATE', 'roleRates', RoleRate);
+		this.loadCollection('CALENDAR', 'calendars', Calendar);
+		this.loadCollection('SCHEDOPTIONS', 'scheduleOptions', ScheduleOption);
+		this.loadCollection('PROJWBS', 'projWBS', ProjWBS);
+		this.loadCollection('RSRC', 'resources', Resource);
+		this.loadCollection('ACTVTYPE', 'activityCodeTypes', ActivityCodeType);
+		this.loadCollection('RSRCLEVELLIST', 'resourceLevelLists', ResourceLevelList);
+		this.loadCollection('RSRCRATE', 'resourceRates', ResourceRate);
+		this.loadCollection('RSRCROLE', 'resourceRoles', ResourceRole);
+		this.loadCollection('ACTVCODE', 'activityCodes', ActivityCode);
+		this.loadCollection('TASKMEMO', 'taskMemos', TaskMemo);
+		this.loadCollection('TASKPRED', 'taskPredecessors', TaskPredecessor);
+		this.loadCollection('TASKRSRC', 'taskResources', TaskResource);
+		this.loadCollection('TASKACTV', 'taskActivityCodes', TaskActivityCode);
+		this.loadCollection('UDFVALUE', 'udfValues', UdfValue);
+		this.loadCollection('TASK', 'tasks', Task, (items) => new Tasks(items as Task[]));
 	}
 
 	private getTable(name: string): Table {
@@ -176,117 +202,4 @@ export class XER implements XERData {
 		);
 	}
 
-	private createCurrencyTypes(table: Table): CurrencyType[] {
-		return table.rows.map(
-			(row) => new CurrencyType(this, table.header, row)
-		);
-	}
-
-	private createFinancialTemplates(table: Table): FinancialTemplate[] {
-		return table.rows.map(
-			(row) => new FinancialTemplate(this, table.header, row)
-		);
-	}
-
-	private createMemoTypes(table: Table): MemoType[] {
-		return table.rows.map((row) => new MemoType(this, table.header, row));
-	}
-
-	private createObs(table: Table): OBS[] {
-		return table.rows.map((row) => new OBS(this, table.header, row));
-	}
-
-	private createUDFTypes(table: Table): UdfType[] {
-		return table.rows.map((row) => new UdfType(this, table.header, row));
-	}
-
-	private createRoles(table: Table): Role[] {
-		return table.rows.map((row) => new Role(this, table.header, row));
-	}
-
-	private createRoleRates(table: Table): RoleRate[] {
-		return table.rows.map((row) => new RoleRate(this, table.header, row));
-	}
-
-	private createCalendars(table: Table): Calendar[] {
-		return table.rows.map((row) => new Calendar(this, table.header, row));
-	}
-
-	private createScheduleOptions(table: Table): ScheduleOption[] {
-		return table.rows.map(
-			(row) => new ScheduleOption(this, table.header, row)
-		);
-	}
-
-	private createProjWBS(table: Table): ProjWBS[] {
-		return table.rows.map((row) => new ProjWBS(this, table.header, row));
-	}
-
-	private createResources(table: Table): Resource[] {
-		return table.rows.map((row) => new Resource(this, table.header, row));
-	}
-
-	private createActivityCodeTypes(table: Table): ActivityCodeType[] {
-		return table.rows.map(
-			(row) => new ActivityCodeType(this, table.header, row)
-		);
-	}
-
-	private createResourceLevelLists(table: Table): ResourceLevelList[] {
-		return table.rows.map(
-			(row) => new ResourceLevelList(this, table.header, row)
-		);
-	}
-
-	private createResourceRates(table: Table): ResourceRate[] {
-		return table.rows.map(
-			(row) => new ResourceRate(this, table.header, row)
-		);
-	}
-
-	private createResourceRoles(table: Table): ResourceRole[] {
-		return table.rows.map(
-			(row) => new ResourceRole(this, table.header, row)
-		);
-	}
-
-	private createTasks(table: Table): Tasks {
-		return new Tasks(table.rows.map((row) => new Task(this, table.header, row)));
-	}
-
-	private createActivityCodes(table: Table): ActivityCode[] {
-		return table.rows.map(
-			(row) => new ActivityCode(this, table.header, row)
-		);
-	}
-
-	private createTaskMemos(table: Table): TaskMemo[] {
-		return table.rows.map((row) => new TaskMemo(this, table.header, row));
-	}
-
-	private createTaskPredecessors(table: Table): TaskPredecessor[] {
-		return table.rows.map(
-			(row) => new TaskPredecessor(this, table.header, row)
-		);
-	}
-
-	private createTaskResources(table: Table): TaskResource[] {
-		return table.rows.map(
-			(row) => new TaskResource(this, table.header, row)
-		);
-	}
-
-	private createTaskActivityCodes(table: Table): TaskActivityCode[] {
-		return table.rows.map(
-			(row) => new TaskActivityCode(this, table.header, row)
-		);
-	}
-
-	private createUDFValues(table: Table): UdfValue[] {
-		return table.rows.map((row) => new UdfValue(this, table.header, row));
-	}
-
-	private createProjects(table: Table): Project[] {
-		return table.rows.map((row) => new Project(this, table.header, row));
-	}
 }

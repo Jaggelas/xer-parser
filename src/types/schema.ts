@@ -1,26 +1,26 @@
-import { ActivityCode } from '../schemas/activity-code';
-import { ActivityCodeType } from '../schemas/activity-code-type';
-import { Calendar } from '../schemas/calendar';
-import { CurrencyType } from '../schemas/currency-type';
-import { FinancialTemplate } from '../schemas/financial-template';
-import { MemoType } from '../schemas/memo-type';
-import { OBS } from '../schemas/obs';
-import { ProjWBS } from '../schemas/proj-wbs';
-import { Project } from '../schemas/project';
-import { Resource } from '../schemas/resource';
-import { ResourceLevelList } from '../schemas/resource-level-list';
-import { ResourceRate } from '../schemas/resource-rate';
-import { ResourceRole } from '../schemas/resource-role';
-import { Role } from '../schemas/role';
-import { RoleRate } from '../schemas/role-rate';
-import { ScheduleOption } from '../schemas/schedule-option';
-import { Task } from '../schemas/task';
-import { TaskActivityCode } from '../schemas/task-activity-code';
-import { TaskMemo } from '../schemas/task-memo';
-import { TaskPredecessor } from '../schemas/task-predecessor';
-import { TaskResource } from '../schemas/task-resource';
-import { UdfType } from '../schemas/udf-type';
-import { UdfValue } from '../schemas/udf-value';
+import type { ActivityCode } from '../schemas/activity-code';
+import type { ActivityCodeType } from '../schemas/activity-code-type';
+import type { Calendar } from '../schemas/calendar';
+import type { CurrencyType } from '../schemas/currency-type';
+import type { FinancialTemplate } from '../schemas/financial-template';
+import type { MemoType } from '../schemas/memo-type';
+import type { OBS } from '../schemas/obs';
+import type { ProjWBS } from '../schemas/proj-wbs';
+import type { Project } from '../schemas/project';
+import type { Resource } from '../schemas/resource';
+import type { ResourceLevelList } from '../schemas/resource-level-list';
+import type { ResourceRate } from '../schemas/resource-rate';
+import type { ResourceRole } from '../schemas/resource-role';
+import type { Role } from '../schemas/role';
+import type { RoleRate } from '../schemas/role-rate';
+import type { ScheduleOption } from '../schemas/schedule-option';
+import type { Task } from '../schemas/task';
+import type { TaskActivityCode } from '../schemas/task-activity-code';
+import type { TaskMemo } from '../schemas/task-memo';
+import type { TaskPredecessor } from '../schemas/task-predecessor';
+import type { TaskResource } from '../schemas/task-resource';
+import type { UdfType } from '../schemas/udf-type';
+import type { UdfValue } from '../schemas/udf-value';
 
 export interface XERData {
 	currencyTypes: CurrencyType[];
@@ -53,3 +53,9 @@ export type SchemaMap = {
 	version: number;
 	map: [string, keyof XERData][];
 };
+
+// Constructor interface for schema classes to ensure they can be instantiated by the loader
+// Uses a type-only import to avoid runtime circular dependencies
+export interface SchemaConstructor<T> {
+	new (xer: import('../xer').XER, header: string[], row: string[]): T;
+}

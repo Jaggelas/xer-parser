@@ -149,6 +149,110 @@ export class Calendar {
 	}
 
 	/**
+	 * Returns true if the specified date has working shifts and is not an exception day.
+	 */
+	public isWorkingDay(date: Moment): boolean {
+		const day = date.day();
+		const shifts = this.properties.weekdays[day] ?? [];
+		const isException = this.properties.exceptions.some((ex) => moment(ex.date).isSame(date, 'date'));
+		return shifts.length > 0 && !isException;
+	}
+
+	/**
+	 * Returns the concrete working shift intervals for the given date.
+	 */
+	public getWorkingShifts(date: Moment): Array<{ start: Moment; end: Moment }> {
+		const day = date.day();
+		const shifts = this.properties.weekdays[day] ?? [];
+		const isException = this.properties.exceptions.some((ex) => moment(ex.date).isSame(date, 'date'));
+		if (isException || shifts.length === 0) return [];
+		return shifts.map((s) => ({ start: s.shiftStart(date), end: s.shiftFinish(date) }));
+	}
+
+	/**
+	 * Find the first working instant at or after the given date.
+	 */
+	public nextWorkingMoment(date: Moment, inclusive = true): Moment {
+		let cursor = date.clone();
+		for (let guard = 0; guard < 366; guard++) { // safety guard across a year
+			const shifts = this.getWorkingShifts(cursor);
+			for (const { start, end } of shifts) {
+				if (cursor.isSameOrBefore(start)) return start.clone();
+				if (inclusive && cursor.isBefore(end)) return cursor.clone();
+				if (!inclusive && cursor.isBefore(end)) return cursor.clone();
+			}
+			cursor = cursor.add(1, 'day').startOf('day');
+		}
+		return date.clone();
+	}
+
+	/**
+	 * Snap a moment to a working instant.
+	 * - start: snap to the start of the next working shift if outside
+	 * - end: snap to the end of the previous working shift if outside
+	 * - nearest: snap to whichever (previous end or next start) is closer
+	 */
+	public clampToWorking(date: Moment, mode: 'start' | 'end' | 'nearest' = 'nearest'): Moment {
+		const inHour = this.isWorkingHour(date);
+		if (inHour) return date.clone();
+
+		const next = this.nextWorkingMoment(date, true);
+
+		// Internal helper: previous working shift end before date
+		const previousWorkingEnd = (): Moment | null => {
+			let cursor = date.clone();
+			for (let guard = 0; guard < 366; guard++) {
+				const shifts = this.getWorkingShifts(cursor);
+				for (let i = shifts.length - 1; i >= 0; i--) {
+					const { start, end } = shifts[i];
+					if (date.isSameOrAfter(end)) return end.clone();
+					if (date.isAfter(start)) return start.clone();
+				}
+				cursor = cursor.subtract(1, 'day').startOf('day');
+			}
+			return null;
+		};
+
+		if (mode === 'start') return next;
+		const prev = previousWorkingEnd();
+		if (mode === 'end') return prev ?? next;
+
+		// nearest
+		if (!prev) return next;
+		const distPrev = Math.abs(date.diff(prev));
+		const distNext = Math.abs(next.diff(date));
+		return distPrev <= distNext ? prev : next;
+	}
+
+	/**
+	 * Compute working time between two instants. Returns hours (default) or minutes with precision.
+	 */
+	public workingHoursBetween(from: Moment, to: Moment, precision: 'hour' | 'minute' = 'hour'): number {
+		if (from.isSame(to)) return 0;
+		const forward = from.isBefore(to);
+		const start = forward ? from.clone() : to.clone();
+		const end = forward ? to.clone() : from.clone();
+
+		let minutes = 0;
+		let cursor = start.clone();
+		while (cursor.isBefore(end, 'day') || cursor.isSame(end, 'day')) {
+			const shifts = this.getWorkingShifts(cursor);
+			for (const { start: s, end: e } of shifts) {
+				const overlapStart = moment.max(s, start);
+				const overlapEnd = moment.min(e, end);
+				if (overlapEnd.isAfter(overlapStart)) {
+					minutes += overlapEnd.diff(overlapStart, 'minutes');
+				}
+			}
+			cursor.add(1, 'day').startOf('day');
+		}
+
+		if (precision === 'minute') return forward ? minutes : -minutes;
+		const hours = minutes / 60;
+		return forward ? hours : -hours;
+	}
+
+	/**
 	 * Get the duration between two dates taking in account the calendar properties and exceptions
 	 * This takes in account the shift hours in a day and the exceptions which are non working days to calculate the hours difference
 	 * The duration is returned in hours new Duration(hrs, this, 'H')

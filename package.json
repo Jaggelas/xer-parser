@@ -13,7 +13,7 @@
 	"scripts": {
 		"build": "bun run build.ts",
 		"prepublishOnly": "bun run build",
-		"test": "echo No tests yet"
+		"test": "bun test"
 	},
 	"files": [
 		"dist"

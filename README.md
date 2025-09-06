@@ -52,9 +52,51 @@ console.log(xer.projects);
 console.log(xer.tasks.completed.length);
 ```
 
+Streaming (Bun or browser with ReadableStream):
+
+```ts
+import { XER, readableStreamToAsyncIterable } from 'xer-parser';
+
+const file = Bun.file('path/to/file.xer');
+const stream = readableStreamToAsyncIterable(file.stream());
+const xer = await XER.fromStream(stream);
+console.log(xer.projects.length);
+```
+
 ## XER-Parser API
 
 To be completed..
+
+### Saving an updated XER
+
+Node (ESM):
+
+```ts
+import { readFile, writeFile } from 'node:fs/promises';
+import { XER } from 'xer-parser';
+
+const text = await readFile('path/to/file.xer', 'utf8');
+const xer = new XER(text);
+
+// ... mutate data, e.g., xer.tasks[0].taskName = 'New Name';
+
+const out = xer.toXERString();
+await writeFile('path/to/output.xer', out, 'utf8');
+```
+
+Bun:
+
+```ts
+import { XER } from 'xer-parser';
+
+const text = await Bun.file('path/to/file.xer').text();
+const xer = new XER(text);
+
+// ... mutate data
+
+const out = xer.toXERString();
+await Bun.write('path/to/output.xer', out);
+```
 
 ## Contributing
 
