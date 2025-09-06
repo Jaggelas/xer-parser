@@ -7,13 +7,13 @@
 	"types": "./dist/index.d.ts",
 	"description": "",
 	"exports": {
-		"types": "./dist/index.d.ts",
 		"import": "./dist/index.js",
 		"require": "./dist/index.cjs"
 	},
 	"scripts": {
 		"build": "bun run build.ts",
-		"prepublishOnly": "bun run build"
+		"prepublishOnly": "bun run build",
+		"test": "echo No tests yet"
 	},
 	"files": [
 		"dist"

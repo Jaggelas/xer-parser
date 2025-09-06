@@ -198,11 +198,11 @@ export class Tasks extends Array<Task> {
         if (!otherTasks) {
             return [];
         }
-        const taskCodes = this.map((task) => task.taskCode);
-        const otherTaskCodes = otherTasks.map((task) => task.taskCode);
-        const allTaskCodes = [...taskCodes, ...otherTaskCodes];
+    const taskCodes = this.map((task) => task.taskCode);
+    const otherTaskCodes = otherTasks.map((task) => task.taskCode);
+    const allTaskCodes = Array.from(new Set<string>([...taskCodes, ...otherTaskCodes]));
 
-        return allTaskCodes.map((taskCode) => {
+    return allTaskCodes.map((taskCode) => {
             const task = this.getTaskByCode(taskCode);
             const otherTask = otherTasks.find((t) => t.taskCode === taskCode);
             return { [taskCode]: { old: task, new: otherTask } };

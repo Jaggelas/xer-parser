@@ -18,7 +18,7 @@ export const parse = (xer_file: string): ParseResponse => {
 	for (let i = 0; i < fileRows.length; i++) {
 		const element = fileRows[i];
 
-		// Identify schema/version header
+		// Identify schema/version header // Always first row
 		if (element[0] === 'ERMHDR') {
 			const version = parseFloat(element[1]);
 			activeSchema = schemaMaps.find((sm) => sm.version === version);
@@ -34,6 +34,7 @@ export const parse = (xer_file: string): ParseResponse => {
 			continue;
 		}
 
+		// Identify start of a new table
 		if (element[0] === '%T') {
 			if (activeTable) {
 				tables.push(activeTable);
@@ -46,13 +47,21 @@ export const parse = (xer_file: string): ParseResponse => {
 			continue;
 		}
 
+		// Header row
 		if (element[0] === '%F') {
 			activeTable.header = element.slice(1);
 			continue;
 		}
 
+		// Data row
 		if (element[0] === '%R') {
 			activeTable.rows.push(element.slice(1));
+			continue;
+		}
+
+		// Final line indicating last line of file
+		if (element[0] === '%E') {
+
 			continue;
 		}
 	}

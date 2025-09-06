@@ -379,7 +379,7 @@ export class Task {
 		)!;
 	}
 
-	public get TaskResources(): TaskResource[] {
+	public get taskResources(): TaskResource[] {
 		return this.xer.taskResources.filter((tr) => tr.taskId === this.taskId);
 	}
 
@@ -393,7 +393,7 @@ export class Task {
 		return this.xer.projWBS.find((projWBS) => projWBS.wbsId === this.wbsId);
 	}
 
-	public get TaskMemos(): TaskMemo[] {
+	public get taskMemos(): TaskMemo[] {
 		return this.xer.taskMemos.filter(
 			(taskMemo) => taskMemo.taskId === this.taskId
 		);

@@ -24,24 +24,35 @@ npm install xer-parser
 
 ## Usage
 
-Here's a basic example of how to use the XER Parser:
+Here's a basic example of how to use the XER Parser. The constructor expects the XER file contents as a string.
 
-```sh
+Node (ESM):
+
+```ts
+import { readFile } from 'node:fs/promises';
 import { XER } from 'xer-parser';
-import { readXER } from 'xer-parser';
 
-const fileURL = 'path/to/your/file.xer';
-
-const file = Bun.file(fileURL)
-
-const xer = new XER(file.text())
+const text = await readFile('path/to/file.xer', 'utf8');
+const xer = new XER(text);
 
 console.log(xer.projects);
-console.log(xer.tasks);
-
+console.log(xer.tasks.normalTasks.length);
 ```
 
-## XER-Parser Api
+Bun:
+
+```ts
+import { XER } from 'xer-parser';
+
+const file = Bun.file('path/to/file.xer');
+const text = await file.text();
+const xer = new XER(text);
+
+console.log(xer.projects);
+console.log(xer.tasks.completed.length);
+```
+
+## XER-Parser API
 
 To be completed..
 
