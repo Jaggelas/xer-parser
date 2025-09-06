@@ -1,20 +1,19 @@
-import { describe, it, expect } from 'bun:test';
+import { describe, it, expect } from 'vitest';
 import { XER } from '../src/xer';
 import { readableStreamToAsyncIterable } from '../src/utilities/stream';
 
 // Helper: read test fixture if present
+import { readFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
+import { resolve, dirname } from 'node:path';
+
 async function readFixture(path: string): Promise<string | null> {
-  try {
-    // Bun.file throws only on access; check existence via .size
-    const f = Bun.file(path);
-    await f.text();
-    return await Bun.file(path).text();
-  } catch {
-    return null;
-  }
+  try { return await readFile(path, 'utf8'); } catch { return null; }
 }
 
-const fixturePath = new URL('../tests/test.xer', import.meta.url).pathname;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const fixturePath = resolve(__dirname, 'test.xer');
 
 describe('XER parse/serialize', () => {
   it('parses basic XER string and preserves ERMHDR + %E', async () => {

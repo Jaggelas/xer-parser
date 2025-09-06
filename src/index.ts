@@ -28,6 +28,7 @@ export { Task } from './schemas/task';
 export { UdfType } from './schemas/udf-type';
 export { UdfValue } from './schemas/udf-value';
 export { readableStreamToAsyncIterable } from './utilities/stream';
+export { nodeReadableToAsyncIterable } from './utilities/node-stream';
 export { serializeXER } from './utilities/serializer';
 
 // const file = Bun.file(

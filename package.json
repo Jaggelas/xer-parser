@@ -1,26 +1,26 @@
 {
 	"name": "xer-parser",
 	"type": "module",
-	"version": "1.0.12",
-	"main": "./dist/index.cjs",
+	"version": "1.1.0",
+	"main": "./dist/index.js",
 	"module": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"description": "",
 	"exports": {
-		"import": "./dist/index.js",
-		"require": "./dist/index.cjs"
+		".": {
+			"import": "./dist/index.js",
+			"types": "./dist/index.d.ts"
+		}
 	},
 	"scripts": {
-		"build": "bun run build.ts",
-		"prepublishOnly": "bun run build",
-		"test": "bun test"
+		"build": "tsup src/index.ts --dts --format esm --sourcemap --clean",
+		"prepublishOnly": "npm run build && npm test",
+		"test": "vitest run"
 	},
 	"files": [
 		"dist"
 	],
-	"keywords": [
-		"bun"
-	],
+	"keywords": [],
 	"license": "MIT",
 	"homepage": "https://github.com/Jaggelas/xer-parser/blob/main/README.md",
 	"repository": {
@@ -34,8 +34,9 @@
 		"url": "https://www.paypal.me/vandermerweJaco"
 	},
 	"devDependencies": {
-		"@types/bun": "^1.1.17",
-		"bun-plugin-dts": "^0.3.0"
+		"tsup": "^8.5.0",
+		"typescript": "^5.9.2",
+		"vitest": "^1.6.1"
 	},
 	"dependencies": {
 		"moment": "^2.30.1"

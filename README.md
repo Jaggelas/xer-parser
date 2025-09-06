@@ -39,33 +39,66 @@ console.log(xer.projects);
 console.log(xer.tasks.normalTasks.length);
 ```
 
-Bun:
+Browser (client-side upload):
 
 ```ts
 import { XER } from 'xer-parser';
 
-const file = Bun.file('path/to/file.xer');
-const text = await file.text();
+const input = document.querySelector('input[type=file]')!;
+const file = input.files?.[0];
+const text = await file!.text();
 const xer = new XER(text);
-
-console.log(xer.projects);
-console.log(xer.tasks.completed.length);
+console.log(xer.projects.length);
 ```
 
-Streaming (Bun or browser with ReadableStream):
+Streaming (Node or browser with ReadableStream):
 
 ```ts
 import { XER, readableStreamToAsyncIterable } from 'xer-parser';
 
-const file = Bun.file('path/to/file.xer');
-const stream = readableStreamToAsyncIterable(file.stream());
-const xer = await XER.fromStream(stream);
+// Node: using fs to get a Readable and convert to AsyncIterable of chunks
+import { createReadStream } from 'node:fs';
+import { Readable } from 'node:stream';
+
+// For web streams, pass the ReadableStream to readableStreamToAsyncIterable
+// For Node streams, wrap into an async generator
+async function* nodeReadableToAsyncIterable(readable: Readable) {
+  for await (const chunk of readable) {
+    yield chunk as Buffer;
+  }
+}
+
+const readable = createReadStream('path/to/file.xer');
+const xer = await XER.fromStream(nodeReadableToAsyncIterable(readable));
 console.log(xer.projects.length);
 ```
 
 ## XER-Parser API
 
 To be completed..
+
+### Schema registry and type safety
+
+The loader uses a strongly-typed schema registry to enforce constructor and property key alignment at compile time. The registry lives in `src/schemas/schema-registry.ts` and lists every table with its target property and class constructor.
+
+Key points:
+
+- Every schema class must have a constructor of the form `(xer, header, row)`.
+- Each registry entry maps a table name to a property on `XER` and the class constructor.
+- The `TASK` table wraps items into the `Tasks` collection via the `wrap` callback.
+
+Adding a new schema:
+
+1. Create `src/schemas/MySchema.ts` with a constructor `(xer, header, row)`.
+2. Add a property to `XERData` (in `src/types/schema.ts`) if it represents a new top-level collection.
+3. Register it in `src/schemas/schema-registry.ts` by adding an entry `{ table, key, ctor }` (and `wrap` if the property isn’t a raw array).
+
+On build, TypeScript validates:
+
+- The constructor signature via `SchemaConstructor<T>`.
+- The `key` matches an `XER` property with compatible element type.
+
+This keeps the loader wiring correct and prevents drift as schemas evolve.
 
 ### Saving an updated XER
 
