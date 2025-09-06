@@ -47,11 +47,11 @@ export class Tasks extends Array<Task> {
      * const minStartDate = tasks.getMinDate('startDate');
      */
     public getMinDate(key: MomentProps<Task>): Moment | undefined {
-        return this.reduce((latestEndDate: Moment | undefined, task: Task) => {
-            if (!latestEndDate || (task[key as keyof Task] as Moment).isAfter(latestEndDate)) {
-                return (task[key as keyof Task] as Moment);
-            }
-            return latestEndDate;
+        return this.reduce((minDate: Moment | undefined, task: Task) => {
+            const value = task[key as keyof Task] as unknown as Moment | undefined;
+            if (!value) return minDate;
+            if (!minDate || value.isBefore(minDate)) return value;
+            return minDate;
         }, undefined);
     }
 
@@ -61,11 +61,11 @@ export class Tasks extends Array<Task> {
      * @returns The earliest Moment date found among all tasks for the specified property, or undefined if no tasks exist
      */
     public getMaxDate(key: MomentProps<Task>): Moment | undefined {
-        return this.reduce((earliestStartDate: Moment | undefined, task: Task) => {
-            if (!earliestStartDate || (task[key as keyof Task] as Moment).isBefore(earliestStartDate)) {
-                return (task[key as keyof Task] as Moment);
-            }
-            return earliestStartDate;
+        return this.reduce((maxDate: Moment | undefined, task: Task) => {
+            const value = task[key as keyof Task] as unknown as Moment | undefined;
+            if (!value) return maxDate;
+            if (!maxDate || value.isAfter(maxDate)) return value;
+            return maxDate;
         }, undefined);
     }
 
@@ -161,8 +161,8 @@ export class Tasks extends Array<Task> {
         if (otherTasks == null) {
             return new Tasks([]);
         }
-        const otherTaskCodes = otherTasks.map((task) => task.taskCode);
-        return new Tasks(otherTasks.filter((task) => !otherTaskCodes.includes(task.taskCode)));
+        const thisTaskCodes = this.map((task) => task.taskCode);
+        return new Tasks(otherTasks.filter((task) => !thisTaskCodes.includes(task.taskCode)));
     }
 
     /**

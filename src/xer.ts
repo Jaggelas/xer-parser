@@ -105,17 +105,32 @@ export class XER implements XERData {
 		this.financialTemplates = this.createFinancialTemplates(
 			this.getTable('FINTMPL')
 		);
-		this.memoTypes = this.createMemoTypes(this.getTable('MEMOTYPE'));
-		this.obs = this.createObs(this.getTable('OBS'));
-		this.udfTypes = this.createUDFTypes(this.getTable('UDFTYPE'));
-		this.roles = this.createRoles(this.getTable('ROLES'));
-		this.roleRates = this.createRoleRates(this.getTable('ROLERATE'));
-		this.calendars = this.createCalendars(this.getTable('CALENDAR'));
+		this.memoTypes = this.createMemoTypes(
+			this.getTable('MEMOTYPE')
+		);
+		this.obs = this.createObs(
+			this.getTable('OBS')
+		);
+		this.udfTypes = this.createUDFTypes(
+			this.getTable('UDFTYPE')
+		);
+		this.roles = this.createRoles(
+			this.getTable('ROLES')
+		);
+		this.roleRates = this.createRoleRates(
+			this.getTable('ROLERATE')
+		);
+		this.calendars = this.createCalendars(
+			this.getTable('CALENDAR'));
 		this.scheduleOptions = this.createScheduleOptions(
 			this.getTable('SCHEDOPTIONS')
 		);
-		this.projWBS = this.createProjWBS(this.getTable('PROJWBS'));
-		this.resources = this.createResources(this.getTable('RSRC'));
+		this.projWBS = this.createProjWBS(
+			this.getTable('PROJWBS')
+		);
+		this.resources = this.createResources(
+			this.getTable('RSRC')
+		);
 		this.activityCodeTypes = this.createActivityCodeTypes(
 			this.getTable('ACTVTYPE')
 		);
@@ -131,7 +146,9 @@ export class XER implements XERData {
 		this.activityCodes = this.createActivityCodes(
 			this.getTable('ACTVCODE')
 		);
-		this.taskMemos = this.createTaskMemos(this.getTable('TASKMEMO'));
+		this.taskMemos = this.createTaskMemos(
+			this.getTable('TASKMEMO')
+		);
 		this.taskPredecessors = this.createTaskPredecessors(
 			this.getTable('TASKPRED')
 		);
@@ -141,8 +158,12 @@ export class XER implements XERData {
 		this.taskActivityCodes = this.createTaskActivityCodes(
 			this.getTable('TASKACTV')
 		);
-		this.udfValues = this.createUDFValues(this.getTable('UDFVALUE'));
-		this.tasks = this.createTasks(this.getTable('TASK'));
+		this.udfValues = this.createUDFValues(
+			this.getTable('UDFVALUE')
+		);
+		this.tasks = this.createTasks(
+			this.getTable('TASK')
+		);
 	}
 
 	private getTable(name: string): Table {

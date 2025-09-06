@@ -282,7 +282,7 @@ export class Task {
 		this.physCompletePct = Number(row[header.indexOf('phys_complete_pct')]);
 		this.revFdbk = row[header.indexOf('rev_fdbk_flag')] === 'Y';
 		this.estWt = Number(row[header.indexOf('est_wt')]);
-		this.lockPlan = row[header.indexOf('lock_plan_flag')] === 'y';
+	this.lockPlan = row[header.indexOf('lock_plan_flag')] === 'Y';
 		this.autoComputeAct =
 			row[header.indexOf('auto_compute_act_flag')] === 'Y';
 		this.completePctType = row[header.indexOf('complete_pct_type')];

@@ -131,8 +131,9 @@ export class Calendar {
 	 * 3. Confirming the time falls within a defined shift's start and finish times
 	 */
 	public isWorkingHour(date: Moment): boolean {
+		// moment().day() is 0(Sun)..6(Sat) -> properties.weekdays uses 0..6
 		const day = date.day();
-		const shifts = this.properties.weekdays[day];
+		const shifts = this.properties.weekdays[day] ?? [];
 
 		const exceptions = this.properties.exceptions.filter((exception) => {
 			return moment(exception.date).isSame(date, 'date');
@@ -160,14 +161,14 @@ export class Calendar {
 			return new Duration(0, this, 'h');
 		}
 
-		const current = from.isBefore(to) ? from : to;
+	const current = (from.isBefore(to) ? from : to).clone();
 		const finish = to.isAfter(from) ? to : from;
 
 		let hours = 0;
 
 		while (current.isSameOrBefore(finish, 'days')) {
 			const day = current.day();
-			const shifts = this.properties.weekdays[day];
+			const shifts = this.properties.weekdays[day] ?? [];
 
 			const exceptions = this.properties.exceptions.filter((exception) => {
 				return moment(exception.date).isSame(current, 'date');
@@ -194,7 +195,7 @@ export class Calendar {
 
 			})
 
-			current.add(1, 'days');
+			current.add(1, 'days').startOf('day');
 
 		}
 
@@ -210,18 +211,19 @@ export class Calendar {
 	 * @param {Duration} duration The duration to add
 	 * @returns {Date} The new date after adding the duration
 	 */
-	public addToDate(from: Moment, qty: number, unit: Unit, ): Moment {
+	public addToDate(from: Moment, qty: number, unit: Unit): Moment {
 		if (qty <= 0) return from.clone(); // No shift needed
 		
 		const exceptionStrings = this.properties.exceptions.map((exception) => exception.date.format("YYYY-MM-DD"));
 		let currentDate = from.clone();
 		let timeAdded = 0;
 
-		// Convert the quantity to hours
-		const qtyInHours = this.unitConvert(unit, 'hour', qty);
+		// Convert the quantity to hours consistently
+		const qtyInHours = this.unitConvert(unit, 'h', qty);
 
 		while (timeAdded < qtyInHours) {
-			const currentDay = currentDate.isoWeekday() % 7;
+			// Use 0..6 index based on moment().day()
+			const currentDay = currentDate.day();
 			const shifts = this.properties.weekdays[currentDay] || [];
 
 			if (!exceptionStrings.includes(currentDate.format("YYYY-MM-DD"))) {
@@ -257,238 +259,66 @@ export class Calendar {
 	}
 	  
 
-	//Converts the value from one unit to another
-	//Taking in account the Hours / Day, Hours / Week, Hours / Month and Hours / Year from the calendar
+	// Convert the value from one unit to another using calendar's hour totals
 	public unitConvert(from: Unit, to: Unit, value: number): number {
-		switch (from) {
-			case 'year':
-			case 'years':
-			case 'y':
-				switch (to) {
-					case 'year':
-					case 'years':
-					case 'y':
-						return value;
-					case 'month':
-					case 'months':
-					case 'M':
-						return (
-							(value * (this?.monthHrCnt || 80)) /
-							(this?.yearHrCnt || 2000)
-						);
-					case 'week':
-					case 'weeks':
-					case 'w':
-						return (
-							(value * (this.weekHrCnt || 40)) /
-							(this.yearHrCnt || 2000)
-						);
-					case 'day':
-					case 'days':
-					case 'd':
-						return (
-							(value * (this.dayHrCnt || 8)) /
-							(this.yearHrCnt || 2000)
-						);
-					case 'hour':
-					case 'hours':
-					case 'h':
-						return value * (this.yearHrCnt || 2000);
-					case 'minute':
-					case 'minutes':
-					case 'm':
-						return value * (this.yearHrCnt || 2000) * 60;
-					default:
-						throw new Error('Invalid unit');
-				}
+		const normalize = (u: Unit): 'y' | 'M' | 'w' | 'd' | 'h' | 'm' => {
+			switch (u) {
+				case 'year':
+				case 'years':
+				case 'y':
+					return 'y';
 				case 'month':
-					case 'months':
-					case 'M':
-				switch (to) {
-					case 'year':
-					case 'years':
-					case 'y':
-						return (
-							(value * (this.yearHrCnt || 2000)) /
-							(this.monthHrCnt || 80)
-						);
-						case 'month':
-							case 'months':
-							case 'M':
-						return value;
-					case 'week':
-					case 'weeks':
-					case 'w':
-						return (
-							(value * (this.weekHrCnt || 40)) /
-							(this.monthHrCnt || 80)
-						);
-					case 'day':
-					case 'days':
-					case 'd':
-						return (
-							(value * (this.dayHrCnt || 8)) /
-							(this.monthHrCnt || 80)
-						);
-					case 'hour':
-					case 'hours':
-					case 'h':
-						return value * (this.monthHrCnt || 80);
-					case 'minute':
-					case 'minutes':
-						case 'm':
-						return value * (this.monthHrCnt || 80) * 60;
-					default:
-						throw new Error('Invalid unit');
-				}
-			case 'week':
-			case 'weeks':
-			case 'w':
-				switch (to) {
-					case 'year':
-					case 'years':
-					case 'y':
-						return (
-							(value * (this.yearHrCnt || 2000)) /
-							(this.weekHrCnt || 40)
-						);
-					case 'month':
-					case 'months':
-						case 'M':
-						return (
-							(value * (this.monthHrCnt || 80)) /
-							(this.weekHrCnt || 40)
-						);
-					case 'week':
-					case 'weeks':
-					case 'w':
-						return value;
-					case 'day':
-					case 'days':
-					case 'd':
-						return (
-							(value * (this.dayHrCnt || 8)) /
-							(this.weekHrCnt || 40)
-						);
-					case 'hour':
-					case 'hours':
-					case 'h':
-						return value * (this.weekHrCnt || 40);
-					case 'minute':
-					case 'minutes':
-						case 'm':
-						return value * (this.weekHrCnt || 40) * 60;
-					default:
-						throw new Error('Invalid unit');
-				}
-			case 'day':
-			case 'days':
-			case 'd':
-				switch (to) {
-					case 'year':
-					case 'years':
-					case 'y':
-						return (
-							(value * (this.yearHrCnt || 2000)) /
-							(this.dayHrCnt || 8)
-						);
-					case 'month':
-					case 'months':
-						case 'M':
-						return (
-							(value * (this.monthHrCnt || 80)) /
-							(this.dayHrCnt || 8)
-						);
-					case 'week':
-					case 'weeks':
-					case 'w':
-						return (
-							(value * (this.weekHrCnt || 40)) /
-							(this.dayHrCnt || 8)
-						);
-					case 'day':
-					case 'days':
-					case 'd':
-						return value;
-					case 'hour':
-					case 'hours':
-					case 'h':
-						return value * (this.dayHrCnt || 8);
-					case 'minute':
-					case 'minutes':
-						case 'm':
-						return value * (this.dayHrCnt || 8) * 60;
-					default:
-						throw new Error('Invalid unit');
-				}
-			case 'hour':
-			case 'hours':
-			case 'h':
-				switch (to) {
-					case 'year':
-					case 'years':
-					case 'y':
-						return value / (this.yearHrCnt || 2000);
-					case 'month':
-					case 'months':
-						case 'M':
-						return value / (this.monthHrCnt || 80);
-					case 'week':
-					case 'weeks':
-					case 'w':
-						return value / (this.weekHrCnt || 40);
-					case 'day':
-					case 'days':
-					case 'd':
-						return value / (this.dayHrCnt || 8);
-					case 'hour':
-					case 'hours':
-					case 'h':
-						return value;
-					case 'minute':
-					case 'minutes':
-						case 'm':
-						return value * 60;
-					default:
-						throw new Error('Invalid unit');
-				}
-			case 'minute':
-			case 'minutes':
+				case 'months':
+				case 'M':
+					return 'M';
+				case 'week':
+				case 'weeks':
+				case 'w':
+					return 'w';
+				case 'day':
+				case 'days':
+				case 'd':
+					return 'd';
+				case 'hour':
+				case 'hours':
+				case 'h':
+					return 'h';
+				case 'minute':
+				case 'minutes':
 				case 'm':
-				switch (to) {
-					case 'year':
-					case 'years':
-					case 'y':
-						return (
-							value / ((this.yearHrCnt || 2000) * 60)
-						);
-					case 'month':
-					case 'months':
-						case 'M':
-						return (
-							value / ((this.monthHrCnt || 80) * 60)
-						);
-					case 'week':
-					case 'weeks':
-					case 'w':
-						return value / ((this.weekHrCnt || 40) * 60);
-					case 'day':
-					case 'days':
-					case 'd':
-						return value / ((this.dayHrCnt || 8) * 60);
-					case 'hour':
-					case 'hours':
-					case 'h':
-						return value / 60;
-					case 'minute':
-					case 'minutes':
-						case 'm':
-						return value;
-					default:
-						throw new Error('Invalid unit');
-				}
-			default:
-				throw new Error('Invalid unit');
+					return 'm';
+				default:
+					throw new Error('Invalid unit');
+			}
+		};
+
+		const f = normalize(from);
+		const t = normalize(to);
+
+		// Hours per canonical unit according to this calendar
+		const hoursPerUnit: Record<'y' | 'M' | 'w' | 'd' | 'h' | 'm', number> = {
+			y: this.yearHrCnt || 2000,
+			M: this.monthHrCnt || 80,
+			w: this.weekHrCnt || 40,
+			d: this.dayHrCnt || 8,
+			h: 1,
+			m: 1 / 60
+		};
+
+		if (f === t) return value;
+
+		// Convert input to hours, then from hours to target unit
+		let valueInHours: number;
+		if (f === 'h') {
+			valueInHours = value;
+		} else if (f === 'm') {
+			valueInHours = value / 60;
+		} else {
+			valueInHours = value * hoursPerUnit[f];
 		}
+
+		if (t === 'h') return valueInHours;
+		if (t === 'm') return valueInHours * 60;
+		return valueInHours / hoursPerUnit[t];
 	}
 }
