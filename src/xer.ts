@@ -1,29 +1,29 @@
 import { Tasks } from './classes/tasks.class';
 import { parse, parseStream } from './utilities/parser';
 import { serializeXER } from './utilities/serializer';
-import { ActivityCode } from './schemas/activity-code';
-import { ActivityCodeType } from './schemas/activity-code-type';
-import { Calendar } from './schemas/calendar';
-import { CurrencyType } from './schemas/currency-type';
-import { FinancialTemplate } from './schemas/financial-template';
-import { MemoType } from './schemas/memo-type';
-import { OBS } from './schemas/obs';
-import { ProjWBS } from './schemas/proj-wbs';
-import { Project } from './schemas/project';
-import { Resource } from './schemas/resource';
-import { ResourceLevelList } from './schemas/resource-level-list';
-import { ResourceRate } from './schemas/resource-rate';
-import { ResourceRole } from './schemas/resource-role';
-import { Role } from './schemas/role';
-import { RoleRate } from './schemas/role-rate';
-import { ScheduleOption } from './schemas/schedule-option';
-import { Task } from './schemas/task';
-import { TaskActivityCode } from './schemas/task-activity-code';
-import { TaskMemo } from './schemas/task-memo';
-import { TaskPredecessor } from './schemas/task-predecessor';
-import { TaskResource } from './schemas/task-resource';
-import { UdfType } from './schemas/udf-type';
-import { UdfValue } from './schemas/udf-value';
+import type { CurrencyType } from './schemas/currency-type';
+import type { FinancialTemplate } from './schemas/financial-template';
+import type { MemoType } from './schemas/memo-type';
+import type { OBS } from './schemas/obs';
+import type { UdfType } from './schemas/udf-type';
+import type { Role } from './schemas/role';
+import type { Project } from './schemas/project';
+import type { RoleRate } from './schemas/role-rate';
+import type { Calendar } from './schemas/calendar';
+import type { ScheduleOption } from './schemas/schedule-option';
+import type { ProjWBS } from './schemas/proj-wbs';
+import type { Resource } from './schemas/resource';
+import type { ActivityCodeType } from './schemas/activity-code-type';
+import type { ResourceLevelList } from './schemas/resource-level-list';
+import type { ResourceRate } from './schemas/resource-rate';
+import type { ResourceRole } from './schemas/resource-role';
+import type { ActivityCode } from './schemas/activity-code';
+import type { TaskActivityCode } from './schemas/task-activity-code';
+import type { TaskMemo } from './schemas/task-memo';
+import type { TaskPredecessor } from './schemas/task-predecessor';
+import type { TaskResource } from './schemas/task-resource';
+import type { UdfValue } from './schemas/udf-value';
+import { SCHEMA_REGISTRY } from './schemas/schema-registry';
 import type { XERData, SchemaConstructor } from './types/schema';
 import { Table } from './types/table';
 
@@ -167,29 +167,9 @@ export class XER implements XERData {
 	}
 
 	private loadEntities() {
-		this.loadCollection('PROJECT', 'projects', Project);
-		this.loadCollection('CURRTYPE', 'currencyTypes', CurrencyType);
-		this.loadCollection('FINTMPL', 'financialTemplates', FinancialTemplate);
-		this.loadCollection('MEMOTYPE', 'memoTypes', MemoType);
-		this.loadCollection('OBS', 'obs', OBS);
-		this.loadCollection('UDFTYPE', 'udfTypes', UdfType);
-		this.loadCollection('ROLES', 'roles', Role);
-		this.loadCollection('ROLERATE', 'roleRates', RoleRate);
-		this.loadCollection('CALENDAR', 'calendars', Calendar);
-		this.loadCollection('SCHEDOPTIONS', 'scheduleOptions', ScheduleOption);
-		this.loadCollection('PROJWBS', 'projWBS', ProjWBS);
-		this.loadCollection('RSRC', 'resources', Resource);
-		this.loadCollection('ACTVTYPE', 'activityCodeTypes', ActivityCodeType);
-		this.loadCollection('RSRCLEVELLIST', 'resourceLevelLists', ResourceLevelList);
-		this.loadCollection('RSRCRATE', 'resourceRates', ResourceRate);
-		this.loadCollection('RSRCROLE', 'resourceRoles', ResourceRole);
-		this.loadCollection('ACTVCODE', 'activityCodes', ActivityCode);
-		this.loadCollection('TASKMEMO', 'taskMemos', TaskMemo);
-		this.loadCollection('TASKPRED', 'taskPredecessors', TaskPredecessor);
-		this.loadCollection('TASKRSRC', 'taskResources', TaskResource);
-		this.loadCollection('TASKACTV', 'taskActivityCodes', TaskActivityCode);
-		this.loadCollection('UDFVALUE', 'udfValues', UdfValue);
-		this.loadCollection('TASK', 'tasks', Task, (items) => new Tasks(items as Task[]));
+		for (const e of SCHEMA_REGISTRY) {
+			this.loadCollection(e.table, e.key as keyof XER, e.ctor as SchemaConstructor<any>, e.wrap as any);
+		}
 	}
 
 	private getTable(name: string): Table {
