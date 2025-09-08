@@ -1,6 +1,6 @@
-import dayjs, { Dayjs } from '../utilities/dayjs';
-import { optionalNumber } from '../utilities/string-convert';
+import { Dayjs } from '../utilities/dayjs';
 import { XER } from '../xer';
+import { BaseSchema } from './base-schema';
 
 /**
  * Represents a role rate entity from XER file.
@@ -16,7 +16,7 @@ import { XER } from '../xer';
  * @property {Date} startDate - The date when this rate becomes effective.
  * @property {number} maxQtyPerHr - Maximum quantity allowed per hour.
  */
-export class RoleRate {
+export class RoleRate extends BaseSchema {
 	/**
 	 * The parent XER instance.
 	 */
@@ -24,15 +24,15 @@ export class RoleRate {
 	/**
 	 * Unique identifier for the role rate.
 	 */
-	public roleRateId: number;
+	public roleRateId!: number;
 	/**
 	 * Reference to the associated role.
 	 */
-	public roleId: number;
+	public roleId!: number;
 	/**
 	 * Primary cost per quantity.
 	 */
-	public costPerQty: number;
+	public costPerQty!: number;
 	/**
 	 * Optional secondary cost per quantity.
 	 */
@@ -52,22 +52,15 @@ export class RoleRate {
 	/**
 	 * The date when this rate becomes effective.
 	 */
-	public startDate: Dayjs;
+	public startDate!: Dayjs;
 	/**
 	 * Maximum quantity allowed per hour.
 	 */
-	public maxQtyPerHr: number;
+	public maxQtyPerHr!: number;
 
 	constructor(_xer: XER, header: string[], row: string[]) {
+		super(_xer);
 		this.xer = _xer;
-		this.roleRateId = Number(row[header.indexOf('role_rate_id')]);
-		this.roleId = Number(row[header.indexOf('role_id')]);
-		this.costPerQty = Number(row[header.indexOf('cost_per_qty')]);
-		this.costPerQty2 = optionalNumber(row[header.indexOf('cost_per_qty2')]);
-		this.costPerQty3 = optionalNumber(row[header.indexOf('cost_per_qty3')]);
-		this.costPerQty4 = optionalNumber(row[header.indexOf('cost_per_qty4')]);
-		this.costPerQty5 = optionalNumber(row[header.indexOf('cost_per_qty5')]);
-	this.startDate = dayjs(row[header.indexOf('start_date')]);
-		this.maxQtyPerHr = Number(row[header.indexOf('max_qty_per_hr')]);
+		this.populateFrom('ROLERATE', header, row);
 	}
 }

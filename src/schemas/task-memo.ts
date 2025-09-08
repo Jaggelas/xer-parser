@@ -1,6 +1,7 @@
 import { XER } from '../xer';
 import { Task } from './task';
 import { MemoType } from './memo-type';
+import { BaseSchema } from './base-schema';
 
 /**
  * Represents a task memo in the XER file structure.
@@ -17,7 +18,7 @@ import { MemoType } from './memo-type';
  * @property {Task} task - Gets the associated Task object (getter)
  * @property {MemoType} memoType - Gets the associated MemoType object (getter)
  */
-export class TaskMemo {
+export class TaskMemo extends BaseSchema {
 	/**
 	 * Reference to the parent XER object containing all data
 	 */
@@ -25,31 +26,28 @@ export class TaskMemo {
 	/**
 	 * Unique identifier for the memo
 	 */
-	public memoId: number;
+	public memoId!: number;
 	/**
 	 * ID of the task this memo is associated with
 	 */
-	public taskId: number;
+	public taskId!: number;
 	/**
 	 * ID of the memo type
 	 */
-	public memoTypeId: number;
+	public memoTypeId!: number;
 	/**
 	 * ID of the project this memo belongs to
 	 */
-	public projId: number;
+	public projId!: number;
 	/**
 	 * The actual memo text content
 	 */
-	public taskMemo: string;
+	public taskMemo!: string;
 
 	constructor(_xer: XER, header: string[], row: string[]) {
+		super(_xer);
 		this.xer = _xer;
-		this.memoId = Number(row[header.indexOf('memo_id')]);
-		this.taskId = Number(row[header.indexOf('task_id')]);
-		this.memoTypeId = Number(row[header.indexOf('memo_type_id')]);
-		this.projId = Number(row[header.indexOf('proj_id')]);
-		this.taskMemo = row[header.indexOf('task_memo')];
+		this.populateFrom('TASKMEMO', header, row);
 	}
 
 	public get task(): Task {

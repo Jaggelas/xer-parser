@@ -1,6 +1,6 @@
-import { optionalNumber, optionalString } from '../utilities/string-convert';
 import { XER } from '../xer';
 import { Calendar } from './calendar';
+import { BaseSchema } from './base-schema';
 
 /**
  * Represents a resource in the XER file format.
@@ -39,7 +39,7 @@ import { Calendar } from './calendar';
  * @property levelFlag - Indicates if resource leveling is enabled
  * @property lastChecksum - Optional checksum for data integrity
  */
-export class Resource {
+export class Resource extends BaseSchema {
 	/**
 	 * Reference to the parent XER object
 	 */
@@ -47,7 +47,7 @@ export class Resource {
 	/**
 	 * Unique identifier for the resource
 	 */
-	public rsrcId: number;
+	public rsrcId!: number;
 	/**
 	 * Optional ID of the parent resource if hierarchical
 	 */
@@ -55,7 +55,7 @@ export class Resource {
 	/**
 	 * ID of the calendar associated with this resource
 	 */
-	public clndrId: number;
+	public clndrId!: number;
 	/**
 	 * Optional role ID assigned to this resource
 	 */
@@ -75,11 +75,11 @@ export class Resource {
 	/**
 	 * Globally unique identifier for the resource
 	 */
-	public guid: string;
+	public guid!: string;
 	/**
 	 * Sequence number for the resource
 	 */
-	public rsrcSeqNum: number;
+	public rsrcSeqNum!: number;
 	/**
 	 * Optional email address of the resource
 	 */
@@ -99,11 +99,11 @@ export class Resource {
 	/**
 	 * Full name of the resource
 	 */
-	public rsrcName: string;
+	public rsrcName!: string;
 	/**
 	 * Abbreviated name of the resource
 	 */
-	public rsrcShortName: string;
+	public rsrcShortName!: string;
 	/**
 	 * Optional title/position name
 	 */
@@ -111,11 +111,11 @@ export class Resource {
 	/**
 	 * Default quantity per hour for the resource
 	 */
-	public defQtyPerHr: number;
+	public defQtyPerHr!: number;
 	/**
 	 * Type of cost quantity measurement
 	 */
-	public costQtyType: string;
+	public costQtyType!: string;
 	/**
 	 * Optional overtime factor
 	 */
@@ -123,23 +123,23 @@ export class Resource {
 	/**
 	 * Indicates if the resource is active
 	 */
-	public activeFlag: boolean;
+	public activeFlag!: boolean;
 	/**
 	 * Indicates if actuals are automatically computed
 	 */
-	public autoComputeActFlag: boolean;
+	public autoComputeActFlag!: boolean;
 	/**
 	 * Indicates if cost quantity is linked by default
 	 */
-	public defCostQtyLinkFlag: boolean;
+	public defCostQtyLinkFlag!: boolean;
 	/**
 	 * Indicates if overtime is allowed
 	 */
-	public otFlag: boolean;
+	public otFlag!: boolean;
 	/**
 	 * Currency ID for resource costs
 	 */
-	public currId: number;
+	public currId!: number;
 	/**
 	 * Optional unit of measurement ID
 	 */
@@ -147,7 +147,7 @@ export class Resource {
 	/**
 	 * Type of resource (e.g., labor, material, equipment)
 	 */
-	public rsrcType: string;
+	public rsrcType!: string;
 	/**
 	 * Optional location ID for the resource
 	 */
@@ -159,59 +159,20 @@ export class Resource {
 	/**
 	 * Indicates if tasks can be loaded to this resource
 	 */
-	public loadTasksFlag: boolean;
+	public loadTasksFlag!: boolean;
 	/**
 	 * Indicates if resource leveling is enabled
 	 */
-	public levelFlag: boolean;
+	public levelFlag!: boolean;
 	/**
 	 * Optional checksum for data integrity
 	 */
 	public lastChecksum?: number;
 
 	constructor(_xer: XER, header: string[], row: string[]) {
+		super(_xer);
 		this.xer = _xer;
-		this.rsrcId = Number(row[header.indexOf('rsrc_id')]);
-		this.parentRsrcId = optionalNumber(
-			row[header.indexOf('parent_rsrc_id')]
-		);
-		this.clndrId = Number(row[header.indexOf('clndr_id')]);
-		this.roleId = optionalNumber(row[header.indexOf('role_id')]);
-		this.shiftId = optionalNumber(row[header.indexOf('shift_id')]);
-		this.userId = optionalNumber(row[header.indexOf('user_id')]);
-		this.pobsId = optionalNumber(row[header.indexOf('pobs_id')]);
-		this.guid = row[header.indexOf('guid')];
-		this.rsrcSeqNum = Number(row[header.indexOf('rsrc_seq_num')]);
-		this.emailAddr = optionalString(row[header.indexOf('email_addr')]);
-		this.employeeCode = optionalString(
-			row[header.indexOf('employee_code')]
-		);
-		this.officePhone = optionalString(row[header.indexOf('office_phone')]);
-		this.otherPhone = optionalString(row[header.indexOf('other_phone')]);
-		this.rsrcName = row[header.indexOf('rsrc_name')];
-		this.rsrcShortName = row[header.indexOf('rsrc_short_name')];
-		this.rsrcTitleName = optionalString(
-			row[header.indexOf('rsrc_title_name')]
-		);
-		this.defQtyPerHr = Number(row[header.indexOf('def_qty_per_hr')]);
-		this.costQtyType = row[header.indexOf('cost_qty_type')];
-		this.otFactor = optionalNumber(row[header.indexOf('ot_factor')]);
-		this.activeFlag = row[header.indexOf('active_flag')] === 'Y';
-		this.autoComputeActFlag =
-			row[header.indexOf('auto_compute_act_flag')] === 'Y';
-		this.defCostQtyLinkFlag =
-			row[header.indexOf('def_cost_Qty_link_flag')] === 'Y';
-		this.otFlag = row[header.indexOf('ot_flag')] === 'Y';
-		this.currId = Number(row[header.indexOf('curr_id')]);
-		this.unitId = optionalNumber(row[header.indexOf('unit_id')]);
-		this.rsrcType = row[header.indexOf('rsrc_type')];
-		this.locationId = optionalNumber(row[header.indexOf('location_id')]);
-		this.rsrcNotes = optionalString(row[header.indexOf('rsrc_notes')]);
-		this.loadTasksFlag = row[header.indexOf('load_tasks_flag')] === 'Y';
-		this.levelFlag = row[header.indexOf('level_flag')] === 'Y';
-		this.lastChecksum = optionalNumber(
-			row[header.indexOf('last_checksum')]
-		);
+		this.populateFrom('RSRC', header, row);
 	}
 
 	public get calendar(): Calendar | undefined {

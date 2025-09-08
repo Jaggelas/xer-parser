@@ -28,6 +28,9 @@ import { SCHEMA_REGISTRY } from './schemas/schema-registry';
 import type { XERData, SchemaConstructor } from './types/schema';
 import { Table } from './types/table';
 import { findRowByColumn, getColumnIndex, setCell, createHeaderProxy } from './utilities/header';
+import type { Phase } from './schemas/phase';
+import type { ApplyActOptions } from './schemas/apply-act-options';
+import type { Document } from './schemas/document';
 
 /**
  * Represents a Primavera XER file parser and data container.
@@ -89,6 +92,9 @@ export class XER implements XERData {
 	public taskResources: TaskResource[] = [];
 	public taskActivityCodes: TaskActivityCode[] = [];
 	public udfValues: UdfValue[] = [];
+	public phases: Phase[] = [];
+	public applyActOptions: ApplyActOptions[] = [];
+	public documents: Document[] = [];
 
 		// Fast ID maps (lazy-initialized on first use)
 		private _taskById?: Map<number, Task>;
@@ -106,6 +112,18 @@ export class XER implements XERData {
 		}
 
 		this.loadEntities();
+	}
+
+	/** Parsed XER file version from ERMHDR (e.g., 23.12). Returns 0 if unknown. */
+	public get version(): number {
+		if (this.headerLine && this.headerLine.startsWith('ERMHDR')) {
+			const parts = this.headerLine.split('\t');
+			if (parts.length >= 2) {
+				const v = parseFloat(parts[1]);
+				return Number.isFinite(v) ? v : 0;
+			}
+		}
+		return 0;
 	}
 
 	/**
@@ -137,6 +155,9 @@ export class XER implements XERData {
 		instance.taskResources = [];
 		instance.taskActivityCodes = [];
 		instance.udfValues = [];
+		instance.phases = [];
+		instance.applyActOptions = [];
+		instance.documents = [];
 
 		const parseResponse = await parseStream(source);
 		if (parseResponse.error) {

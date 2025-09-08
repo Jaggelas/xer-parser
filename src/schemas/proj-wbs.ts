@@ -1,18 +1,14 @@
 import { Dayjs } from '../utilities/dayjs';
-import {
-	optionalDate,
-	optionalNumber,
-	optionalString
-} from '../utilities/string-convert';
 import { XER } from '../xer';
 import { Project } from './project';
 import { Task } from './task';
+import { BaseSchema } from './base-schema';
 
 /**
  * Represents a Work Breakdown Structure (WBS) element in a project.
  * WBS elements are used to organize and define the total scope of the project.
  */
-export class ProjWBS {
+export class ProjWBS extends BaseSchema {
 	/**
 	 * The parent XER object containing all project data
 	 */
@@ -20,43 +16,43 @@ export class ProjWBS {
 	/**
 	 * Unique identifier for the WBS element
 	 */
-	public wbsId: number;
+	public wbsId!: number;
 	/**
 	 * ID of the project this WBS belongs to
 	 */
-	public projId: number;
+	public projId!: number;
 	/**
 	 * Organizational Breakdown Structure ID
 	 */
-	public obsId: number;
+	public obsId!: number;
 	/**
 	 * Sequence number for ordering
 	 */
-	public seqNum: number;
+	public seqNum!: number;
 	/**
 	 * Estimated weight of the WBS element
 	 */
-	public estWt: number;
+	public estWt!: number;
 	/**
 	 * Indicates if this is a project node
 	 */
-	public projNodeFlag: boolean;
+	public projNodeFlag!: boolean;
 	/**
 	 * Indicates if this element summarizes data
 	 */
-	public sumDataFlag: boolean;
+	public sumDataFlag!: boolean;
 	/**
 	 * Current status of the WBS element
 	 */
-	public statusCode: string;
+	public statusCode!: string;
 	/**
 	 * Short name/code for the WBS element
 	 */
-	public wbsShortName: string;
+	public wbsShortName!: string;
 	/**
 	 * Full name of the WBS element
 	 */
-	public wbsName: string;
+	public wbsName!: string;
 	/**
 	 * Optional phase identifier
 	 */
@@ -68,11 +64,11 @@ export class ProjWBS {
 	/**
 	 * Earned value user percentage
 	 */
-	public evUserPct: number;
+	public evUserPct!: number;
 	/**
 	 * Earned value estimate to complete user value
 	 */
-	public evEtcUserValue: number;
+	public evEtcUserValue!: number;
 	/**
 	 * Original cost if specified
 	 */
@@ -104,15 +100,15 @@ export class ProjWBS {
 	/**
 	 * Earned value computation type
 	 */
-	public evComputeType: string;
+	public evComputeType!: string;
 	/**
 	 * ETC computation type
 	 */
-	public evEtcComputeType: string;
+	public evEtcComputeType!: string;
 	/**
 	 * Globally unique identifier
 	 */
-	public guid: string;
+	public guid!: string;
 	/**
 	 * Template GUID if applicable
 	 */
@@ -140,43 +136,9 @@ export class ProjWBS {
 	 * - Other attributes (guid, tmplGuid, planOpenState)
 	 */
 	constructor(_xer: XER, header: string[], row: string[]) {
+		super(_xer);
 		this.xer = _xer;
-		this.wbsId = Number(row[header.indexOf('wbs_id')]);
-		this.projId = Number(row[header.indexOf('proj_id')]);
-		this.obsId = Number(row[header.indexOf('obs_id')]);
-		this.seqNum = Number(row[header.indexOf('seq_num')]);
-		this.estWt = Number(row[header.indexOf('est_wt')]);
-		this.projNodeFlag = row[header.indexOf('proj_node_flag')] === 'Y';
-		this.sumDataFlag = row[header.indexOf('sum_data_flag')] === 'Y';
-		this.statusCode = row[header.indexOf('status_code')];
-		this.wbsShortName = row[header.indexOf('wbs_short_name')];
-		this.wbsName = row[header.indexOf('wbs_name')];
-		this.phaseId = optionalNumber(row[header.indexOf('phase_id')]);
-		this.parentWbsId = optionalNumber(row[header.indexOf('parent_wbs_id')]);
-		this.evUserPct = Number(row[header.indexOf('ev_user_pct')]);
-		this.evEtcUserValue = Number(row[header.indexOf('ev_etc_user_value')]);
-		this.origCost = optionalNumber(row[header.indexOf('orig_cost')]);
-		this.indepRemainTotalCost = optionalNumber(
-			row[header.indexOf('indep_remain_total_cost')]
-		);
-		this.annDscntRatePct = optionalNumber(
-			row[header.indexOf('ann_dscnt_rate_pct')]
-		);
-		this.dscntPeriodType = row[header.indexOf('dscnt_period_type')];
-		this.indepRemainWorkQty = optionalNumber(
-			row[header.indexOf('indep_remain_work_qty')]
-		);
-		this.anticipStartDate = optionalDate(
-			row[header.indexOf('anticip_start_date')]
-		);
-		this.anticipEndDate = optionalDate(
-			row[header.indexOf('anticip_end_date')]
-		);
-		this.evComputeType = row[header.indexOf('ev_compute_type')];
-		this.evEtcComputeType = row[header.indexOf('ev_etc_compute_type')];
-		this.guid = row[header.indexOf('guid')];
-		this.tmplGuid = optionalString(row[header.indexOf('tmpl_guid')]);
-		this.planOpenState = row[header.indexOf('plan_open_state')];
+		this.populateFrom('PROJWBS', header, row);
 	}
 
 	/**

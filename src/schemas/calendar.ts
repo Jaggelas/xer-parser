@@ -2,15 +2,15 @@ import { Duration } from '../classes/duration.class';
 import { CalendarProperties } from '../types/calendar-properties';
 import { Unit } from '../types/unit.type';
 import { parseCalendarData } from '../utilities/calendar-data-parser';
-import { optionalDate, optionalNumber } from '../utilities/string-convert';
 import { XER } from '../xer';
 import { Project } from './project';
 import dayjs, { Dayjs } from '../utilities/dayjs';
+import { BaseSchema } from './base-schema';
 
 /**
  * Represents a Calendar in the XER schema.
  */
-export class Calendar {
+export class Calendar extends BaseSchema {
 	/**
 	 * The XER instance associated with this calendar.
 	 */
@@ -19,17 +19,17 @@ export class Calendar {
 	/**
 	 * The unique identifier for the calendar.
 	 */
-	public clndrId: number;
+	public clndrId!: number;
 
 	/**
 	 * Indicates whether this calendar is the default calendar.
 	 */
-	public defaultFlag: boolean;
+	public defaultFlag!: boolean;
 
 	/**
 	 * The name of the calendar.
 	 */
-	public clndrName: string;
+	public clndrName!: string;
 
 	/**
 	 * The project ID associated with the calendar, if any.
@@ -49,37 +49,37 @@ export class Calendar {
 	/**
 	 * The type of the calendar.
 	 */
-	public clndrType: string;
+	public clndrType!: string;
 
 	/**
 	 * The number of hours in a day for the calendar.
 	 */
-	public dayHrCnt: number;
+	public dayHrCnt!: number;
 
 	/**
 	 * The number of hours in a week for the calendar.
 	 */
-	public weekHrCnt: number;
+	public weekHrCnt!: number;
 
 	/**
 	 * The number of hours in a month for the calendar.
 	 */
-	public monthHrCnt: number;
+	public monthHrCnt!: number;
 
 	/**
 	 * The number of hours in a year for the calendar.
 	 */
-	public yearHrCnt: number;
+	public yearHrCnt!: number;
 
 	/**
 	 * Indicates whether the calendar is private to the resource.
 	 */
-	public rsrcPrivate: boolean;
+	public rsrcPrivate!: boolean;
 
 	/**
 	 * The calendar data as a string.
 	 */
-	public clndrData: string;
+	public clndrData!: string;
 
 	public properties: CalendarProperties;
 
@@ -91,20 +91,9 @@ export class Calendar {
 	 * @param row - The data row from the XER file.
 	 */
 	constructor(_xer: XER, header: string[], row: string[]) {
+		super(_xer);
 		this.xer = _xer;
-		this.clndrId = Number(row[header.indexOf('clndr_id')]);
-		this.defaultFlag = row[header.indexOf('default_flag')] === 'Y';
-		this.clndrName = row[header.indexOf('clndr_name')];
-		this.projId = optionalNumber(row[header.indexOf('proj_id')]);
-		this.baseClndrId = optionalNumber(row[header.indexOf('base_clndr_id')]);
-		this.lastChngDate = optionalDate(row[header.indexOf('last_chng_date')]);
-		this.clndrType = row[header.indexOf('clndr_type')];
-		this.dayHrCnt = Number(row[header.indexOf('day_hr_cnt')]);
-		this.weekHrCnt = Number(row[header.indexOf('week_hr_cnt')]);
-		this.monthHrCnt = Number(row[header.indexOf('month_hr_cnt')]);
-		this.yearHrCnt = Number(row[header.indexOf('year_hr_cnt')]);
-		this.rsrcPrivate = row[header.indexOf('rsrc_private')] === 'Y';
-		this.clndrData = row[header.indexOf('clndr_data')];
+		this.populateFrom('CALENDAR', header, row);
 		this.properties = parseCalendarData(this.clndrData);
 	}
 

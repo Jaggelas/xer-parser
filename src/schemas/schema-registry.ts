@@ -25,6 +25,9 @@ import { TaskResource } from './task-resource';
 import { UdfType } from './udf-type';
 import { UdfValue } from './udf-value';
 import { Tasks } from '../classes/tasks.class';
+import { Phase } from './phase';
+import { ApplyActOptions } from './apply-act-options';
+import { Document } from './document';
 
 type ElementOf<K extends keyof XER> = XER[K] extends Array<infer E> ? E : never;
 
@@ -60,5 +63,8 @@ export const SCHEMA_REGISTRY = [
   register({ table: 'TASKRSRC', key: 'taskResources', ctor: TaskResource }),
   register({ table: 'TASKACTV', key: 'taskActivityCodes', ctor: TaskActivityCode }),
   register({ table: 'UDFVALUE', key: 'udfValues', ctor: UdfValue }),
+  register({ table: 'PHASE', key: 'phases', ctor: Phase }),
+  register({ table: 'APPLYACTOPTIONS', key: 'applyActOptions', ctor: ApplyActOptions }),
+  register({ table: 'DOCUMENT', key: 'documents', ctor: Document }),
   register({ table: 'TASK', key: 'tasks', ctor: Task, wrap: (items) => new Tasks(items as Task[]) }),
 ] as const;

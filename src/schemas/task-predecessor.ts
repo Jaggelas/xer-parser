@@ -1,8 +1,8 @@
-import { optionalString } from '../utilities/string-convert';
 import { XER } from '../xer';
 import { Task } from './task';
 import { Project } from './project';
 import { Duration } from '../classes/duration.class';
+import { BaseSchema } from './base-schema';
 
 /**
  * Represents a predecessor relationship between tasks in a project schedule
@@ -20,7 +20,7 @@ import { Duration } from '../classes/duration.class';
  * @property {string} aref - Activity reference
  * @property {string} arls - Activity relationship line style
  */
-export class TaskPredecessor {
+export class TaskPredecessor extends BaseSchema {
 	/**
 	 * The parent XER object containing all project data
 	 */
@@ -28,31 +28,31 @@ export class TaskPredecessor {
 	/**
 	 * Unique identifier for the predecessor relationship
 	 */
-	public taskPredId: number;
+	public taskPredId!: number;
 	/**
 	 * Identifier of the task that has the predecessor
 	 */
-	public taskId: number;
+	public taskId!: number;
 	/**
 	 * Identifier of the predecessor task
 	 */
-	public predTaskId: number;
+	public predTaskId!: number;
 	/**
 	 * Identifier of the project containing the task
 	 */
-	public projId: number;
+	public projId!: number;
 	/**
 	 * Identifier of the project containing the predecessor task
 	 */
-	public predProjId: number;
+	public predProjId!: number;
 	/**
 	 * Type of predecessor relationship (e.g., Finish-to-Start, Start-to-Start)
 	 */
-	public predType: string;
+	public predType!: string;
 	/**
 	 * Lag time in hours between the predecessor and successor tasks
 	 */
-	public lag: Duration;
+	public lag!: Duration;
 	/**
 	 * Optional comments about the predecessor relationship
 	 */
@@ -60,28 +60,20 @@ export class TaskPredecessor {
 	/**
 	 * Float path indicator
 	 */
-	public floatPath: string;
+	public floatPath!: string;
 	/**
 	 * Activity reference
 	 */
-	public aref: string;
+	public aref!: string;
 	/**
 	 * Activity relationship line style
 	 */
-	public arls: string;
+	public arls!: string;
 
 	constructor(_xer: XER, header: string[], row: string[]) {
+		super(_xer);
 		this.xer = _xer;
-		this.taskPredId = Number(row[header.indexOf('task_pred_id')]);
-		this.taskId = Number(row[header.indexOf('task_id')]);
-		this.predTaskId = Number(row[header.indexOf('pred_task_id')]);
-		this.projId = Number(row[header.indexOf('proj_id')]);
-		this.predProjId = Number(row[header.indexOf('pred_proj_id')]);
-		this.predType = row[header.indexOf('pred_type')];
-		this.comments = optionalString(row[header.indexOf('comments')]);
-		this.floatPath = row[header.indexOf('float_path')];
-		this.aref = row[header.indexOf('aref')];
-		this.arls = row[header.indexOf('arls')];
+		this.populateFrom('TASKPRED', header, row);
 		this.lag = new Duration(
 			row[header.indexOf('lag_hr_cnt')],
 			this.project.calendar,

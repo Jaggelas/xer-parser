@@ -1,5 +1,6 @@
 import { XER } from '../xer';
 import { Project } from './project';
+import { BaseSchema } from './base-schema';
 
 /**
  * Represents scheduling options for a project in Primavera P6.
@@ -32,7 +33,7 @@ import { Project } from './project';
  * @property keyActivityForMultipleLongestPaths - Key activity identifier for longest path calculations
  * @property LevelPriorityList - Prioritized list for resource leveling
  */
-export class ScheduleOption {
+export class ScheduleOption extends BaseSchema {
 	/**
 	 * Reference to the parent XER object
 	 */
@@ -40,156 +41,108 @@ export class ScheduleOption {
 	/**
 	 * Unique identifier for the schedule options
 	 */
-	public schedoptionsId: number;
+	public schedoptionsId!: number;
 	/**
 	 * Project ID these schedule options belong to
 	 */
-	public projId: number;
+	public projId!: number;
 	/**
 	 * Type of external relationship dependencies
 	 */
-	public schedOuterDependType: string;
+	public schedOuterDependType!: string;
 	/**
 	 * Whether open-ended activities are marked critical
 	 */
-	public schedOpenCriticalFlag: boolean;
+	public schedOpenCriticalFlag!: boolean;
 	/**
 	 * Whether relationship lag is calculated from early start
 	 */
-	public schedLagEarlyStartFlag: boolean;
+	public schedLagEarlyStartFlag!: boolean;
 	/**
 	 * Logic retention setting during progress override
 	 */
-	public schedRetainedLogic: string;
+	public schedRetainedLogic!: string;
 	/**
 	 * Whether to copy plan to forecast dates
 	 */
-	public schedSetplantoforecast: boolean;
+	public schedSetplantoforecast!: boolean;
 	/**
 	 * Type of float calculation used
 	 */
-	public schedFloatType: string;
+	public schedFloatType!: string;
 	/**
 	 * Calendar used for relationship lag
 	 */
-	public schedCalendarOnRelationshipLag: number;
+	public schedCalendarOnRelationshipLag!: number;
 	/**
 	 * Whether to use expected finish dates
 	 */
-	public schedUseExpectEndFlag: boolean;
+	public schedUseExpectEndFlag!: boolean;
 	/**
 	 * Progress override setting
 	 */
-	public schedProgressOverride: string;
+	public schedProgressOverride!: string;
 	/**
 	 * Float threshold for resource leveling
 	 */
-	public levelFloatThrsCnt: number;
+	public levelFloatThrsCnt!: number;
 	/**
 	 * Whether to level resources across projects
 	 */
-	public levelOuterAssignFlag: boolean;
+	public levelOuterAssignFlag!: boolean;
 	/**
 	 * Priority for cross-project resource leveling
 	 */
-	public levelOuterAssignPriority: string;
+	public levelOuterAssignPriority!: string;
 	/**
 	 * Resource over-allocation threshold percentage
 	 */
-	public levelOverAllocPct: number;
+	public levelOverAllocPct!: number;
 	/**
 	 * Whether to level within float
 	 */
-	public levelWithinFloatFlag: boolean;
+	public levelWithinFloatFlag!: boolean;
 	/**
 	 * Whether to preserve scheduled dates during leveling
 	 */
-	public levelKeepSchedDateFlag: boolean;
+	public levelKeepSchedDateFlag!: boolean;
 	/**
 	 * Whether to level all resources
 	 */
-	public levelAllRsrcFlag: boolean;
+	public levelAllRsrcFlag!: boolean;
 	/**
 	 * Whether to use project end date for float calculations
 	 */
-	public schedUseProjectEndDateForFloat: boolean;
+	public schedUseProjectEndDateForFloat!: boolean;
 	/**
 	 * Whether multiple longest path calculation is enabled
 	 */
-	public enableMultipleLongestPathCalc: boolean;
+	public enableMultipleLongestPathCalc!: boolean;
 	/**
 	 * Whether to limit multiple longest path calculations
 	 */
-	public limitMultipleLongestPathCalc: boolean;
+	public limitMultipleLongestPathCalc!: boolean;
 	/**
 	 * Maximum number of longest paths to calculate
 	 */
-	public maxMultipleLongestPath: number;
+	public maxMultipleLongestPath!: number;
 	/**
 	 * Whether to use total float for multiple longest paths
 	 */
-	public useTotalFloatMultipleLongestPaths: boolean;
+	public useTotalFloatMultipleLongestPaths!: boolean;
 	/**
 	 * Key activity identifier for longest path calculations
 	 */
-	public keyActivityForMultipleLongestPaths: string;
+	public keyActivityForMultipleLongestPaths!: string;
 	/**
 	 * Prioritized list for resource leveling
 	 */
-	public LevelPriorityList: string;
+	public LevelPriorityList!: string;
 
 	constructor(_xer: XER, header: string[], row: string[]) {
+		super(_xer);
 		this.xer = _xer;
-		this.schedoptionsId = Number(row[header.indexOf('schedoptions_id')]);
-		this.projId = Number(row[header.indexOf('proj_id')]);
-		this.schedOuterDependType =
-			row[header.indexOf('sched_outer_depend_type')];
-		this.schedOpenCriticalFlag =
-			row[header.indexOf('sched_open_critical_flag')] === 'Y';
-		this.schedLagEarlyStartFlag =
-			row[header.indexOf('sched_lag_early_start_flag')] === 'Y';
-		this.schedRetainedLogic = row[header.indexOf('sched_retained_logic')];
-		this.schedSetplantoforecast =
-			row[header.indexOf('sched_setplantoforecast')] === 'Y';
-		this.schedFloatType = row[header.indexOf('sched_float_type')];
-		this.schedCalendarOnRelationshipLag = Number(
-			row[header.indexOf('sched_calendar_on_relationship_lag')]
-		);
-		this.schedUseExpectEndFlag =
-			row[header.indexOf('sched_use_expect_end_flag')] === 'Y';
-		this.schedProgressOverride =
-			row[header.indexOf('sched_progress_override')];
-		this.levelFloatThrsCnt = Number(
-			row[header.indexOf('level_float_thrs_cnt')]
-		);
-		this.levelOuterAssignFlag =
-			row[header.indexOf('level_outer_assign_flag')] === 'Y';
-		this.levelOuterAssignPriority =
-			row[header.indexOf('level_outer_assign_priority')];
-		this.levelOverAllocPct = Number(
-			row[header.indexOf('level_over_alloc_pct')]
-		);
-		this.levelWithinFloatFlag =
-			row[header.indexOf('level_within_float_flag')] === 'Y';
-		this.levelKeepSchedDateFlag =
-			row[header.indexOf('level_keep_sched_date_flag')] === 'Y';
-		this.levelAllRsrcFlag =
-			row[header.indexOf('level_all_rsrc_flag')] === 'Y';
-		this.schedUseProjectEndDateForFloat =
-			row[header.indexOf('sched_use_project_end_date_for_float')] === 'Y';
-		this.enableMultipleLongestPathCalc =
-			row[header.indexOf('enable_multiple_longest_path_calc')] === 'Y';
-		this.limitMultipleLongestPathCalc =
-			row[header.indexOf('limit_multiple_longest_path_calc')] === 'Y';
-		this.maxMultipleLongestPath = Number(
-			row[header.indexOf('max_multiple_longest_path')]
-		);
-		this.useTotalFloatMultipleLongestPaths =
-			row[header.indexOf('use_total_float_multiple_longest_paths')] ===
-			'Y';
-		this.keyActivityForMultipleLongestPaths =
-			row[header.indexOf('key_activity_for_multiple_longest_paths')];
-		this.LevelPriorityList = row[header.indexOf('LevelPriorityList')];
+		this.populateFrom('SCHEDOPTIONS', header, row);
 	}
 
 	public get project(): Project {

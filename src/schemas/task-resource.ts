@@ -1,13 +1,10 @@
-import dayjs, { Dayjs } from '../utilities/dayjs';
+import { Dayjs } from '../utilities/dayjs';
 import { Duration } from '../classes/duration.class';
-import {
-	optionalDate,
-	optionalNumber,
-	optionalString
-} from '../utilities/string-convert';
+// no longer need optional converters here; BaseSchema handles conversions
 import { XER } from '../xer';
 import { Project } from './project';
 import { Resource } from './resource';
+import { BaseSchema } from './base-schema';
 
 /**
  * Represents a resource assigned to a task in a project schedule
@@ -61,7 +58,7 @@ import { Resource } from './resource';
  * @property {boolean} hasRsrchours - Indicates if resource has hours
  * @property {number} taskrsrcSumId - Task resource summary ID
  */
-export class TaskResource {
+export class TaskResource extends BaseSchema {
 	/**
 	 * Reference to the parent XER object
 	 */
@@ -69,23 +66,23 @@ export class TaskResource {
 	/**
 	 * Unique identifier for the task resource assignment
 	 */
-	public taskrsrcId: number;
+	public taskrsrcId!: number;
 	/**
 	 * ID of the task this resource is assigned to
 	 */
-	public taskId: number;
+	public taskId!: number;
 	/**
 	 * ID of the project this assignment belongs to
 	 */
-	public projId: number;
+	public projId!: number;
 	/**
 	 * Indicates if cost and quantity are linked
 	 */
-	public costQtyLinkFlag: boolean;
+	public costQtyLinkFlag!: boolean;
 	/**
 	 * ID of the role assigned
 	 */
-	public roleId: number;
+	public roleId!: number;
 	/**
 	 * Optional account ID associated with this assignment
 	 */
@@ -93,7 +90,7 @@ export class TaskResource {
 	/**
 	 * ID of the resource assigned
 	 */
-	public rsrcId: number;
+	public rsrcId!: number;
 	/**
 	 * Optional project WBS ID
 	 */
@@ -101,39 +98,39 @@ export class TaskResource {
 	/**
 	 * Skill level of the resource for this assignment
 	 */
-	public skillLevel: number;
+	public skillLevel!: number;
 	/**
 	 * Remaining quantity of work
 	 */
-	public remainQty: number;
+	public remainQty!: number;
 	/**
 	 * Target quantity of work
 	 */
-	public targetQty: number;
+	public targetQty!: number;
 	/**
 	 * Remaining quantity per hour
 	 */
-	public remainQtyPerHr: number;
+	public remainQtyPerHr!: number;
 	/**
 	 * Target lag duration in hours
 	 */
-	public targetLag: Duration;
+	public targetLag!: Duration;
 	/**
 	 * Target quantity per hour
 	 */
-	public targetQtyPerHr: number;
+	public targetQtyPerHr!: number;
 	/**
 	 * Actual overtime quantity
 	 */
-	public actOtQty: number;
+	public actOtQty!: number;
 	/**
 	 * Actual regular time quantity
 	 */
-	public actRegQty: number;
+	public actRegQty!: number;
 	/**
 	 * Remaining lag duration in hours
 	 */
-	public relag: Duration;
+	public relag!: Duration;
 	/**
 	 * Optional overtime factor
 	 */
@@ -141,23 +138,23 @@ export class TaskResource {
 	/**
 	 * Cost per quantity unit
 	 */
-	public costPerQty: number;
+	public costPerQty!: number;
 	/**
 	 * Target cost for the assignment
 	 */
-	public targetCost: number;
+	public targetCost!: number;
 	/**
 	 * Actual regular time cost
 	 */
-	public actRegCost: number;
+	public actRegCost!: number;
 	/**
 	 * Actual overtime cost
 	 */
-	public actOtCost: number;
+	public actOtCost!: number;
 	/**
 	 * Remaining cost
 	 */
-	public remainCost: number;
+	public remainCost!: number;
 	/**
 	 * Optional actual start date
 	 */
@@ -169,31 +166,31 @@ export class TaskResource {
 	/**
 	 * Remaining start date
 	 */
-	public restartDate: Dayjs;
+	public restartDate!: Dayjs;
 	/**
 	 * Remaining end date
 	 */
-	public reendDate: Dayjs;
+	public reendDate!: Dayjs;
 	/**
 	 * Target start date
 	 */
-	public targetStartDate: Dayjs;
+	public targetStartDate!: Dayjs;
 	/**
 	 * Target end date
 	 */
-	public targetEndDate: Dayjs;
+	public targetEndDate!: Dayjs;
 	/**
 	 * Remaining late start date
 	 */
-	public remLateStartDate: Dayjs;
+	public remLateStartDate!: Dayjs;
 	/**
 	 * Remaining late end date
 	 */
-	public remLateEndDate: Dayjs;
+	public remLateEndDate!: Dayjs;
 	/**
 	 * Indicates if dates should roll up
 	 */
-	public rollupDatesFlag: boolean;
+	public rollupDatesFlag!: boolean;
 	/**
 	 * Optional target curve value
 	 */
@@ -213,19 +210,19 @@ export class TaskResource {
 	/**
 	 * Globally unique identifier
 	 */
-	public guid: string;
+	public guid!: string;
 	/**
 	 * Type of rate applied
 	 */
-	public rateType: string;
+	public rateType!: string;
 	/**
 	 * Actual cost this period
 	 */
-	public actThisPerCost: number;
+	public actThisPerCost!: number;
 	/**
 	 * Actual quantity this period
 	 */
-	public actThisPerQty: number;
+	public actThisPerQty!: number;
 	/**
 	 * Optional curve ID
 	 */
@@ -233,84 +230,33 @@ export class TaskResource {
 	/**
 	 * Resource type
 	 */
-	public rsrcType: string;
+	public rsrcType!: string;
 	/**
 	 * Source type for cost per quantity unit value
 	 */
-	public costPerQtySourceType: string;
+	public costPerQtySourceType!: string;
 	/**
 	 * User who created the assignment
 	 */
-	public createUser: string;
+	public createUser!: string;
 	/**
 	 * Date when assignment was created
 	 */
-	public createDate: Dayjs;
+	public createDate!: Dayjs;
 	/**
 	 * Indicates if resource has hours
 	 */
-	public hasRsrchours: boolean;
+	public hasRsrchours!: boolean;
 	/**
 	 * Task resource summary ID
 	 */
-	public taskrsrcSumId: number;
+	public taskrsrcSumId!: number;
 
 	constructor(_xer: XER, header: string[], row: string[]) {
+		super(_xer);
 		this.xer = _xer;
-		this.taskrsrcId = Number(row[header.indexOf('taskrsrc_id')]);
-		this.taskId = Number(row[header.indexOf('task_id')]);
-		this.projId = Number(row[header.indexOf('proj_id')]);
-		this.costQtyLinkFlag =
-			row[header.indexOf('cost_qty_link_flag')] === 'Y';
-		this.roleId = Number(row[header.indexOf('role_id')]);
-		this.acctId = optionalNumber(row[header.indexOf('acct_id')]);
-		this.rsrcId = Number(row[header.indexOf('rsrc_id')]);
-		this.pobsId = optionalNumber(row[header.indexOf('pobs_id')]);
-		this.skillLevel = Number(row[header.indexOf('skill_level')]);
-		this.remainQty = Number(row[header.indexOf('remain_qty')]);
-		this.targetQty = Number(row[header.indexOf('target_qty')]);
-		this.remainQtyPerHr = Number(row[header.indexOf('remain_qty_per_hr')]);
-		this.targetQtyPerHr = Number(row[header.indexOf('target_qty_per_hr')]);
-		this.actOtQty = Number(row[header.indexOf('act_ot_qty')]);
-		this.actRegQty = Number(row[header.indexOf('act_reg_qty')]);
-		this.otFactor = optionalNumber(row[header.indexOf('ot_factor')]);
-		this.costPerQty = Number(row[header.indexOf('cost_per_qty')]);
-		this.targetCost = Number(row[header.indexOf('target_cost')]);
-		this.actRegCost = Number(row[header.indexOf('act_reg_cost')]);
-		this.actOtCost = Number(row[header.indexOf('act_ot_cost')]);
-		this.remainCost = Number(row[header.indexOf('remain_cost')]);
-		this.actStartDate = optionalDate(row[header.indexOf('act_start_date')]);
-		this.actEndDate = optionalDate(row[header.indexOf('act_end_date')]);
-	this.restartDate = dayjs(row[header.indexOf('restart_date')]);
-	this.reendDate = dayjs(row[header.indexOf('reend_date')]);
-	this.targetStartDate = dayjs(
-			row[header.indexOf('target_start_date')]
-		);
-	this.targetEndDate = dayjs(row[header.indexOf('target_end_date')]);
-	this.remLateStartDate = dayjs(
-			row[header.indexOf('rem_late_start_date')]
-		);
-	this.remLateEndDate = dayjs(
-			row[header.indexOf('rem_late_end_date')]
-		);
-		this.rollupDatesFlag = row[header.indexOf('rollup_dates_flag')] === 'Y';
-		this.targetCrv = optionalNumber(row[header.indexOf('target_crv')]);
-		this.remainCrv = optionalNumber(row[header.indexOf('remain_crv')]);
-		this.actualCrv = optionalNumber(row[header.indexOf('actual_crv')]);
-		this.tsPendActEndFlag =
-			optionalString(row[header.indexOf('ts_pend_act_end_flag')]) === 'Y';
-		this.guid = row[header.indexOf('guid')];
-		this.rateType = row[header.indexOf('rate_type')];
-		this.actThisPerCost = Number(row[header.indexOf('act_this_per_cost')]);
-		this.actThisPerQty = Number(row[header.indexOf('act_this_per_qty')]);
-		this.curvId = optionalNumber(row[header.indexOf('curv_id')]);
-		this.rsrcType = row[header.indexOf('rsrc_type')];
-		this.costPerQtySourceType =
-			row[header.indexOf('cost_per_qty_source_type')];
-		this.createUser = row[header.indexOf('create_user')];
-	this.createDate = dayjs(row[header.indexOf('create_date')]);
-		this.hasRsrchours = row[header.indexOf('has_rsrchours')] === 'Y';
-		this.taskrsrcSumId = Number(row[header.indexOf('taskrsrc_sum_id')]);
+		this.populateFrom('TASKRSRC', header, row);
+		// Custom: Duration fields constructed from hours
 		this.targetLag = new Duration(
 			row[header.indexOf('target_lag_drtn_hr_cnt')],
 			this.project.calendar,

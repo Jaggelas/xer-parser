@@ -1,4 +1,5 @@
 import { XER } from '../xer';
+import { BaseSchema } from './base-schema';
 
 /**
  * Represents a resource role entity in an XER file.
@@ -14,7 +15,7 @@ import { XER } from '../xer';
  * @property {string} rsrcType - The type of the resource
  * @property {number} rsrcRoleId - The unique identifier of the resource role combination
  */
-export class ResourceRole {
+export class ResourceRole extends BaseSchema {
 	/**
 	 * The parent XER instance this resource role belongs to
 	 */
@@ -22,50 +23,43 @@ export class ResourceRole {
 	/**
 	 * The unique identifier of the resource
 	 */
-	public rsrcId: number;
+	public rsrcId!: number;
 	/**
 	 * The unique identifier of the role
 	 */
-	public roleId: number;
+	public roleId!: number;
 	/**
 	 * The skill level associated with this resource role
 	 */
-	public skillLevel: number;
+	public skillLevel!: number;
 	/**
 	 * The abbreviated name of the role
 	 */
-	public roleShortName: string;
+	public roleShortName!: string;
 	/**
 	 * The full name of the role
 	 */
-	public roleName: string;
+	public roleName!: string;
 	/**
 	 * The abbreviated name of the resource
 	 */
-	public rsrcShortName: string;
+	public rsrcShortName!: string;
 	/**
 	 * The full name of the resource
 	 */
-	public rsrcName: string;
+	public rsrcName!: string;
 	/**
 	 * The type of the resource
 	 */
-	public rsrcType: string;
+	public rsrcType!: string;
 	/**
 	 * The unique identifier of the resource role combination
 	 */
-	public rsrcRoleId: number;
+	public rsrcRoleId!: number;
 
 	constructor(_xer: XER, header: string[], row: string[]) {
+		super(_xer);
 		this.xer = _xer;
-		this.rsrcId = Number(row[header.indexOf('rsrc_id')]);
-		this.roleId = Number(row[header.indexOf('role_id')]);
-		this.skillLevel = Number(row[header.indexOf('skill_level')]);
-		this.roleShortName = row[header.indexOf('role_short_name')];
-		this.roleName = row[header.indexOf('role_name')];
-		this.rsrcShortName = row[header.indexOf('rsrc_short_name')];
-		this.rsrcName = row[header.indexOf('rsrc_name')];
-		this.rsrcType = row[header.indexOf('rsrc_type')];
-		this.rsrcRoleId = Number(row[header.indexOf('rsrc_role_id')]);
+		this.populateFrom('RSRCROLE', header, row);
 	}
 }

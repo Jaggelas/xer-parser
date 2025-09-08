@@ -1,5 +1,5 @@
 import { schemaMaps } from '../schemas/file_schemas';
-import { SchemaMap } from '../types/schema';
+import { SchemaMap, matchesVersion } from '../types/schema';
 import { Table } from '../types/table';
 
 type ParseResponse = { error: string; tables: null } | { error: null; tables: Table[]; headerLine: string };
@@ -22,7 +22,7 @@ export const parse = (xer_file: string): ParseResponse => {
 		// Identify schema/version header // Always first row
 		if (element[0] === 'ERMHDR') {
 			const version = parseFloat(element[1]);
-			activeSchema = schemaMaps.find((sm) => sm.version === version);
+			activeSchema = schemaMaps.find((sm) => matchesVersion(sm.version, version));
 			headerLine = element.join('\t');
 			// If schema is unsupported, abort parsing early with a clear error
 			if (!activeSchema) {
@@ -96,7 +96,7 @@ export const parseStream = async (
 
 		if (element[0] === 'ERMHDR') {
 			const version = parseFloat(element[1]);
-			activeSchema = schemaMaps.find((sm) => sm.version === version);
+			activeSchema = schemaMaps.find((sm) => matchesVersion(sm.version, version));
 			headerLine = line; // preserve original ERMHDR line
 			return;
 		}

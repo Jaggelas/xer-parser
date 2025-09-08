@@ -10,6 +10,7 @@ import { TaskActivityCode } from './task-activity-code';
 import { Duration } from '../classes/duration.class';
 import { Project } from './project';
 import dayjs, { Dayjs } from '../utilities/dayjs';
+import { BaseSchema } from './base-schema';
 
 
 export type TaskType = 'TT_Task' | 'TT_LOE' | 'TT_Mile' | 'TT_Rsrc' | 'TT_FinMile';
@@ -20,7 +21,7 @@ export type TaskStatusCode = 'TK_Complete' | 'TK_Active' | 'TK_NotStart';
  * Represents a Task entity from an XER file.
  * This class contains all task-related information including dates, resource allocations, and relationships.
  */
-export class Task {
+export class Task extends BaseSchema {
 	/**
 	 * Reference to the parent XER object
 	 */
@@ -28,63 +29,63 @@ export class Task {
 	/**
 	 * Unique identifier for the task
 	 */
-	public taskId: number;
+	public taskId!: number;
 	/**
 	 * Project identifier this task belongs to
 	 */
-	public projId: number;
+	public projId!: number;
 	/**
 	 * Work Breakdown Structure identifier
 	 */
-	public wbsId: number;
+	public wbsId!: number;
 	/**
 	 * Calendar identifier associated with this task
 	 */
-	public clndrId: number;
+	public clndrId!: number;
 	/**
 	 * Physical completion percentage of the task
 	 */
-	public physCompletePct: number;
+	public physCompletePct!: number;
 	/**
 	 * Indicates if feedback is revised
 	 */
-	public revFdbk: boolean;
+	public revFdbk!: boolean;
 	/**
 	 * Estimated weight of the task
 	 */
-	public estWt: number;
+	public estWt!: number;
 	/**
 	 * Indicates if the task plan is locked
 	 */
-	public lockPlan: boolean;
+	public lockPlan!: boolean;
 	/**
 	 * Indicates if actual values are automatically computed
 	 */
-	public autoComputeAct: boolean;
+	public autoComputeAct!: boolean;
 	/**
 	 * Type of completion percentage calculation
 	 */
-	public completePctType: string;
+	public completePctType!: string;
 	/**
 	 * Type of task
 	 */
-	public taskType: TaskType;
+	public taskType!: TaskType;
 	/**
 	 * Type of duration
 	 */
-	public durationType: string;
+	public durationType!: string;
 	/**
 	 * Current status of the task
 	 */
-	public statusCode: TaskStatusCode;
+	public statusCode!: TaskStatusCode;
 	/**
 	 * Task code identifier
 	 */
-	public taskCode: string;
+	public taskCode!: string;
 	/**
 	 * Name of the task
 	 */
-	public taskName: string;
+	public taskName!: string;
 	/**
 	 * Optional resource identifier
 	 */
@@ -92,43 +93,43 @@ export class Task {
 	/**
 	 * Total float in hours
 	 */
-	public totalFloat: Duration;
+	public totalFloat!: Duration;
 	/**
 	 * Free float in hours
 	 */
-	public freeFloat: Duration;
+	public freeFloat!: Duration;
 	/**
 	 * Remaining duration in hours
 	 */
-	public remainDrtn: Duration;
+	public remainDrtn!: Duration;
 	/**
 	 * Actual work quantity
 	 */
-	public actWorkQty: number;
+	public actWorkQty!: number;
 	/**
 	 * Remaining work quantity
 	 */
-	public remainWorkQty: number;
+	public remainWorkQty!: number;
 	/**
 	 * Target work quantity
 	 */
-	public targetWorkQty: number;
+	public targetWorkQty!: number;
 	/**
 	 * Target duration in hours
 	 */
-	public targetDrtn: Duration;
+	public targetDrtn!: Duration;
 	/**
 	 * Target equipment quantity
 	 */
-	public targetEquipQty: number;
+	public targetEquipQty!: number;
 	/**
 	 * Actual equipment quantity
 	 */
-	public actEquipQty: number;
+	public actEquipQty!: number;
 	/**
 	 * Remaining equipment quantity
 	 */
-	public remainEquipQty: number;
+	public remainEquipQty!: number;
 	/**
 	 * Constraint date
 	 */
@@ -144,11 +145,11 @@ export class Task {
 	/**
 	 * Late start date
 	 */
-	public lateStartDate: Dayjs;
+	public lateStartDate!: Dayjs;
 	/**
 	 * Late end date
 	 */
-	public lateEndDate: Dayjs;
+	public lateEndDate!: Dayjs;
 	/**
 	 * Expected end date
 	 */
@@ -156,35 +157,35 @@ export class Task {
 	/**
 	 * Early start date
 	 */
-	public earlyStartDate: Dayjs;
+	public earlyStartDate!: Dayjs;
 	/**
 	 * Early end date
 	 */
-	public earlyEndDate: Dayjs;
+	public earlyEndDate!: Dayjs;
 	/**
 	 * Restart date
 	 */
-	public restartDate: Dayjs;
+	public restartDate!: Dayjs;
 	/**
 	 * Reend date
 	 */
-	public reendDate: Dayjs;
+	public reendDate!: Dayjs;
 	/**
 	 * Target start date
 	 */
-	public targetStartDate: Dayjs;
+	public targetStartDate!: Dayjs;
 	/**
 	 * Target end date
 	 */
-	public targetEndDate: Dayjs;
+	public targetEndDate!: Dayjs;
 	/**
 	 * Remaining late start date
 	 */
-	public remLateStartDate: Dayjs;
+	public remLateStartDate!: Dayjs;
 	/**
 	 * Remaining late end date
 	 */
-	public remLateEndDate: Dayjs;
+	public remLateEndDate!: Dayjs;
 	/**
 	 * Constraint type
 	 */
@@ -192,7 +193,7 @@ export class Task {
 	/**
 	 * Priority type
 	 */
-	public priorityType: string;
+	public priorityType!: string;
 	/**
 	 * Suspend date
 	 */
@@ -212,7 +213,7 @@ export class Task {
 	/**
 	 * Global unique identifier
 	 */
-	public guid: string;
+	public guid!: string;
 	/**
 	 * Template global unique identifier
 	 */
@@ -228,15 +229,15 @@ export class Task {
 	/**
 	 * Indicates if task is on the driving path
 	 */
-	public drivingPath: boolean;
+	public drivingPath!: boolean;
 	/**
 	 * Actual this period work quantity
 	 */
-	public actThisPerWorkQty: number;
+	public actThisPerWorkQty!: number;
 	/**
 	 * Actual this period equipment quantity
 	 */
-	public actThisPerEquipQty: number;
+	public actThisPerEquipQty!: number;
 	/**
 	 * External early start date
 	 */
@@ -248,19 +249,19 @@ export class Task {
 	/**
 	 * Create date of the task
 	 */
-	public createDate: Dayjs;
+	public createDate!: Dayjs;
 	/**
 	 * Update date of the task
 	 */
-	public updateDate: Dayjs;
+	public updateDate!: Dayjs;
 	/**
 	 * User who created the task
 	 */
-	public createUser: string;
+	public createUser!: string;
 	/**
 	 * User who updated the task
 	 */
-	public updateUser: string;
+	public updateUser!: string;
 	/**
 	 * Location identifier
 	 */
@@ -271,121 +272,49 @@ export class Task {
 	public crtPathNum?: number;
 
 	constructor(_xer: XER, header: string[], row: string[]) {
+		super(_xer);
 		this.xer = _xer;
-		this.taskId = Number(row[header.indexOf('task_id')]);
-		this.projId = Number(row[header.indexOf('proj_id')]);
-		this.wbsId = Number(row[header.indexOf('wbs_id')]);
-		this.clndrId = Number(row[header.indexOf('clndr_id')]);
-		this.physCompletePct = Number(row[header.indexOf('phys_complete_pct')]);
-		this.revFdbk = row[header.indexOf('rev_fdbk_flag')] === 'Y';
-		this.estWt = Number(row[header.indexOf('est_wt')]);
-	this.lockPlan = row[header.indexOf('lock_plan_flag')] === 'Y';
-		this.autoComputeAct =
-			row[header.indexOf('auto_compute_act_flag')] === 'Y';
-		this.completePctType = row[header.indexOf('complete_pct_type')];
-		this.taskType = row[header.indexOf('task_type')] as TaskType;
-		this.durationType = row[header.indexOf('duration_type')];
-		this.statusCode = row[header.indexOf('status_code')] as TaskStatusCode;
-		this.taskCode = row[header.indexOf('task_code')];
-		this.taskName = row[header.indexOf('task_name')];
+		// Populate all mapped scalar fields
+		this.populateFrom('TASK', header, row);
+		// Construct Duration objects from raw hours
+		this.totalFloat = new Duration(row[header.indexOf('total_float_hr_cnt')], this.calendar, 'h');
+		this.freeFloat = new Duration(row[header.indexOf('free_float_hr_cnt')], this.calendar, 'h');
+		this.remainDrtn = new Duration(row[header.indexOf('remain_drtn_hr_cnt')], this.calendar, 'h');
+		this.targetDrtn = new Duration(row[header.indexOf('target_drtn_hr_cnt')], this.calendar, 'h');
+		// Optional columns not always present
 		{
 			const idx = getColumnIndex(header, 'rsrc_id');
-			this.rsrcId = idx >= 0 ? optionalNumber(row[idx]) : undefined;
+			this.rsrcId = idx >= 0 ? optionalNumber(row[idx]) : this.rsrcId;
 		}
-		this.totalFloat = new Duration(
-			row[header.indexOf('total_float_hr_cnt')],
-			this.calendar,
-			'h'
-		);
-		this.freeFloat = new Duration(
-			row[header.indexOf('free_float_hr_cnt')],
-			this.calendar,
-			'h'
-		);
-		this.remainDrtn = new Duration(
-			row[header.indexOf('remain_drtn_hr_cnt')],
-			this.calendar,
-			'h'
-		);
-		this.actWorkQty = Number(row[header.indexOf('act_work_qty')]);
-		this.remainWorkQty = Number(row[header.indexOf('remain_work_qty')]);
-		this.targetWorkQty = Number(row[header.indexOf('target_work_qty')]);
-		this.targetDrtn = new Duration(
-			row[header.indexOf('target_drtn_hr_cnt')],
-			this.calendar,
-			'h'
-		);
-		this.targetEquipQty = Number(row[header.indexOf('target_equip_qty')]);
-		this.actEquipQty = Number(row[header.indexOf('act_equip_qty')]);
-		this.remainEquipQty = Number(row[header.indexOf('remain_equip_qty')]);
-		this.cstrDate = optionalDate(row[header.indexOf('cstr_date')]);
-		this.actStartDate = optionalDate(row[header.indexOf('act_start_date')]);
-		this.actEndDate = optionalDate(row[header.indexOf('act_end_date')]);
-		this.lateStartDate = dayjs(row[header.indexOf('late_start_date')]);
-		this.lateEndDate = dayjs(row[header.indexOf('late_end_date')]);
-		this.expectEndDate = optionalDate(
-			row[header.indexOf('expect_end_date')]
-		);
-		this.earlyStartDate = dayjs(row[header.indexOf('early_start_date')]);
-		this.earlyEndDate = dayjs(row[header.indexOf('early_end_date')]);
-		this.restartDate = dayjs(row[header.indexOf('restart_date')]);
-		this.reendDate = dayjs(row[header.indexOf('reend_date')]);
-		this.targetStartDate = dayjs(
-			row[header.indexOf('target_start_date')]
-		);
-		this.targetEndDate = dayjs(row[header.indexOf('target_end_date')]);
-		this.remLateStartDate = dayjs(
-			row[header.indexOf('rem_late_start_date')]
-		);
-		this.remLateEndDate = dayjs(
-			row[header.indexOf('rem_late_end_date')]
-		);
 		{
 			const idx = getColumnIndex(header, 'cstr_type');
-			this.cstrType = idx >= 0 ? optionalString(row[idx]) : undefined;
+			this.cstrType = idx >= 0 ? optionalString(row[idx]) : this.cstrType;
 		}
-		this.priorityType = row[header.indexOf('priority_type')];
 		{
 			const sIdx = getColumnIndex(header, 'suspend_date');
 			const rIdx = getColumnIndex(header, 'resume_date');
-			this.suspendDate = sIdx >= 0 ? optionalDate(row[sIdx]) : undefined;
-			this.resumeDate = rIdx >= 0 ? optionalDate(row[rIdx]) : undefined;
+			this.suspendDate = sIdx >= 0 ? optionalDate(row[sIdx]) : this.suspendDate;
+			this.resumeDate = rIdx >= 0 ? optionalDate(row[rIdx]) : this.resumeDate;
 		}
-		this.floatPath = optionalNumber(row[header.indexOf('float_path')]);
-		this.floatPathOrder = optionalNumber(
-			row[header.indexOf('float_path_order')]
-		);
-		this.guid = row[header.indexOf('guid')];
 		{
 			const tIdx = getColumnIndex(header, 'tmpl_guid');
 			const d2Idx = getColumnIndex(header, 'cstr_date2');
 			const t2Idx = getColumnIndex(header, 'cstr_type2');
-			this.tmplGuid = tIdx >= 0 ? optionalString(row[tIdx]) : undefined;
-			this.cstrDate2 = d2Idx >= 0 ? optionalDate(row[d2Idx]) : undefined;
-			this.cstrType2 = t2Idx >= 0 ? optionalString(row[t2Idx]) : undefined;
+			this.tmplGuid = tIdx >= 0 ? optionalString(row[t2Idx]) : this.tmplGuid;
+			this.cstrDate2 = d2Idx >= 0 ? optionalDate(row[d2Idx]) : this.cstrDate2;
+			this.cstrType2 = t2Idx >= 0 ? optionalString(row[t2Idx]) : this.cstrType2;
 		}
-		this.drivingPath = row[header.indexOf('driving_path_flag')] === 'Y';
-		this.actThisPerWorkQty = Number(
-			row[header.indexOf('act_this_per_work_qty')]
-		);
-		this.actThisPerEquipQty = Number(
-			row[header.indexOf('act_this_per_equip_qty')]
-		);
 		{
 			const eeIdx = getColumnIndex(header, 'external_early_start_date');
 			const elIdx = getColumnIndex(header, 'external_late_end_date');
-			this.externalEarlyStartDate = eeIdx >= 0 ? optionalDate(row[eeIdx]) : undefined;
-			this.externalLateEndDate = elIdx >= 0 ? optionalDate(row[elIdx]) : undefined;
+			this.externalEarlyStartDate = eeIdx >= 0 ? optionalDate(row[eeIdx]) : this.externalEarlyStartDate;
+			this.externalLateEndDate = elIdx >= 0 ? optionalDate(row[elIdx]) : this.externalLateEndDate;
 		}
-		this.createDate = dayjs(row[header.indexOf('create_date')]);
-		this.updateDate = dayjs(row[header.indexOf('update_date')]);
-		this.createUser = row[header.indexOf('create_user')];
-		this.updateUser = row[header.indexOf('update_user')];
 		{
 			const locIdx = getColumnIndex(header, 'location_id');
 			const crtIdx = getColumnIndex(header, 'crt_path_num');
-			this.locationId = locIdx >= 0 ? optionalNumber(row[locIdx]) : undefined;
-			this.crtPathNum = crtIdx >= 0 ? optionalNumber(row[crtIdx]) : undefined;
+			this.locationId = locIdx >= 0 ? optionalNumber(row[locIdx]) : this.locationId;
+			this.crtPathNum = crtIdx >= 0 ? optionalNumber(row[crtIdx]) : this.crtPathNum;
 		}
 	}
 

@@ -2,6 +2,7 @@ import { XER } from '../xer';
 import { Task } from './task';
 import { ActivityCodeType } from './activity-code-type';
 import { ActivityCode } from './activity-code';
+import { BaseSchema } from './base-schema';
 
 /**
  * Represents a task activity code relationship in a XER file.
@@ -18,7 +19,7 @@ import { ActivityCode } from './activity-code';
  * @property {ActivityCode} activityCode - Gets the associated activity code object
  * @property {Task} task - Gets the associated task object
  */
-export class TaskActivityCode {
+export class TaskActivityCode extends BaseSchema {
 	/**
 	 * The parent XER instance containing all data
 	 */
@@ -26,26 +27,24 @@ export class TaskActivityCode {
 	/**
 	 * The unique identifier of the associated task
 	 */
-	public taskId: number;
+	public taskId!: number;
 	/**
 	 * The unique identifier of the activity code type
 	 */
-	public actvCodeTypeId: number;
+	public actvCodeTypeId!: number;
 	/**
 	 * The unique identifier of the activity code
 	 */
-	public actvCodeId: number;
+	public actvCodeId!: number;
 	/**
 	 * The unique identifier of the project
 	 */
-	public projId: number;
+	public projId!: number;
 
 	constructor(_xer: XER, header: string[], row: string[]) {
+		super(_xer);
 		this.xer = _xer;
-		this.taskId = Number(row[header.indexOf('task_id')]);
-		this.actvCodeTypeId = Number(row[header.indexOf('actv_code_type_id')]);
-		this.actvCodeId = Number(row[header.indexOf('actv_code_id')]);
-		this.projId = Number(row[header.indexOf('proj_id')]);
+		this.populateFrom('TASKACTV', header, row);
 	}
 
 	public get activityCodeType(): ActivityCodeType {

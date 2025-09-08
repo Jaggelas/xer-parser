@@ -21,6 +21,9 @@ import type { TaskPredecessor } from '../schemas/task-predecessor';
 import type { TaskResource } from '../schemas/task-resource';
 import type { UdfType } from '../schemas/udf-type';
 import type { UdfValue } from '../schemas/udf-value';
+import type { Phase } from '../schemas/phase';
+import type { ApplyActOptions } from '../schemas/apply-act-options';
+import type { Document } from '../schemas/document';
 
 export interface XERData {
 	currencyTypes: CurrencyType[];
@@ -46,16 +49,47 @@ export interface XERData {
 	taskResources: TaskResource[];
 	taskActivityCodes: TaskActivityCode[];
 	udfValues: UdfValue[];
+	phases: Phase[];
+	applyActOptions: ApplyActOptions[];
+	documents: Document[];
 }
 
 // The map should be a dictionary of table names to their respective property maps
+export type VersionSpec = number | number[] | { min: number; max?: number };
+
 export type SchemaMap = {
-	version: number;
-	map: [string, keyof XERData][];
+	version: VersionSpec;
+	map: AnyPropertyMap[];
 };
+
+// Helper: get the element/entity type from an XERData collection (which are arrays)
+type EntityOf<K extends keyof XERData> = XERData[K] extends ReadonlyArray<infer U> ? U : never;
+
+// Property map specialized for a particular XERData collection key K
+type PropertyMapFor<K extends keyof XERData> = {
+	table: [string, K];
+	// columns: [ header, key-of-entity, property-type ]
+	columns: [string, keyof EntityOf<K>, PropertyType][];
+};
+
+// Union of all possible property maps for any collection in XERData. Using this
+// avoids collapsing keys to the intersection (e.g., only 'xer') when authoring
+// heterogeneous arrays like SchemaMap.map.
+type AnyPropertyMap = { [K in keyof XERData]: PropertyMapFor<K> }[keyof XERData];
+
+export type PropertyType = 'TEXT' | 'OTEXT' | 'NUMBER' | 'ONUMBER' | 'DATE' | 'ODATE' | 'DURATION' | 'ODURATION' | 'BOOLEAN' | 'OBOOLEAN';
 
 // Constructor interface for schema classes to ensure they can be instantiated by the loader
 // Uses a type-only import to avoid runtime circular dependencies
 export interface SchemaConstructor<T> {
 	new (xer: import('../xer').XER, header: string[], row: string[]): T;
+}
+
+// Helper: determine if a given version matches a version spec
+export function matchesVersion(spec: VersionSpec, version: number): boolean {
+	if (typeof spec === 'number') return version === spec;
+	if (Array.isArray(spec)) return spec.includes(version);
+	const { min, max } = spec;
+	if (max == null) return version >= min;
+	return version >= min && version <= max;
 }

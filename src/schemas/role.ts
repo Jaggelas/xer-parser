@@ -1,6 +1,6 @@
-import { optionalNumber, optionalString } from '../utilities/string-convert';
 import { XER } from '../xer';
 import { RoleRate } from './role-rate';
+import { BaseSchema } from './base-schema';
 
 /**
  * Represents a Role entity from XER data.
@@ -22,7 +22,7 @@ import { RoleRate } from './role-rate';
  * @method childrenRoles - Gets an array of Role objects that have this role as their parent
  * @method roleRates - Gets an array of RoleRate objects associated with this role
  */
-export class Role {
+export class Role extends BaseSchema {
 	/**
 	 * The parent XER instance containing this role
 	 */
@@ -30,7 +30,7 @@ export class Role {
 	/**
 	 * Unique identifier for the role
 	 */
-	public roleId: number;
+	public roleId!: number;
 	/**
 	 * Optional reference to a parent role's ID
 	 */
@@ -38,15 +38,15 @@ export class Role {
 	/**
 	 * Sequence number for ordering
 	 */
-	public seqNum: number;
+	public seqNum!: number;
 	/**
 	 * Full name of the role
 	 */
-	public roleName: string;
+	public roleName!: string;
 	/**
 	 * Abbreviated name of the role
 	 */
-	public roleShortName: string;
+	public roleShortName!: string;
 	/**
 	 * Optional Project Object Breakdown Structure ID
 	 */
@@ -54,11 +54,11 @@ export class Role {
 	/**
 	 * Flag indicating if cost quantity linking is enabled
 	 */
-	public defCostQtyLinkFlag: boolean;
+	public defCostQtyLinkFlag!: boolean;
 	/**
 	 * Type of cost quantity measurement
 	 */
-	public costQtyType: string;
+	public costQtyType!: string;
 	/**
 	 * Optional description of the role
 	 */
@@ -66,23 +66,12 @@ export class Role {
 	/**
 	 * Checksum value for data integrity
 	 */
-	public lastChecksum: number;
+	public lastChecksum!: number;
 
 	constructor(_xer: XER, header: string[], row: string[]) {
+		super(_xer);
 		this.xer = _xer;
-		this.roleId = Number(row[header.indexOf('role_id')]);
-		this.parentRoleId = optionalNumber(
-			row[header.indexOf('parent_role_id')]
-		);
-		this.seqNum = Number(row[header.indexOf('seq_num')]);
-		this.roleName = row[header.indexOf('role_name')];
-		this.roleShortName = row[header.indexOf('role_short_name')];
-		this.pobsId = optionalNumber(row[header.indexOf('pobs_id')]);
-		this.defCostQtyLinkFlag =
-			row[header.indexOf('def_cost_qty_link_flag')] === 'Y';
-		this.costQtyType = row[header.indexOf('cost_qty_type')];
-		this.roleDescr = optionalString(row[header.indexOf('role_descr')]);
-		this.lastChecksum = Number(row[header.indexOf('last_checksum')]);
+		this.populateFrom('ROLES', header, row);
 	}
 
 	public get parentRole(): Role {

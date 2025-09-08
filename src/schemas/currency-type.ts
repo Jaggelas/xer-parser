@@ -1,9 +1,10 @@
 import { XER } from '../xer';
+import { BaseSchema } from './base-schema';
 
 /**
  * Represents a currency type with various formatting and identification properties.
  */
-export class CurrencyType {
+export class CurrencyType extends BaseSchema {
 	/**
 	 * The XER instance associated with this currency type.
 	 */
@@ -12,57 +13,57 @@ export class CurrencyType {
 	/**
 	 * The unique identifier for the currency.
 	 */
-	public currId: number;
+	public currId!: number;
 
 	/**
 	 * The number of decimal digits used in the currency.
 	 */
-	public decimalDigitCnt: number;
+	public decimalDigitCnt!: number;
 
 	/**
 	 * The symbol used to represent the currency.
 	 */
-	public currSymbol: string;
+	public currSymbol!: string;
 
 	/**
 	 * The symbol used to represent the decimal point in the currency.
 	 */
-	public decimalSymbol: string;
+	public decimalSymbol!: string;
 
 	/**
 	 * The symbol used to group digits in the currency.
 	 */
-	public digitGroupSymbol: string;
+	public digitGroupSymbol!: string;
 
 	/**
 	 * The format type for positive currency values.
 	 */
-	public posCurrFmtType: string;
+	public posCurrFmtType!: string;
 
 	/**
 	 * The format type for negative currency values.
 	 */
-	public negCurrFmtType: string;
+	public negCurrFmtType!: string;
 
 	/**
 	 * The type of the currency.
 	 */
-	public currType: string;
+	public currType!: string;
 
 	/**
 	 * The short name of the currency.
 	 */
-	public currShortName: string;
+	public currShortName!: string;
 
 	/**
 	 * The number of digits in each group for the currency.
 	 */
-	public groupDigitCnt: number;
+	public groupDigitCnt!: number;
 
 	/**
 	 * The base exchange rate for the currency.
 	 */
-	public baseExchRate: number;
+	public baseExchRate!: number;
 
 	/**
 	 * Constructs a new instance of the CurrencyType class.
@@ -72,17 +73,8 @@ export class CurrencyType {
 	 * @param row - The data row containing currency information.
 	 */
 	constructor(_xer: XER, header: string[], row: string[]) {
+		super(_xer);
 		this.xer = _xer;
-		this.currId = Number(row[header.indexOf('curr_id')]);
-		this.decimalDigitCnt = Number(row[header.indexOf('decimal_digit_cnt')]);
-		this.currSymbol = row[header.indexOf('curr_symbol')];
-		this.decimalSymbol = row[header.indexOf('decimal_symbol')];
-		this.digitGroupSymbol = row[header.indexOf('digit_group_symbol')];
-		this.posCurrFmtType = row[header.indexOf('pos_curr_fmt_type')];
-		this.negCurrFmtType = row[header.indexOf('neg_curr_fmt_type')];
-		this.currType = row[header.indexOf('curr_type')];
-		this.currShortName = row[header.indexOf('curr_short_name')];
-		this.groupDigitCnt = Number(row[header.indexOf('group_digit_cnt')]);
-		this.baseExchRate = Number(row[header.indexOf('base_exch_rate')]);
+		this.populateFrom('CURRTYPE', header, row);
 	}
 }

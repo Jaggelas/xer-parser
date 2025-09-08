@@ -1,4 +1,5 @@
 import { XER } from '../xer';
+import { BaseSchema } from './base-schema';
 
 /**
  * Represents a resource level list in XER format.
@@ -10,7 +11,7 @@ import { XER } from '../xer';
  * @property {number} schedoptionsId - Associated schedule options identifier
  * @property {number} rsrcId - Resource identifier this level list belongs to
  */
-export class ResourceLevelList {
+export class ResourceLevelList extends BaseSchema {
 	/**
 	 * Creates an instance of ResourceLevelList.
 	 */
@@ -18,22 +19,19 @@ export class ResourceLevelList {
 	/**
 	 * Unique identifier for the resource level list
 	 */
-	public rsrcLevelListId: number;
+	public rsrcLevelListId!: number;
 	/**
 	 * Associated schedule options identifier
 	 */
-	public schedoptionsId: number;
+	public schedoptionsId!: number;
 	/**
 	 * Resource identifier this level list belongs to
 	 */
-	public rsrcId: number;
+	public rsrcId!: number;
 
 	constructor(_xer: XER, header: string[], row: string[]) {
+		super(_xer);
 		this.xer = _xer;
-		this.rsrcLevelListId = Number(
-			row[header.indexOf('rsrc_level_list_id')]
-		);
-		this.schedoptionsId = Number(row[header.indexOf('schedoptions_id')]);
-		this.rsrcId = Number(row[header.indexOf('rsrc_id')]);
+		this.populateFrom('RSRCLEVELLIST', header, row);
 	}
 }

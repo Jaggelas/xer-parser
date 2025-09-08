@@ -1,11 +1,11 @@
-import { optionalNumber } from '../utilities/string-convert';
 import { XER } from '../xer';
+import { BaseSchema } from './base-schema';
 import { Project } from './project';
 
 /**
  * Represents an activity code type in the XER schema.
  */
-export class ActivityCodeType {
+export class ActivityCodeType extends BaseSchema {
 	/**
 	 * The XER instance associated with this activity code type.
 	 */
@@ -14,22 +14,22 @@ export class ActivityCodeType {
 	/**
 	 * The unique identifier for the activity code type.
 	 */
-	public actvCodeTypeId: number;
+	public actvCodeTypeId!: number;
 
 	/**
 	 * The short length of the activity code type.
 	 */
-	public actvShortLen: number;
+	public actvShortLen!: number;
 
 	/**
 	 * The sequence number of the activity code type.
 	 */
-	public seqNum: number;
+	public seqNum!: number;
 
 	/**
 	 * The name of the activity code type.
 	 */
-	public actvCodeType: string;
+	public actvCodeType!: string;
 
 	/**
 	 * The project ID associated with the activity code type (optional).
@@ -39,17 +39,17 @@ export class ActivityCodeType {
 	/**
 	 * The WBS ID associated with the activity code type.
 	 */
-	public wbsId: number;
+	public wbsId!: number;
 
 	/**
 	 * The scope of the activity code type.
 	 */
-	public actvCodeTypeScope: string;
+	public actvCodeTypeScope!: string;
 
 	/**
 	 * The export flag indicating whether the activity code type should be exported.
 	 */
-	public exportFlag: boolean;
+	public exportFlag!: boolean;
 
 	/**
 	 * Gets the activity code type instance.
@@ -77,14 +77,8 @@ export class ActivityCodeType {
 	 * @param row - The data row of the XER file.
 	 */
 	constructor(_xer: XER, header: string[], row: string[]) {
+		super(_xer);
 		this.xer = _xer;
-		this.actvCodeTypeId = Number(row[header.indexOf('actv_code_type_id')]);
-		this.actvShortLen = Number(row[header.indexOf('actv_short_len')]);
-		this.seqNum = Number(row[header.indexOf('seq_num')]);
-		this.actvCodeType = row[header.indexOf('actv_code_type')];
-		this.projId = optionalNumber(row[header.indexOf('proj_id')]);
-		this.wbsId = Number(row[header.indexOf('wbs_id')]);
-		this.actvCodeTypeScope = row[header.indexOf('actv_code_type_scope')];
-		this.exportFlag = row[header.indexOf('export_flag')] === 'Y';
+		this.populateFrom('ACTVTYPE', header, row);
 	}
 }

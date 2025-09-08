@@ -1,10 +1,6 @@
 import { Dayjs } from '../utilities/dayjs';
-import {
-	optionalDate,
-	optionalNumber,
-	optionalString
-} from '../utilities/string-convert';
 import { XER } from '../xer';
+import { BaseSchema } from './base-schema';
 
 /**
  * Represents a User Defined Field (UDF) value in an XER file.
@@ -20,7 +16,7 @@ import { XER } from '../xer';
  * @property {string} [udfText] - Optional text value for the UDF
  * @property {number} [udfCodeId] - Optional code identifier value for the UDF
  */
-export class UdfValue {
+export class UdfValue extends BaseSchema {
 	/**
 	 * Reference to the parent XER object
 	 */
@@ -28,15 +24,15 @@ export class UdfValue {
 	/**
 	 * The unique identifier for the UDF type
 	 */
-	public udfTypeId: number;
+	public udfTypeId!: number;
 	/**
 	 * Foreign key ID referencing the associated project element
 	 */
-	public fkId: number;
+	public fkId!: number;
 	/**
 	 * The project identifier this UDF belongs to
 	 */
-	public projId: number;
+	public projId!: number;
 	/**
 	 * Optional date value for the UDF
 	 */
@@ -55,13 +51,8 @@ export class UdfValue {
 	public udfCodeId?: number;
 
 	constructor(_xer: XER, header: string[], row: string[]) {
+		super(_xer);
 		this.xer = _xer;
-		this.udfTypeId = Number(row[header.indexOf('udf_type_id')]);
-		this.fkId = Number(row[header.indexOf('fk_id')]);
-		this.projId = Number(row[header.indexOf('proj_id')]);
-		this.udfDate = optionalDate(row[header.indexOf('udf_date')]);
-		this.udfNumber = optionalNumber(row[header.indexOf('udf_number')]);
-		this.udfText = optionalString(row[header.indexOf('udf_text')]);
-		this.udfCodeId = optionalNumber(row[header.indexOf('udf_code_id')]);
+		this.populateFrom('UDFVALUE', header, row);
 	}
 }
