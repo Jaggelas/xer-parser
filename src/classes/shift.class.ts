@@ -20,7 +20,7 @@ export class Shift {
 
     /**
      * Determines if a given date falls within the shift's time window
-     * @param date - A Moment.js date object to check
+     * @param date - A Dayjs date object to check
      * @returns {boolean} True if the time portion of the date falls between shift start and end times, false otherwise
      */
     inShift(date: Dayjs): boolean {

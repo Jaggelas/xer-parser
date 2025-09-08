@@ -543,15 +543,20 @@ export class XER implements XERData {
 		// ---------- Validation ----------
 		/**
 		 * Validate structural integrity: missing headers, orphaned references, duplicate IDs.
-		 * Returns a list of issue strings; empty if ok.
+		 * Returns structured ValidationIssue[] with codes, severity, and context.
+		 * If { autoRefresh: true }, entities will be rebuilt from raw tables before validating.
 		 */
-		public validate(): string[] {
-			const issues: string[] = [];
+		public validate(options?: import('./types/validation').ValidateOptions): import('./types/validation').ValidationIssue[] {
+			if (options?.autoRefresh) this.refreshEntities();
+			const issues: import('./types/validation').ValidationIssue[] = [];
+			const push = (issue: import('./types/validation').ValidationIssue) => { issues.push(issue); };
 			// Basic header checks for TASK table
 			const taskTable = this.tables.find(t => t.name === 'TASK');
 			if (taskTable) {
 				for (const col of ['task_id','proj_id','wbs_id','clndr_id','task_code','task_name']) {
-					if (getColumnIndex(taskTable.header, col) < 0) issues.push(`TASK missing column: ${col}`);
+					if (getColumnIndex(taskTable.header, col) < 0) push({
+						severity: 'error', code: 'TASK_MISSING_COLUMN', message: `TASK missing column: ${col}`, table: 'TASK'
+					});
 				}
 				// Duplicate task_id
 				const seen = new Set<string>();
@@ -563,7 +568,7 @@ export class XER implements XERData {
 						if (seen.has(id)) dup.push(id); else seen.add(id);
 					}
 				}
-				if (dup.length) issues.push(`Duplicate TASK.task_id: ${Array.from(new Set(dup)).join(', ')}`);
+				if (dup.length) push({ severity: 'error', code: 'TASK_DUPLICATE_ID', message: `Duplicate TASK.task_id: ${Array.from(new Set(dup)).join(', ')}`, table: 'TASK' });
 			}
 
 					// Orphans based on raw TASK table (reflects latest write-backs)
@@ -576,10 +581,10 @@ export class XER implements XERData {
 					for (const r of taskTable.rows) {
 						const code = codeIdx >= 0 ? r[codeIdx] : '(unknown)';
 						if (projIdx >= 0 && !projIds.has(Number(r[projIdx]))) {
-							issues.push(`Task ${code} references missing proj_id ${r[projIdx]}`);
+							push({ severity: 'error', code: 'TASK_MISSING_PROJ', message: `Task ${code} references missing proj_id ${r[projIdx]}` , table: 'TASK', refTable: 'PROJECT', refId: Number(r[projIdx])});
 						}
 						if (calIdx >= 0 && !calIds.has(Number(r[calIdx]))) {
-							issues.push(`Task ${code} references missing clndr_id ${r[calIdx]}`);
+							push({ severity: 'error', code: 'TASK_MISSING_CALENDAR', message: `Task ${code} references missing clndr_id ${r[calIdx]}`, table: 'TASK', refTable: 'CALENDAR', refId: Number(r[calIdx])});
 						}
 					}
 				}
@@ -591,8 +596,8 @@ export class XER implements XERData {
 						const taskIdx = getColumnIndex(predTable.header, 'task_id');
 						const predIdx = getColumnIndex(predTable.header, 'pred_task_id');
 						for (const r of predTable.rows) {
-							if (taskIdx >= 0 && !taskIds.has(Number(r[taskIdx]))) issues.push(`TASKPRED references missing task_id ${r[taskIdx]}`);
-							if (predIdx >= 0 && !taskIds.has(Number(r[predIdx]))) issues.push(`TASKPRED references missing pred_task_id ${r[predIdx]}`);
+							if (taskIdx >= 0 && !taskIds.has(Number(r[taskIdx]))) push({ severity: 'error', code: 'TASKPRED_MISSING_TASK', message: `TASKPRED references missing task_id ${r[taskIdx]}`, table: 'TASKPRED', refTable: 'TASK', refId: Number(r[taskIdx]) });
+							if (predIdx >= 0 && !taskIds.has(Number(r[predIdx]))) push({ severity: 'error', code: 'TASKPRED_MISSING_PRED_TASK', message: `TASKPRED references missing pred_task_id ${r[predIdx]}`, table: 'TASKPRED', refTable: 'TASK', refId: Number(r[predIdx]) });
 						}
 					}
 
@@ -603,8 +608,8 @@ export class XER implements XERData {
 						const tIdx = getColumnIndex(taskRsrcTable.header, 'task_id');
 						const rIdx = getColumnIndex(taskRsrcTable.header, 'rsrc_id');
 						for (const r of taskRsrcTable.rows) {
-							if (tIdx >= 0 && !taskIds.has(Number(r[tIdx]))) issues.push(`TASKRSRC references missing task_id ${r[tIdx]}`);
-							if (rIdx >= 0 && !rsrcIds.has(Number(r[rIdx]))) issues.push(`TASKRSRC references missing rsrc_id ${r[rIdx]}`);
+							if (tIdx >= 0 && !taskIds.has(Number(r[tIdx]))) push({ severity: 'error', code: 'TASKRSRC_MISSING_TASK', message: `TASKRSRC references missing task_id ${r[tIdx]}`, table: 'TASKRSRC', refTable: 'TASK', refId: Number(r[tIdx]) });
+							if (rIdx >= 0 && !rsrcIds.has(Number(r[rIdx]))) push({ severity: 'error', code: 'TASKRSRC_MISSING_RESOURCE', message: `TASKRSRC references missing rsrc_id ${r[rIdx]}`, table: 'TASKRSRC', refTable: 'RSRC', refId: Number(r[rIdx]) });
 						}
 					}
 
@@ -616,7 +621,7 @@ export class XER implements XERData {
 							for (const r of taskTable.rows) {
 								if (wIdx >= 0 && !wbsIds.has(Number(r[wIdx]))) {
 									const code = codeIdx >= 0 ? r[codeIdx] : '(unknown)';
-									issues.push(`Task ${code} references missing wbs_id ${r[wIdx]}`);
+									push({ severity: 'error', code: 'TASK_MISSING_WBS', message: `Task ${code} references missing wbs_id ${r[wIdx]}`, table: 'TASK', refTable: 'PROJWBS', refId: Number(r[wIdx]) });
 								}
 							}
 						}
@@ -627,7 +632,7 @@ export class XER implements XERData {
 						if (taskActvTable) {
 							const aIdx = getColumnIndex(taskActvTable.header, 'actv_code_id');
 							for (const r of taskActvTable.rows) {
-								if (aIdx >= 0 && !actvCodeIds.has(Number(r[aIdx]))) issues.push(`TASKACTV references missing actv_code_id ${r[aIdx]}`);
+								if (aIdx >= 0 && !actvCodeIds.has(Number(r[aIdx]))) push({ severity: 'error', code: 'TASKACTV_MISSING_ACTVCODE', message: `TASKACTV references missing actv_code_id ${r[aIdx]}`, table: 'TASKACTV', refTable: 'ACTVCODE', refId: Number(r[aIdx]) });
 							}
 						}
 
@@ -636,8 +641,8 @@ export class XER implements XERData {
 								const actvSet = new Set(this.activityCodes.map(a => a.actvCodeId));
 								const typeSet = new Set(this.activityCodeTypes.map(t => t.actvCodeTypeId));
 								for (const a of this.activityCodes) {
-									if (a.parentActvCodeId != null && !actvSet.has(a.parentActvCodeId)) issues.push(`ACTVCODE ${a.actvCodeId} missing parent_actv_code_id ${a.parentActvCodeId}`);
-									if (!typeSet.has(a.actvCodeTypeId)) issues.push(`ACTVCODE ${a.actvCodeId} missing actv_code_type_id ${a.actvCodeTypeId}`);
+									if (a.parentActvCodeId != null && !actvSet.has(a.parentActvCodeId)) push({ severity: 'warn', code: 'ACTVCODE_MISSING_PARENT', message: `ACTVCODE ${a.actvCodeId} missing parent_actv_code_id ${a.parentActvCodeId}`, table: 'ACTVCODE', id: a.actvCodeId, refTable: 'ACTVCODE', refId: a.parentActvCodeId });
+									if (!typeSet.has(a.actvCodeTypeId)) push({ severity: 'error', code: 'ACTVCODE_MISSING_TYPE', message: `ACTVCODE ${a.actvCodeId} missing actv_code_type_id ${a.actvCodeTypeId}`, table: 'ACTVCODE', id: a.actvCodeId, refTable: 'ACTVTYPE', refId: a.actvCodeTypeId });
 								}
 							}
 
@@ -645,7 +650,7 @@ export class XER implements XERData {
 							if (this.resources.length) {
 								const calSet = new Set(this.calendars.map(c => c.clndrId));
 								for (const r of this.resources) {
-									if (!calSet.has(r.clndrId)) issues.push(`RSRC ${r.rsrcId} references missing clndr_id ${r.clndrId}`);
+									if (!calSet.has(r.clndrId)) push({ severity: 'error', code: 'RSRC_MISSING_CALENDAR', message: `RSRC ${r.rsrcId} references missing clndr_id ${r.clndrId}`, table: 'RSRC', id: r.rsrcId, refTable: 'CALENDAR', refId: r.clndrId });
 								}
 							}
 
@@ -653,7 +658,7 @@ export class XER implements XERData {
 							if (this.udfValues.length) {
 								const typeSet = new Set(this.udfTypes.map(u => u.udfTypeId));
 								for (const u of this.udfValues) {
-									if (!typeSet.has(u.udfTypeId)) issues.push(`UDFVALUE missing udf_type_id ${u.udfTypeId}`);
+									if (!typeSet.has(u.udfTypeId)) push({ severity: 'error', code: 'UDFVALUE_MISSING_TYPE', message: `UDFVALUE missing udf_type_id ${u.udfTypeId}`, table: 'UDFVALUE', refTable: 'UDFTYPE', refId: u.udfTypeId });
 								}
 							}
 
@@ -663,7 +668,7 @@ export class XER implements XERData {
 											const roleIds = new Set(this.roles.map(r => r.roleId));
 											for (const r of this.roles) {
 												if (r.parentRoleId != null && !roleIds.has(r.parentRoleId)) {
-													issues.push(`ROLE ${r.roleId} missing parent_role_id ${r.parentRoleId}`);
+													push({ severity: 'warn', code: 'ROLE_MISSING_PARENT', message: `ROLE ${r.roleId} missing parent_role_id ${r.parentRoleId}`, table: 'ROLES', id: r.roleId, refTable: 'ROLES', refId: r.parentRoleId });
 												}
 											}
 										}
@@ -672,7 +677,7 @@ export class XER implements XERData {
 										if (this.roleRates.length) {
 											const roleIds = new Set(this.roles.map(r => r.roleId));
 											for (const rr of this.roleRates) {
-												if (!roleIds.has(rr.roleId)) issues.push(`ROLERATE ${rr.roleRateId} references missing role_id ${rr.roleId}`);
+												if (!roleIds.has(rr.roleId)) push({ severity: 'error', code: 'ROLERATE_MISSING_ROLE', message: `ROLERATE ${rr.roleRateId} references missing role_id ${rr.roleId}`, table: 'ROLERATE', id: rr.roleRateId, refTable: 'ROLES', refId: rr.roleId });
 											}
 										}
 
@@ -681,8 +686,8 @@ export class XER implements XERData {
 											const roleIds = new Set(this.roles.map(r => r.roleId));
 											const rsrcIds2 = new Set(this.resources.map(r => r.rsrcId));
 											for (const rr of this.resourceRoles) {
-												if (!rsrcIds2.has(rr.rsrcId)) issues.push(`RSRCROLE ${rr.rsrcRoleId} references missing rsrc_id ${rr.rsrcId}`);
-												if (!roleIds.has(rr.roleId)) issues.push(`RSRCROLE ${rr.rsrcRoleId} references missing role_id ${rr.roleId}`);
+												if (!rsrcIds2.has(rr.rsrcId)) push({ severity: 'error', code: 'RSRCROLE_MISSING_RSRC', message: `RSRCROLE ${rr.rsrcRoleId} references missing rsrc_id ${rr.rsrcId}`, table: 'RSRCROLE', id: rr.rsrcRoleId, refTable: 'RSRC', refId: rr.rsrcId });
+												if (!roleIds.has(rr.roleId)) push({ severity: 'error', code: 'RSRCROLE_MISSING_ROLE', message: `RSRCROLE ${rr.rsrcRoleId} references missing role_id ${rr.roleId}`, table: 'RSRCROLE', id: rr.rsrcRoleId, refTable: 'ROLES', refId: rr.roleId });
 											}
 										}
 
@@ -690,7 +695,7 @@ export class XER implements XERData {
 										if (this.resourceRates.length) {
 											const rsrcIds3 = new Set(this.resources.map(r => r.rsrcId));
 											for (const rate of this.resourceRates) {
-												if (!rsrcIds3.has(rate.rsrcId)) issues.push(`RSRCRATE ${rate.rsrcRateId} references missing rsrc_id ${rate.rsrcId}`);
+												if (!rsrcIds3.has(rate.rsrcId)) push({ severity: 'error', code: 'RSRCRATE_MISSING_RSRC', message: `RSRCRATE ${rate.rsrcRateId} references missing rsrc_id ${rate.rsrcId}`, table: 'RSRCRATE', id: rate.rsrcRateId, refTable: 'RSRC', refId: rate.rsrcId });
 											}
 										}
 
@@ -699,8 +704,8 @@ export class XER implements XERData {
 											const rsrcIds4 = new Set(this.resources.map(r => r.rsrcId));
 											const schedOptIds = new Set(this.scheduleOptions.map(s => s.schedoptionsId));
 											for (const rl of this.resourceLevelLists) {
-												if (!rsrcIds4.has(rl.rsrcId)) issues.push(`RSRCLEVELLIST ${rl.rsrcLevelListId} references missing rsrc_id ${rl.rsrcId}`);
-												if (!schedOptIds.has(rl.schedoptionsId)) issues.push(`RSRCLEVELLIST ${rl.rsrcLevelListId} references missing schedoptions_id ${rl.schedoptionsId}`);
+												if (!rsrcIds4.has(rl.rsrcId)) push({ severity: 'error', code: 'RSRCLEVELLIST_MISSING_RSRC', message: `RSRCLEVELLIST ${rl.rsrcLevelListId} references missing rsrc_id ${rl.rsrcId}`, table: 'RSRCLEVELLIST', id: rl.rsrcLevelListId, refTable: 'RSRC', refId: rl.rsrcId });
+												if (!schedOptIds.has(rl.schedoptionsId)) push({ severity: 'error', code: 'RSRCLEVELLIST_MISSING_SCHEDOPT', message: `RSRCLEVELLIST ${rl.rsrcLevelListId} references missing schedoptions_id ${rl.schedoptionsId}`, table: 'RSRCLEVELLIST', id: rl.rsrcLevelListId, refTable: 'SCHEDOPTIONS', refId: rl.schedoptionsId });
 											}
 										}
 
@@ -708,7 +713,7 @@ export class XER implements XERData {
 										if (this.scheduleOptions.length) {
 											const projIds2 = new Set(this.projects.map(p => p.projId));
 											for (const s of this.scheduleOptions) {
-												if (!projIds2.has(s.projId)) issues.push(`SCHEDOPTIONS ${s.schedoptionsId} references missing proj_id ${s.projId}`);
+												if (!projIds2.has(s.projId)) push({ severity: 'error', code: 'SCHEDOPTIONS_MISSING_PROJECT', message: `SCHEDOPTIONS ${s.schedoptionsId} references missing proj_id ${s.projId}`, table: 'SCHEDOPTIONS', id: s.schedoptionsId, refTable: 'PROJECT', refId: s.projId });
 											}
 										}
 

@@ -1,10 +1,10 @@
 import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
-import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
-import isBetween from 'dayjs/plugin/isBetween';
-import minMax from 'dayjs/plugin/minMax';
-import customParseFormat from 'dayjs/plugin/customParseFormat';
+import utc from 'dayjs/plugin/utc.js';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore.js';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter.js';
+import isBetween from 'dayjs/plugin/isBetween.js';
+import minMax from 'dayjs/plugin/minMax.js';
+import customParseFormat from 'dayjs/plugin/customParseFormat.js';
 
 dayjs.extend(utc);
 dayjs.extend(isSameOrBefore);

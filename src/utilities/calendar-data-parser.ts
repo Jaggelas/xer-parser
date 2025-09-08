@@ -34,7 +34,8 @@ export const parseCalendarData = (data: string): CalendarProperties => {
 
 	const properties: CalendarProperties = {
 		weekdays: [[], [], [], [], [], [], []],
-		exceptions: []
+		exceptions: [],
+		exceptionSet: new Set<string>()
 	};
 
 	let activeCategory: 'DaysOfWeek' | 'Exceptions' | '' = '';
@@ -77,10 +78,8 @@ export const parseCalendarData = (data: string): CalendarProperties => {
 				// Primavera stores Excel-style serial dates (days since 1899-12-30)
 				const base = dayjs('1899-12-30');
 				const date = base.add(n, 'day').startOf('day');
-				properties.exceptions.push({
-					date,
-					shifts: []
-				});
+				properties.exceptions.push({ date, shifts: [] });
+				properties.exceptionSet!.add(date.format('YYYY-MM-DD'));
 			}
 		}
 	});

@@ -9,4 +9,6 @@ export type CalendarProperties = {
 		date: Dayjs;
 		shifts: Array<Shift> | null;
 	}>;
+	// Fast lookup of exception days by 'YYYY-MM-DD'
+	exceptionSet?: Set<string>;
 };

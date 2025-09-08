@@ -1,25 +1,32 @@
 {
 	"name": "xer-parser",
 	"type": "module",
-	"version": "1.1.0",
+	"version": "2.0.0",
 	"main": "./dist/index.js",
 	"module": "./dist/index.js",
 	"types": "./dist/index.d.ts",
-	"description": "",
+	"description": "Modern TypeScript library to parse, validate, and serialize Primavera P6 XER files. ESM-only, supports streaming and rich calendar utilities.",
 	"exports": {
 		".": {
 			"import": "./dist/index.js",
 			"types": "./dist/index.d.ts"
 		}
 	},
+	"engines": {
+		"node": ">=18"
+	},
 	"scripts": {
 		"build": "tsup src/index.ts --dts --format esm --sourcemap --clean",
 		"prepublishOnly": "npm run build && npm test",
-		"test": "vitest run"
+		"test": "vitest run",
+		"bench": "npm run build && node ./bench/calendar.bench.mjs"
 	},
 	"files": [
 		"dist"
 	],
+	"publishConfig": {
+		"access": "public"
+	},
 	"keywords": [],
 	"license": "MIT",
 	"homepage": "https://github.com/Jaggelas/xer-parser/blob/main/README.md",

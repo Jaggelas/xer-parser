@@ -18,6 +18,7 @@ A modern, browser-friendly TypeScript library to parse, inspect, and serialize P
 - Type-safe schema registry to ensure constructor/property alignment
 - Mutations: table-specific write-back helpers (update/insert/delete)
 - Validation: `validate()` checks headers, duplicates, and referential integrity
+- Validation: `validate({ autoRefresh })` returns machine-readable issues with codes, severity, and context
 - `refreshEntities()` to rebuild entities after raw-table edits
 
 ## Installation
@@ -128,11 +129,13 @@ xer.insertTaskResourceRow({
 // Rebuild entity objects from raw tables when you need up-to-date collections
 xer.refreshEntities();
 
-// Validate referential integrity and basic structure
+// Validate referential integrity and basic structure (structured issues by default)
 const issues = xer.validate();
-if (issues.length) {
-  console.warn('XER has validation issues:', issues);
-}
+// issues: Array<{ severity: 'error' | 'warn'; code: string; message: string; table?: string; id?: number | string; refTable?: string; refId?: number | string }>
+
+// If you've just mutated raw tables and rely on entity-based checks, you can
+// skip a separate refresh by passing autoRefresh
+const refreshed = xer.validate({ autoRefresh: true });
 
 // Finally, serialize back to XER text
 const out = xer.toXERString();
@@ -140,7 +143,7 @@ const out = xer.toXERString();
 
 ### Common issues reported by validate()
 
-The validator returns human-readable strings. Here are frequent messages, what they mean, and typical fixes:
+The validator returns machine-readable objects with `severity`, `code`, and context fields. Below are common messages, what they mean, and typical fixes (shown as strings for readability):
 
 | Example message | Meaning | How to fix |
 | --- | --- | --- |
@@ -162,7 +165,7 @@ The validator returns human-readable strings. Here are frequent messages, what t
 | `TASK missing column: task_name` | Required header not present | Add the missing column to the `%F` header of the TASK table |
 
 Notes:
-- After using write-back helpers, call `refreshEntities()` if you rely on entity-based collections (e.g., roles/resources) for validation. Some checks (like TASK orphan checks) read raw tables and don’t require a refresh.
+- After using write-back helpers, call `refreshEntities()` if you rely on entity-based collections (e.g., roles/resources) for validation—or pass `validate({ autoRefresh: true })` to refresh inside the call. Some checks (like TASK orphan checks) read raw tables and don’t require a refresh.
 
 ### Gotchas: refreshEntities() vs raw-table reads
 
@@ -193,9 +196,17 @@ Write-back helpers (subset):
 - Leveling/schedule: `updateResourceLevelListRow`, `updateScheduleOptionRow`, ...
 
 Other:
+ 
 
 - `refreshEntities()` — rebuilds entity arrays from raw tables
-- `validate(): string[]` — returns a list of issues, empty if ok
+- `validate(options?: { autoRefresh?: boolean }): ValidationIssue[]` — structured issues with codes and context
+
+Validation types are exported:
+
+- `ValidationIssue`
+- `ValidationSeverity`
+ 
+- `ValidateOptions`
 
 Tasks collection: `Tasks extends Array<Task>`
 
@@ -212,6 +223,26 @@ Calendar utilities: `Calendar`
 - `workingHoursBetween(from, to, precision)` — hours or minutes (sign-aware)
 - `nextWorkingMoment(date, inclusive)`, `clampToWorking(date, mode)`
 - `unitConvert(from, to, value)` — calendar-specific conversion
+
+## Performance at scale
+
+- Exception lookups are O(1): exceptions are pre-indexed by date (YYYY-MM-DD) during parse and used by `isWorkingDay` and `getWorkingShifts`.
+- Calendar arithmetic iterates only across concrete working intervals to minimize scanning.
+
+Benchmarks (micro)
+
+Run a small local benchmark to gauge heavy operations across large ranges:
+
+```powershell
+npm run build
+npm run bench
+```
+
+Notes (indicative; varies by hardware):
+
+- addToDate 1,000h x100 iters: completes in tens of milliseconds total.
+- addToDate 10,000h x20 iters: typically under a second total.
+- workingHoursBetween across 180/365 days x multiple iters: remains responsive due to interval clipping.
 
 ## Schema registry and type safety
 

@@ -131,15 +131,14 @@ export class Calendar {
 	 * 3. Confirming the time falls within a defined shift's start and finish times
 	 */
 	public isWorkingHour(date: Dayjs): boolean {
-		// moment().day() is 0(Sun)..6(Sat) -> properties.weekdays uses 0..6
+		// Day-of-week: 0 (Sunday) .. 6 (Saturday); properties.weekdays uses 0..6
 		const day = date.day();
 		const shifts = this.properties.weekdays[day] ?? [];
 
-		const exceptions = this.properties.exceptions.filter((exception) => {
-			return exception.date.isSame(date, 'day');
-		});
+		const isException = this.properties.exceptionSet?.has(date.format('YYYY-MM-DD'))
+			|| this.properties.exceptions.some((ex) => ex.date.isSame(date, 'day'));
 
-		if (shifts.length === 0 || exceptions.length > 0) {
+		if (shifts.length === 0 || isException) {
 			return false;
 		}
 
@@ -154,7 +153,8 @@ export class Calendar {
 	public isWorkingDay(date: Dayjs): boolean {
 		const day = date.day();
 		const shifts = this.properties.weekdays[day] ?? [];
-	const isException = this.properties.exceptions.some((ex) => ex.date.isSame(date, 'day'));
+		const isException = this.properties.exceptionSet?.has(date.format('YYYY-MM-DD'))
+			|| this.properties.exceptions.some((ex) => ex.date.isSame(date, 'day'));
 		return shifts.length > 0 && !isException;
 	}
 
@@ -164,7 +164,8 @@ export class Calendar {
 	public getWorkingShifts(date: Dayjs): Array<{ start: Dayjs; end: Dayjs }> {
 		const day = date.day();
 		const shifts = this.properties.weekdays[day] ?? [];
-	const isException = this.properties.exceptions.some((ex) => ex.date.isSame(date, 'day'));
+		const isException = this.properties.exceptionSet?.has(date.format('YYYY-MM-DD'))
+			|| this.properties.exceptions.some((ex) => ex.date.isSame(date, 'day'));
 		if (isException || shifts.length === 0) return [];
 		return shifts.map((s) => ({ start: s.shiftStart(date), end: s.shiftFinish(date) }));
 	}

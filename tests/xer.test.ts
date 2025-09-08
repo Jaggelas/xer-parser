@@ -105,8 +105,8 @@ describe('XER parse/serialize', () => {
     ].join('\r\n');
 
     const xer = new XER(content);
-    // No issues expected
-    expect(xer.validate()).toEqual([]);
+  // No issues expected
+  expect(xer.validate()).toEqual([]);
 
     // Update the task name via write-back
     const ok = xer.updateTaskRow(1, { task_name: 'Updated' });
@@ -119,8 +119,8 @@ describe('XER parse/serialize', () => {
     const removed = xer.deleteTaskRow(1);
     expect(removed).toBe(true);
     xer.insertTaskRow({ task_id: 2, proj_id: 999, wbs_id: 1, clndr_id: 10, task_code: 'TK-002', task_name: 'BadProj' });
-    const issues = xer.validate();
-    expect(issues.some(i => i.includes('missing proj_id'))).toBe(true);
+  const issues = xer.validate();
+  expect(issues.some(i => i.code === 'TASK_MISSING_PROJ')).toBe(true);
 
   // Insert a resource and link to task via TASKRSRC; then refresh and validate
   xer.insertResourceRow({ rsrc_id: 50, clndr_id: 10, rsrc_name: 'R', rsrc_short_name: 'R', rsrc_seq_num: 1, guid: 'g', cost_qty_type: 'Q', def_qty_per_hr: 1, curr_id: 1, rsrc_type: 'L' });
@@ -128,7 +128,7 @@ describe('XER parse/serialize', () => {
   xer.refreshEntities();
   const issues2 = xer.validate();
   // Still missing proj_id on task 2, but no RSRC clndr issue
-  expect(issues2.some(i => i.includes('missing proj_id'))).toBe(true);
+  expect(issues2.some(i => i.code === 'TASK_MISSING_PROJ')).toBe(true);
   });
 
   it('role/role-rate/resource-role helpers and validation', () => {
@@ -164,14 +164,14 @@ describe('XER parse/serialize', () => {
   xer.insertRoleRateRow({ role_rate_id: 11, role_id: 999, cost_per_qty: 1, start_date: '2020-01-02', max_qty_per_hr: 8 });
   xer.refreshEntities();
   const issues = xer.validate();
-    expect(issues.some(i => i.includes('ROLERATE') && i.includes('missing role_id'))).toBe(true);
+    expect(issues.some(i => i.code === 'ROLERATE_MISSING_ROLE')).toBe(true);
 
     // Update resource role to missing resource -> flagged
   const ok = xer.updateResourceRoleRow(500, { rsrc_id: 999 });
     expect(ok).toBe(true);
   xer.refreshEntities();
   const issues2 = xer.validate();
-    expect(issues2.some(i => i.includes('RSRCROLE') && i.includes('missing rsrc_id'))).toBe(true);
+    expect(issues2.some(i => i.code === 'RSRCROLE_MISSING_RSRC')).toBe(true);
   });
 
   it('schedule option and resource-level/resource-rate helpers and validation', () => {
@@ -206,18 +206,18 @@ describe('XER parse/serialize', () => {
   const ok1 = xer.updateResourceLevelListRow(300, { schedoptions_id: 999 });
     expect(ok1).toBe(true);
   xer.refreshEntities();
-  expect(xer.validate().some(i => i.includes('RSRCLEVELLIST') && i.includes('missing schedoptions_id'))).toBe(true);
+  expect(xer.validate().some(i => i.code === 'RSRCLEVELLIST_MISSING_SCHEDOPT')).toBe(true);
 
     // Make RSRCRATE reference missing rsrc -> flagged
   const ok2 = xer.updateResourceRateRow(400, { rsrc_id: 999 });
     expect(ok2).toBe(true);
   xer.refreshEntities();
-  expect(xer.validate().some(i => i.includes('RSRCRATE') && i.includes('missing rsrc_id'))).toBe(true);
+  expect(xer.validate().some(i => i.code === 'RSRCRATE_MISSING_RSRC')).toBe(true);
 
     // Make SCHEDOPTIONS reference missing project -> flagged
   const ok3 = xer.updateScheduleOptionRow(200, { proj_id: 999 });
     expect(ok3).toBe(true);
   xer.refreshEntities();
-  expect(xer.validate().some(i => i.includes('SCHEDOPTIONS') && i.includes('missing proj_id'))).toBe(true);
+  expect(xer.validate().some(i => i.code === 'SCHEDOPTIONS_MISSING_PROJECT')).toBe(true);
   });
 });
