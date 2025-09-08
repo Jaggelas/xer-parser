@@ -37,7 +37,7 @@ describe('Calendar utilities', () => {
     let foundDay: typeof probe | null = null;
     for (let i = 0; i < 14; i++) {
       if (cal.isWorkingDay(probe)) { foundDay = probe.clone(); break; }
-      probe.add(1, 'day');
+      probe = probe.add(1, 'day');
     }
     expect(foundDay).toBeTruthy();
     if (!foundDay) return;
@@ -50,7 +50,7 @@ describe('Calendar utilities', () => {
       expect(cal.isWorkingDay(foundDay.clone())).toBe(true);
 
       // Sum of shift hours equals workingHoursBetween for that day
-      const startOfDay = shifts[0].start.clone().startOf('day');
+  const startOfDay = shifts[0].start.clone().startOf('day');
       const endOfDay = startOfDay.clone().endOf('day');
       const wh = cal.workingHoursBetween(startOfDay, endOfDay, 'hour');
       const sum = shifts.reduce((acc, s) => acc + s.end.diff(s.start, 'hours'), 0);

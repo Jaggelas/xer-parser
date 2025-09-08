@@ -1,4 +1,4 @@
-import { Moment } from 'moment';
+import { Dayjs } from '../utilities/dayjs';
 import {
 	optionalDate,
 	optionalNumber,
@@ -96,11 +96,11 @@ export class ProjWBS {
 	/**
 	 * Anticipated start date
 	 */
-	public anticipStartDate?: Moment;
+	public anticipStartDate?: Dayjs;
 	/**
 	 * Anticipated end date
 	 */
-	public anticipEndDate?: Moment;
+	public anticipEndDate?: Dayjs;
 	/**
 	 * Earned value computation type
 	 */

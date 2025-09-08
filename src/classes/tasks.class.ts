@@ -1,6 +1,6 @@
-import { Moment } from "moment";
+import { Dayjs } from "../utilities/dayjs";
 import { Task } from '../schemas/task';
-import { Change, MomentProps } from "../types/utility-types";
+import { Change, DayjsProps } from "../types/utility-types";
 import { Duration } from "./duration.class";
 
 export class Tasks extends Array<Task> {
@@ -39,16 +39,16 @@ export class Tasks extends Array<Task> {
     /**
      * Gets the minimum date value from a collection of tasks based on the specified date property.
      * 
-     * @param {MomentProps<Task>} key - The key representing the date property to compare (e.g., 'startDate', 'endDate')
-     * @returns {Moment | undefined} The minimum date found in the collection, or undefined if the collection is empty
+    * @param {DayjsProps<Task>} key - The key representing the date property to compare (e.g., 'startDate', 'endDate')
+    * @returns {Dayjs | undefined} The minimum date found in the collection, or undefined if the collection is empty
      * 
      * @example
      * const tasks = new Tasks([...]);
      * const minStartDate = tasks.getMinDate('startDate');
      */
-    public getMinDate(key: MomentProps<Task>): Moment | undefined {
-        return this.reduce((minDate: Moment | undefined, task: Task) => {
-            const value = task[key as keyof Task] as unknown as Moment | undefined;
+    public getMinDate(key: DayjsProps<Task>): Dayjs | undefined {
+        return this.reduce((minDate: Dayjs | undefined, task: Task) => {
+            const value = task[key as keyof Task] as unknown as Dayjs | undefined;
             if (!value) return minDate;
             if (!minDate || value.isBefore(minDate)) return value;
             return minDate;
@@ -57,12 +57,12 @@ export class Tasks extends Array<Task> {
 
     /**
      * Finds the earliest date among all tasks for a specified date property.
-     * @param key - The moment-based property of Task to compare (e.g., 'startDate', 'endDate')
-     * @returns The earliest Moment date found among all tasks for the specified property, or undefined if no tasks exist
+    * @param key - The Dayjs-based property of Task to compare (e.g., 'startDate', 'endDate')
+    * @returns The latest Dayjs date found among all tasks for the specified property, or undefined if no tasks exist
      */
-    public getMaxDate(key: MomentProps<Task>): Moment | undefined {
-        return this.reduce((maxDate: Moment | undefined, task: Task) => {
-            const value = task[key as keyof Task] as unknown as Moment | undefined;
+    public getMaxDate(key: DayjsProps<Task>): Dayjs | undefined {
+        return this.reduce((maxDate: Dayjs | undefined, task: Task) => {
+            const value = task[key as keyof Task] as unknown as Dayjs | undefined;
             if (!value) return maxDate;
             if (!maxDate || value.isAfter(maxDate)) return value;
             return maxDate;

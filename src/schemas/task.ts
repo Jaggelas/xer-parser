@@ -9,7 +9,7 @@ import { Calendar } from './calendar';
 import { TaskActivityCode } from './task-activity-code';
 import { Duration } from '../classes/duration.class';
 import { Project } from './project';
-import moment, { Moment } from 'moment';
+import dayjs, { Dayjs } from '../utilities/dayjs';
 
 
 export type TaskType = 'TT_Task' | 'TT_LOE' | 'TT_Mile' | 'TT_Rsrc' | 'TT_FinMile';
@@ -132,59 +132,59 @@ export class Task {
 	/**
 	 * Constraint date
 	 */
-	public cstrDate?: Moment;
+	public cstrDate?: Dayjs;
 	/**
 	 * Actual start date
 	 */
-	public actStartDate?: Moment;
+	public actStartDate?: Dayjs;
 	/**
 	 * Actual end date
 	 */
-	public actEndDate?: Moment;
+	public actEndDate?: Dayjs;
 	/**
 	 * Late start date
 	 */
-	public lateStartDate: Moment;
+	public lateStartDate: Dayjs;
 	/**
 	 * Late end date
 	 */
-	public lateEndDate: Moment;
+	public lateEndDate: Dayjs;
 	/**
 	 * Expected end date
 	 */
-	public expectEndDate?: Moment;
+	public expectEndDate?: Dayjs;
 	/**
 	 * Early start date
 	 */
-	public earlyStartDate: Moment;
+	public earlyStartDate: Dayjs;
 	/**
 	 * Early end date
 	 */
-	public earlyEndDate: Moment;
+	public earlyEndDate: Dayjs;
 	/**
 	 * Restart date
 	 */
-	public restartDate: Moment;
+	public restartDate: Dayjs;
 	/**
 	 * Reend date
 	 */
-	public reendDate: Moment;
+	public reendDate: Dayjs;
 	/**
 	 * Target start date
 	 */
-	public targetStartDate: Moment;
+	public targetStartDate: Dayjs;
 	/**
 	 * Target end date
 	 */
-	public targetEndDate: Moment;
+	public targetEndDate: Dayjs;
 	/**
 	 * Remaining late start date
 	 */
-	public remLateStartDate: Moment;
+	public remLateStartDate: Dayjs;
 	/**
 	 * Remaining late end date
 	 */
-	public remLateEndDate: Moment;
+	public remLateEndDate: Dayjs;
 	/**
 	 * Constraint type
 	 */
@@ -196,11 +196,11 @@ export class Task {
 	/**
 	 * Suspend date
 	 */
-	public suspendDate?: Moment;
+	public suspendDate?: Dayjs;
 	/**
 	 * Resume date
 	 */
-	public resumeDate?: Moment;
+	public resumeDate?: Dayjs;
 	/**
 	 * Float path
 	 */
@@ -220,7 +220,7 @@ export class Task {
 	/**
 	 * Constraint date 2
 	 */
-	public cstrDate2?: Moment;
+	public cstrDate2?: Dayjs;
 	/**
 	 * Constraint type 2
 	 */
@@ -240,19 +240,19 @@ export class Task {
 	/**
 	 * External early start date
 	 */
-	public externalEarlyStartDate?: Moment;
+	public externalEarlyStartDate?: Dayjs;
 	/**
 	 * External late end date
 	 */
-	public externalLateEndDate?: Moment;
+	public externalLateEndDate?: Dayjs;
 	/**
 	 * Create date of the task
 	 */
-	public createDate: Moment;
+	public createDate: Dayjs;
 	/**
 	 * Update date of the task
 	 */
-	public updateDate: Moment;
+	public updateDate: Dayjs;
 	/**
 	 * User who created the task
 	 */
@@ -321,23 +321,23 @@ export class Task {
 		this.cstrDate = optionalDate(row[header.indexOf('cstr_date')]);
 		this.actStartDate = optionalDate(row[header.indexOf('act_start_date')]);
 		this.actEndDate = optionalDate(row[header.indexOf('act_end_date')]);
-		this.lateStartDate = moment(row[header.indexOf('late_start_date')]);
-		this.lateEndDate = moment(row[header.indexOf('late_end_date')]);
+		this.lateStartDate = dayjs(row[header.indexOf('late_start_date')]);
+		this.lateEndDate = dayjs(row[header.indexOf('late_end_date')]);
 		this.expectEndDate = optionalDate(
 			row[header.indexOf('expect_end_date')]
 		);
-		this.earlyStartDate = moment(row[header.indexOf('early_start_date')]);
-		this.earlyEndDate = moment(row[header.indexOf('early_end_date')]);
-		this.restartDate = moment(row[header.indexOf('restart_date')]);
-		this.reendDate = moment(row[header.indexOf('reend_date')]);
-		this.targetStartDate = moment(
+		this.earlyStartDate = dayjs(row[header.indexOf('early_start_date')]);
+		this.earlyEndDate = dayjs(row[header.indexOf('early_end_date')]);
+		this.restartDate = dayjs(row[header.indexOf('restart_date')]);
+		this.reendDate = dayjs(row[header.indexOf('reend_date')]);
+		this.targetStartDate = dayjs(
 			row[header.indexOf('target_start_date')]
 		);
-		this.targetEndDate = moment(row[header.indexOf('target_end_date')]);
-		this.remLateStartDate = moment(
+		this.targetEndDate = dayjs(row[header.indexOf('target_end_date')]);
+		this.remLateStartDate = dayjs(
 			row[header.indexOf('rem_late_start_date')]
 		);
-		this.remLateEndDate = moment(
+		this.remLateEndDate = dayjs(
 			row[header.indexOf('rem_late_end_date')]
 		);
 		{
@@ -377,8 +377,8 @@ export class Task {
 			this.externalEarlyStartDate = eeIdx >= 0 ? optionalDate(row[eeIdx]) : undefined;
 			this.externalLateEndDate = elIdx >= 0 ? optionalDate(row[elIdx]) : undefined;
 		}
-		this.createDate = moment(row[header.indexOf('create_date')]);
-		this.updateDate = moment(row[header.indexOf('update_date')]);
+		this.createDate = dayjs(row[header.indexOf('create_date')]);
+		this.updateDate = dayjs(row[header.indexOf('update_date')]);
 		this.createUser = row[header.indexOf('create_user')];
 		this.updateUser = row[header.indexOf('update_user')];
 		{
@@ -433,7 +433,7 @@ export class Task {
 	 * @param finish Finish date
 	 * @returns Object containing the start date and an array of hours per day
 	 */
-	public distributionHrs(start: Moment, finish: Moment): {start: Moment, distribution: number[]} {
+	public distributionHrs(start: Dayjs, finish: Dayjs): { start: Dayjs; distribution: number[] } {
 		
 		const calendar = this.calendar ?? this.project.calendar;
 		
@@ -441,27 +441,28 @@ export class Task {
 			throw new Error('No calendar found for task or project');
 		}
 
-		const exceptionStrings = calendar.properties.exceptions.map((exception) => exception.date.format("YYYY-MM-DD"));
-		const distribution = new Array(Math.abs(start.diff(finish, 'days'))).fill(0);
-		const currentDate = start.clone();
+		const exceptionStrings = calendar.properties.exceptions.map((exception) => exception.date.format('YYYY-MM-DD'));
+		const totalDays = Math.abs(finish.diff(start, 'day'));
+		const distribution = new Array(totalDays).fill(0);
+		let currentDate = start;
 
 		let index = 0;
 		while (currentDate.isBefore(finish)) {
 			
-			if (exceptionStrings.includes(currentDate.format("YYYY-MM-DD"))) {
+			if (exceptionStrings.includes(currentDate.format('YYYY-MM-DD'))) {
 				distribution[index] = 0;
 			} else {
-				const from = moment.max(currentDate.clone().startOf('day'), start);
-				const to = moment.min(currentDate.clone().endOf('day'), finish);
+				const from = dayjs.max(currentDate.startOf('day'), start);
+				const to = dayjs.min(currentDate.endOf('day'), finish);
 
 				distribution[index] = calendar.duration(from, to).hours;
 			}
 
 			index++;
-			currentDate.add(1, 'day');
+			currentDate = currentDate.add(1, 'day');
 		}
 
-		return {start, distribution};
+		return { start, distribution };
 	}
 
 }

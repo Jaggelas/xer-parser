@@ -1,4 +1,4 @@
-import { Moment } from 'moment';
+import { Dayjs } from '../utilities/dayjs';
 import {
 	optionalDate,
 	optionalNumber,
@@ -40,7 +40,7 @@ export class UdfValue {
 	/**
 	 * Optional date value for the UDF
 	 */
-	public udfDate?: Moment;
+	public udfDate?: Dayjs;
 	/**
 	 * Optional numeric value for the UDF
 	 */

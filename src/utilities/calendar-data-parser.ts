@@ -1,6 +1,6 @@
 import { Shift } from '../classes/shift.class';
 import { CalendarProperties } from '../types/calendar-properties';
-import moment from 'moment';
+import dayjs from './dayjs';
 
 /**
  * Parses calendar data string into a structured CalendarProperties object.
@@ -28,7 +28,9 @@ import moment from 'moment';
  * ```
  */
 export const parseCalendarData = (data: string): CalendarProperties => {
-	const lines = data.replaceAll(' ', '').replaceAll('()', '()/n').split('/n');
+	// Remove odd delimiter chars (ASCII 127 shown as \u007F here) and whitespace
+	const cleaned = data.replace(/[\u007F\s]+/g, '');
+	const lines = cleaned.split('()').join('()/n').split('/n');
 
 	const properties: CalendarProperties = {
 		weekdays: [[], [], [], [], [], [], []],
@@ -37,7 +39,7 @@ export const parseCalendarData = (data: string): CalendarProperties => {
 
 	let activeCategory: 'DaysOfWeek' | 'Exceptions' | '' = '';
 	let activeDayIndex: number | undefined;
-	lines.forEach((line) => {
+	lines.forEach((line: string) => {
 		if (line.includes('DaysOfWeek()')) {
 			activeCategory = 'DaysOfWeek';
 			return;
@@ -71,10 +73,12 @@ export const parseCalendarData = (data: string): CalendarProperties => {
 		if (activeCategory === 'Exceptions') {
 			if (line.match(/\(d\|[0-9]*\)\(\)/)) {
 				const matchedString = line.match(/d\|[0-9]*/)?.[0]!;
+				const n = Number(matchedString.split('|')[1]);
+				// Primavera stores Excel-style serial dates (days since 1899-12-30)
+				const base = dayjs('1899-12-30');
+				const date = base.add(n, 'day').startOf('day');
 				properties.exceptions.push({
-					date: moment(
-						Date.UTC(0, 0, Number(matchedString.split('|')[1]) - 1)
-					),
+					date,
 					shifts: []
 				});
 			}

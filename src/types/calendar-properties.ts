@@ -1,4 +1,4 @@
-import { Moment } from "moment";
+import { Dayjs } from "dayjs";
 import { Shift } from "../classes/shift.class";
 
 
@@ -6,7 +6,7 @@ import { Shift } from "../classes/shift.class";
 export type CalendarProperties = {
 	weekdays: Array<Shift>[];
 	exceptions: Array<{
-		date: Moment;
+		date: Dayjs;
 		shifts: Array<Shift> | null;
 	}>;
 };

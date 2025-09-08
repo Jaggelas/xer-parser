@@ -39,6 +39,6 @@
 		"vitest": "^1.6.1"
 	},
 	"dependencies": {
-		"moment": "^2.30.1"
+		"dayjs": "^1.11.18"
 	}
 }

@@ -1,4 +1,4 @@
-import moment, { Moment } from 'moment';
+import dayjs, { Dayjs } from '../utilities/dayjs';
 import { Duration } from '../classes/duration.class';
 import {
 	optionalDate,
@@ -161,35 +161,35 @@ export class TaskResource {
 	/**
 	 * Optional actual start date
 	 */
-	public actStartDate?: Moment;
+	public actStartDate?: Dayjs;
 	/**
 	 * Optional actual end date
 	 */
-	public actEndDate?: Moment;
+	public actEndDate?: Dayjs;
 	/**
 	 * Remaining start date
 	 */
-	public restartDate: Moment;
+	public restartDate: Dayjs;
 	/**
 	 * Remaining end date
 	 */
-	public reendDate: Moment;
+	public reendDate: Dayjs;
 	/**
 	 * Target start date
 	 */
-	public targetStartDate: Moment;
+	public targetStartDate: Dayjs;
 	/**
 	 * Target end date
 	 */
-	public targetEndDate: Moment;
+	public targetEndDate: Dayjs;
 	/**
 	 * Remaining late start date
 	 */
-	public remLateStartDate: Moment;
+	public remLateStartDate: Dayjs;
 	/**
 	 * Remaining late end date
 	 */
-	public remLateEndDate: Moment;
+	public remLateEndDate: Dayjs;
 	/**
 	 * Indicates if dates should roll up
 	 */
@@ -245,7 +245,7 @@ export class TaskResource {
 	/**
 	 * Date when assignment was created
 	 */
-	public createDate: Moment;
+	public createDate: Dayjs;
 	/**
 	 * Indicates if resource has hours
 	 */
@@ -281,16 +281,16 @@ export class TaskResource {
 		this.remainCost = Number(row[header.indexOf('remain_cost')]);
 		this.actStartDate = optionalDate(row[header.indexOf('act_start_date')]);
 		this.actEndDate = optionalDate(row[header.indexOf('act_end_date')]);
-		this.restartDate = moment(row[header.indexOf('restart_date')]);
-		this.reendDate = moment(row[header.indexOf('reend_date')]);
-		this.targetStartDate = moment(
+	this.restartDate = dayjs(row[header.indexOf('restart_date')]);
+	this.reendDate = dayjs(row[header.indexOf('reend_date')]);
+	this.targetStartDate = dayjs(
 			row[header.indexOf('target_start_date')]
 		);
-		this.targetEndDate = moment(row[header.indexOf('target_end_date')]);
-		this.remLateStartDate = moment(
+	this.targetEndDate = dayjs(row[header.indexOf('target_end_date')]);
+	this.remLateStartDate = dayjs(
 			row[header.indexOf('rem_late_start_date')]
 		);
-		this.remLateEndDate = moment(
+	this.remLateEndDate = dayjs(
 			row[header.indexOf('rem_late_end_date')]
 		);
 		this.rollupDatesFlag = row[header.indexOf('rollup_dates_flag')] === 'Y';
@@ -308,7 +308,7 @@ export class TaskResource {
 		this.costPerQtySourceType =
 			row[header.indexOf('cost_per_qty_source_type')];
 		this.createUser = row[header.indexOf('create_user')];
-		this.createDate = moment(row[header.indexOf('create_date')]);
+	this.createDate = dayjs(row[header.indexOf('create_date')]);
 		this.hasRsrchours = row[header.indexOf('has_rsrchours')] === 'Y';
 		this.taskrsrcSumId = Number(row[header.indexOf('taskrsrc_sum_id')]);
 		this.targetLag = new Duration(

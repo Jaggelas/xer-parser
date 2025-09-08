@@ -9,7 +9,7 @@ import { ScheduleOption } from './schedule-option';
 import { ProjWBS } from './proj-wbs';
 import { Duration } from '../classes/duration.class';
 import { Calendar } from './calendar';
-import moment, { Moment } from 'moment';
+import dayjs, { Dayjs } from '../utilities/dayjs';
 
 /**
  * Represents a project in Primavera P6 XER format
@@ -135,31 +135,31 @@ export class Project {
 	/**
 	 * Last recalculation date
 	 */
-	public lastRecalcDate: Moment;
+	public lastRecalcDate: Dayjs;
 	/**
 	 * Planned start date
 	 */
-	public planStartDate: Moment;
+	public planStartDate: Dayjs;
 	/**
 	 * Planned end date (optional)
 	 */
-	public planEndDate?: Moment;
+	public planEndDate?: Dayjs;
 	/**
 	 * Scheduled end date (optional)
 	 */
-	public scdEndDate?: Moment;
+	public scdEndDate?: Dayjs;
 	/**
 	 * Date project was added
 	 */
-	public addDate: Moment;
+	public addDate: Dayjs;
 	/**
 	 * Last task summarization date (optional)
 	 */
-	public lastTasksumDate?: Moment;
+	public lastTasksumDate?: Dayjs;
 	/**
 	 * Forecast start date (optional)
 	 */
-	public fcstStartDate?: Moment;
+	public fcstStartDate?: Dayjs;
 	/**
 	 * Default duration type
 	 */
@@ -251,7 +251,7 @@ export class Project {
 	/**
 	 * Last baseline update date (optional)
 	 */
-	public lastBaselineUpdateDate?: Moment;
+	public lastBaselineUpdateDate?: Dayjs;
 	/**
 	 * External key for integration (optional)
 	 */
@@ -259,7 +259,7 @@ export class Project {
 	/**
 	 * Date actuals were applied (optional)
 	 */
-	public applyActualsDate?: Moment;
+	public applyActualsDate?: Dayjs;
 	/**
 	 * Location ID (optional)
 	 */
@@ -267,7 +267,7 @@ export class Project {
 	/**
 	 * Last schedule calculation date (optional)
 	 */
-	public lastScheduleDate?: Moment;
+	public lastScheduleDate?: Dayjs;
 	/**
 	 * Level of loaded scope
 	 */
@@ -291,7 +291,7 @@ export class Project {
 	/**
 	 * Next data date
 	 */
-	public nextDataDate: Moment;
+	public nextDataDate: Dayjs;
 	/**
 	 * Whether period is closed
 	 */
@@ -299,7 +299,7 @@ export class Project {
 	/**
 	 * Summary refresh date
 	 */
-	public sumRefreshDate: Moment;
+	public sumRefreshDate: Dayjs;
 	/**
 	 * Whether resource summaries are loaded
 	 */
@@ -352,11 +352,11 @@ export class Project {
 			row[header.indexOf('last_checksum')]
 		);
 		this.defCostPerHr = Number(row[header.indexOf('def_cost_per_qty')]);
-		this.lastRecalcDate = moment(row[header.indexOf('last_recalc_date')]);
-		this.planStartDate = moment(row[header.indexOf('plan_start_date')]);
+	this.lastRecalcDate = dayjs(row[header.indexOf('last_recalc_date')]);
+	this.planStartDate = dayjs(row[header.indexOf('plan_start_date')]);
 		this.planEndDate = optionalDate(row[header.indexOf('plan_end_date')]);
 		this.scdEndDate = optionalDate(row[header.indexOf('scd_end_date')]);
-		this.addDate = moment(row[header.indexOf('add_date')]);
+	this.addDate = dayjs(row[header.indexOf('add_date')]);
 		this.lastTasksumDate = optionalDate(
 			row[header.indexOf('last_tasksum_date')]
 		);
@@ -416,9 +416,9 @@ export class Project {
 		this.baselinesToExport = row[header.indexOf('baselines_to_export')];
 		this.baselineNamesToExport =
 			row[header.indexOf('baseline_names_to_export')];
-		this.nextDataDate = moment(row[header.indexOf('next_data_date')]);
+	this.nextDataDate = dayjs(row[header.indexOf('next_data_date')]);
 		this.closePeriodFlag = row[header.indexOf('close_period_flag')] === 'Y';
-		this.sumRefreshDate = moment(row[header.indexOf('sum_refresh_date')]);
+	this.sumRefreshDate = dayjs(row[header.indexOf('sum_refresh_date')]);
 		this.trsrcsumLoaded = row[header.indexOf('trsrcsum_loaded')] === 'Y';
 		this.sumtaskLoaded = row[header.indexOf('sumtask_loaded')] === 'Y';
 		this.criticalDrtn = new Duration(

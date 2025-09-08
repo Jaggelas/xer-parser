@@ -1,4 +1,4 @@
-import moment, { Moment } from "moment";
+import dayjs, { Dayjs } from "./dayjs";
 
 /**
  * Converts a string to a number if the string is not empty.
@@ -18,8 +18,8 @@ export const optionalNumber = (string: string): number | undefined => {
  * @param string - The string to convert to a Date object.
  * @returns A Date object if the string is not empty, otherwise undefined.
  */
-export const optionalDate = (string: string): Moment | undefined => {
-	return string === '' ? undefined : moment(string);
+export const optionalDate = (string: string): Dayjs | undefined => {
+	return string === '' ? undefined : dayjs(string);
 };
 
 /**

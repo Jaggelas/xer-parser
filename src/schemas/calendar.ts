@@ -5,7 +5,7 @@ import { parseCalendarData } from '../utilities/calendar-data-parser';
 import { optionalDate, optionalNumber } from '../utilities/string-convert';
 import { XER } from '../xer';
 import { Project } from './project';
-import moment, { Moment } from 'moment';
+import dayjs, { Dayjs } from '../utilities/dayjs';
 
 /**
  * Represents a Calendar in the XER schema.
@@ -44,7 +44,7 @@ export class Calendar {
 	/**
 	 * The date when the calendar was last changed, if any.
 	 */
-	public lastChngDate?: Moment;
+	public lastChngDate?: Dayjs;
 
 	/**
 	 * The type of the calendar.
@@ -130,13 +130,13 @@ export class Calendar {
 	 * 2. Verifying the date is not marked as an exception
 	 * 3. Confirming the time falls within a defined shift's start and finish times
 	 */
-	public isWorkingHour(date: Moment): boolean {
+	public isWorkingHour(date: Dayjs): boolean {
 		// moment().day() is 0(Sun)..6(Sat) -> properties.weekdays uses 0..6
 		const day = date.day();
 		const shifts = this.properties.weekdays[day] ?? [];
 
 		const exceptions = this.properties.exceptions.filter((exception) => {
-			return moment(exception.date).isSame(date, 'date');
+			return exception.date.isSame(date, 'day');
 		});
 
 		if (shifts.length === 0 || exceptions.length > 0) {
@@ -151,20 +151,20 @@ export class Calendar {
 	/**
 	 * Returns true if the specified date has working shifts and is not an exception day.
 	 */
-	public isWorkingDay(date: Moment): boolean {
+	public isWorkingDay(date: Dayjs): boolean {
 		const day = date.day();
 		const shifts = this.properties.weekdays[day] ?? [];
-		const isException = this.properties.exceptions.some((ex) => moment(ex.date).isSame(date, 'date'));
+	const isException = this.properties.exceptions.some((ex) => ex.date.isSame(date, 'day'));
 		return shifts.length > 0 && !isException;
 	}
 
 	/**
 	 * Returns the concrete working shift intervals for the given date.
 	 */
-	public getWorkingShifts(date: Moment): Array<{ start: Moment; end: Moment }> {
+	public getWorkingShifts(date: Dayjs): Array<{ start: Dayjs; end: Dayjs }> {
 		const day = date.day();
 		const shifts = this.properties.weekdays[day] ?? [];
-		const isException = this.properties.exceptions.some((ex) => moment(ex.date).isSame(date, 'date'));
+	const isException = this.properties.exceptions.some((ex) => ex.date.isSame(date, 'day'));
 		if (isException || shifts.length === 0) return [];
 		return shifts.map((s) => ({ start: s.shiftStart(date), end: s.shiftFinish(date) }));
 	}
@@ -172,18 +172,18 @@ export class Calendar {
 	/**
 	 * Find the first working instant at or after the given date.
 	 */
-	public nextWorkingMoment(date: Moment, inclusive = true): Moment {
+	public nextWorkingMoment(date: Dayjs, inclusive = true): Dayjs {
 		let cursor = date.clone();
 		for (let guard = 0; guard < 366; guard++) { // safety guard across a year
 			const shifts = this.getWorkingShifts(cursor);
 			for (const { start, end } of shifts) {
-				if (cursor.isSameOrBefore(start)) return start.clone();
-				if (inclusive && cursor.isBefore(end)) return cursor.clone();
-				if (!inclusive && cursor.isBefore(end)) return cursor.clone();
+				if (cursor.isSame(start) || cursor.isBefore(start)) return start;
+				if (inclusive && cursor.isBefore(end)) return cursor;
+				if (!inclusive && cursor.isBefore(end)) return cursor;
 			}
 			cursor = cursor.add(1, 'day').startOf('day');
 		}
-		return date.clone();
+		return date;
 	}
 
 	/**
@@ -192,21 +192,21 @@ export class Calendar {
 	 * - end: snap to the end of the previous working shift if outside
 	 * - nearest: snap to whichever (previous end or next start) is closer
 	 */
-	public clampToWorking(date: Moment, mode: 'start' | 'end' | 'nearest' = 'nearest'): Moment {
+	public clampToWorking(date: Dayjs, mode: 'start' | 'end' | 'nearest' = 'nearest'): Dayjs {
 		const inHour = this.isWorkingHour(date);
-		if (inHour) return date.clone();
+		if (inHour) return date;
 
 		const next = this.nextWorkingMoment(date, true);
 
 		// Internal helper: previous working shift end before date
-		const previousWorkingEnd = (): Moment | null => {
+	const previousWorkingEnd = (): Dayjs | null => {
 			let cursor = date.clone();
 			for (let guard = 0; guard < 366; guard++) {
 				const shifts = this.getWorkingShifts(cursor);
 				for (let i = shifts.length - 1; i >= 0; i--) {
 					const { start, end } = shifts[i];
-					if (date.isSameOrAfter(end)) return end.clone();
-					if (date.isAfter(start)) return start.clone();
+		    if (date.isSame(end) || date.isAfter(end)) return end;
+		    if (date.isAfter(start)) return start;
 				}
 				cursor = cursor.subtract(1, 'day').startOf('day');
 			}
@@ -219,15 +219,15 @@ export class Calendar {
 
 		// nearest
 		if (!prev) return next;
-		const distPrev = Math.abs(date.diff(prev));
-		const distNext = Math.abs(next.diff(date));
+	const distPrev = Math.abs(date.diff(prev));
+	const distNext = Math.abs(next.diff(date));
 		return distPrev <= distNext ? prev : next;
 	}
 
 	/**
 	 * Compute working time between two instants. Returns hours (default) or minutes with precision.
 	 */
-	public workingHoursBetween(from: Moment, to: Moment, precision: 'hour' | 'minute' = 'hour'): number {
+	public workingHoursBetween(from: Dayjs, to: Dayjs, precision: 'hour' | 'minute' = 'hour'): number {
 		if (from.isSame(to)) return 0;
 		const forward = from.isBefore(to);
 		const start = forward ? from.clone() : to.clone();
@@ -238,13 +238,13 @@ export class Calendar {
 		while (cursor.isBefore(end, 'day') || cursor.isSame(end, 'day')) {
 			const shifts = this.getWorkingShifts(cursor);
 			for (const { start: s, end: e } of shifts) {
-				const overlapStart = moment.max(s, start);
-				const overlapEnd = moment.min(e, end);
+				const overlapStart = dayjs.max(s, start);
+				const overlapEnd = dayjs.min(e, end);
 				if (overlapEnd.isAfter(overlapStart)) {
-					minutes += overlapEnd.diff(overlapStart, 'minutes');
+					minutes += overlapEnd.diff(overlapStart, 'minute');
 				}
 			}
-			cursor.add(1, 'day').startOf('day');
+			cursor = cursor.add(1, 'day').startOf('day');
 		}
 
 		if (precision === 'minute') return forward ? minutes : -minutes;
@@ -259,13 +259,13 @@ export class Calendar {
 	 *
 	 * @param {Task} task Other task to compare to
 	 */
-	public duration(from: Moment, to: Moment): Duration {
+	public duration(from: Dayjs, to: Dayjs): Duration {
 
 		if (from.isSame(to, 'minute')) {
 			return new Duration(0, this, 'h');
 		}
 
-	const current = (from.isBefore(to) ? from : to).clone();
+		let current = (from.isBefore(to) ? from : to).clone();
 		const finish = to.isAfter(from) ? to : from;
 
 		let hours = 0;
@@ -275,11 +275,11 @@ export class Calendar {
 			const shifts = this.properties.weekdays[day] ?? [];
 
 			const exceptions = this.properties.exceptions.filter((exception) => {
-				return moment(exception.date).isSame(current, 'date');
+				return exception.date.isSame(current, 'day');
 			});
 
 			if (shifts.length === 0 || exceptions.length > 0) {
-				current.add(1, 'days');
+				current = current.add(1, 'day');
 				continue;
 			}
 
@@ -287,19 +287,23 @@ export class Calendar {
 				const shiftStart = shift.shiftStart(current);
 				const shiftFinish = shift.shiftFinish(current);
 
-				if (current.isSameOrBefore(shiftStart, 'hours') && finish.isSameOrAfter(shiftFinish, 'hours')) {
-					hours += shiftFinish.diff(shiftStart, 'hours');
-				} else if (current.isSameOrBefore(shiftStart, 'hours') && finish.isSameOrBefore(shiftFinish, 'hours') && finish.isSameOrAfter(shiftStart, 'hours')) {
-					hours += finish.diff(shiftStart, 'hours');
-				} else if (current.isSameOrAfter(shiftStart, 'hours') && finish.isSameOrAfter(shiftFinish, 'hours') && current.isSameOrBefore(shiftFinish, 'hours')) {
-					hours += shiftFinish.diff(current, 'hours');
-				} else if (current.isSameOrAfter(shiftStart, 'hours') && finish.isSameOrBefore(shiftFinish, 'hours')) {
-					hours += finish.diff(current, 'hours');
+				if (current.isSame(shiftStart, 'hour') || current.isBefore(shiftStart, 'hour')) {
+					if (finish.isSame(shiftFinish, 'hour') || finish.isAfter(shiftFinish, 'hour')) {
+						hours += shiftFinish.diff(shiftStart, 'hour');
+					} else if (finish.isAfter(shiftStart, 'hour')) {
+						hours += finish.diff(shiftStart, 'hour');
+					}
+				} else if (current.isAfter(shiftStart, 'hour')) {
+					if (finish.isSame(shiftFinish, 'hour') || finish.isAfter(shiftFinish, 'hour')) {
+						hours += shiftFinish.diff(current, 'hour');
+					} else if (finish.isAfter(current, 'hour')) {
+						hours += finish.diff(current, 'hour');
+					}
 				} else {}
 
 			})
 
-			current.add(1, 'days').startOf('day');
+			current = current.add(1, 'day').startOf('day');
 
 		}
 
@@ -315,7 +319,7 @@ export class Calendar {
 	 * @param {Duration} duration The duration to add
 	 * @returns {Date} The new date after adding the duration
 	 */
-	public addToDate(from: Moment, qty: number, unit: Unit): Moment {
+	public addToDate(from: Dayjs, qty: number, unit: Unit): Dayjs {
 		if (qty <= 0) return from.clone(); // No shift needed
 
 		// Convert desired quantity to minutes to minimize precision drift
@@ -332,11 +336,11 @@ export class Calendar {
 			for (const { start, end } of shifts) {
 				if (added >= qtyInMinutes) break;
 				if (cursor.isBefore(end)) {
-					const intervalStart = moment.max(start, cursor);
-					const available = end.diff(intervalStart, 'minutes');
+					const intervalStart = dayjs.max(start, cursor);
+					const available = end.diff(intervalStart, 'minute');
 					const need = qtyInMinutes - added;
 					if (available >= need) {
-						return intervalStart.clone().add(need, 'minutes');
+						return intervalStart.clone().add(need, 'minute');
 					}
 					// consume whole interval
 					added += available;
