@@ -1,30 +1,32 @@
-# XER Parser
+# xer-parser
 
-XER Parser is a library for parsing Primavera P6 XER files. It provides a set of tools to read data from XER files.
+A modern, browser-friendly TypeScript library to parse, inspect, and serialize Primavera P6 XER files. Designed for Node and the web with streaming support, strong typing, and calendar-aware utilities.
 
-**NOTE !!** This library is still very early in development and should not be used in production.
+> Status: Actively evolving. APIs may change in minor releases.
 
-## Table of Contents
+## Features
 
-- [XER Parser](#xer-parser)
-  - [Table of Contents](#table-of-contents)
-  - [Installation](#installation)
-  - [Usage](#usage)
-  - [XER-Parser Api](#xer-parser-api)
-  - [Contributing](#contributing)
-  - [License](#license)
+- Pure ESM, works in Node and modern browsers
+- Streaming parse (AsyncIterable) to avoid loading large files into memory
+- High-fidelity round-trip serialization
+  - Preserves original ERMHDR
+  - Keeps table and column order
+  - Appends required %E end marker
+- Rich entities with utilities
+  - `Tasks` collection helpers (filtering, compare, date range, etc.)
+  - `Calendar` utilities for working time, durations, and snapping
+- Type-safe schema registry to ensure constructor/property alignment
+- Mutations: table-specific write-back helpers (update/insert/delete)
+- Validation: `validate()` checks headers, duplicates, and referential integrity
+- `refreshEntities()` to rebuild entities after raw-table edits
 
 ## Installation
-
-You can install the library using npm:
 
 ```sh
 npm install xer-parser
 ```
 
-## Usage
-
-Here's a basic example of how to use the XER Parser. The constructor expects the XER file contents as a string.
+## Quick start
 
 Node (ESM):
 
@@ -35,11 +37,11 @@ import { XER } from 'xer-parser';
 const text = await readFile('path/to/file.xer', 'utf8');
 const xer = new XER(text);
 
-console.log(xer.projects);
+console.log(xer.projects.length);
 console.log(xer.tasks.normalTasks.length);
 ```
 
-Browser (client-side upload):
+Browser (file upload):
 
 ```ts
 import { XER } from 'xer-parser';
@@ -51,92 +53,186 @@ const xer = new XER(text);
 console.log(xer.projects.length);
 ```
 
-Streaming (Node or browser with ReadableStream):
+### Streaming
+
+Node stream:
+
+```ts
+import { createReadStream } from 'node:fs';
+import { XER, nodeReadableToAsyncIterable } from 'xer-parser';
+
+const readable = createReadStream('path/to/file.xer');
+const xer = await XER.fromStream(nodeReadableToAsyncIterable(readable));
+```
+
+Web ReadableStream:
 
 ```ts
 import { XER, readableStreamToAsyncIterable } from 'xer-parser';
 
-// Node: using fs to get a Readable and convert to AsyncIterable of chunks
-import { createReadStream } from 'node:fs';
-import { Readable } from 'node:stream';
-
-// For web streams, pass the ReadableStream to readableStreamToAsyncIterable
-// For Node streams, wrap into an async generator
-async function* nodeReadableToAsyncIterable(readable: Readable) {
-  for await (const chunk of readable) {
-    yield chunk as Buffer;
-  }
-}
-
-const readable = createReadStream('path/to/file.xer');
-const xer = await XER.fromStream(nodeReadableToAsyncIterable(readable));
-console.log(xer.projects.length);
+const webStream = file.stream(); // from a File or Response
+const xer = await XER.fromStream(readableStreamToAsyncIterable(webStream));
 ```
 
-## XER-Parser API
-
-To be completed..
-
-### Schema registry and type safety
-
-The loader uses a strongly-typed schema registry to enforce constructor and property key alignment at compile time. The registry lives in `src/schemas/schema-registry.ts` and lists every table with its target property and class constructor.
-
-Key points:
-
-- Every schema class must have a constructor of the form `(xer, header, row)`.
-- Each registry entry maps a table name to a property on `XER` and the class constructor.
-- The `TASK` table wraps items into the `Tasks` collection via the `wrap` callback.
-
-Adding a new schema:
-
-1. Create `src/schemas/MySchema.ts` with a constructor `(xer, header, row)`.
-2. Add a property to `XERData` (in `src/types/schema.ts`) if it represents a new top-level collection.
-3. Register it in `src/schemas/schema-registry.ts` by adding an entry `{ table, key, ctor }` (and `wrap` if the property isn’t a raw array).
-
-On build, TypeScript validates:
-
-- The constructor signature via `SchemaConstructor<T>`.
-- The `key` matches an `XER` property with compatible element type.
-
-This keeps the loader wiring correct and prevents drift as schemas evolve.
-
-### Saving an updated XER
-
-Node (ESM):
+### Serialize (save XER)
 
 ```ts
-import { readFile, writeFile } from 'node:fs/promises';
-import { XER } from 'xer-parser';
+import { writeFile } from 'node:fs/promises';
 
-const text = await readFile('path/to/file.xer', 'utf8');
-const xer = new XER(text);
-
-// ... mutate data, e.g., xer.tasks[0].taskName = 'New Name';
-
+// ... after parsing and updating entities
 const out = xer.toXERString();
 await writeFile('path/to/output.xer', out, 'utf8');
 ```
 
-Bun:
+### Mutations and validation
+
+Perform raw table edits through helpers, refresh entities if you rely on entity collections, and validate before saving:
 
 ```ts
 import { XER } from 'xer-parser';
 
-const text = await Bun.file('path/to/file.xer').text();
 const xer = new XER(text);
 
-// ... mutate data
+// Update a task name
+xer.updateTaskRow(1, { task_name: 'Updated' });
 
+// Insert a resource and assign it to a task
+xer.insertResourceRow({
+  rsrc_id: 50,
+  clndr_id: 10,
+  rsrc_name: 'Welder',
+  rsrc_short_name: 'WELD',
+  rsrc_seq_num: 1,
+  guid: 'guid-123',
+  cost_qty_type: 'Q',
+  def_qty_per_hr: 1,
+  curr_id: 1,
+  rsrc_type: 'L'
+});
+xer.insertTaskResourceRow({
+  taskrsrc_id: 1000,
+  task_id: 1,
+  proj_id: 100,
+  rsrc_id: 50,
+  role_id: 1,
+  remain_qty: 1,
+  target_qty: 1,
+  remain_qty_per_hr: 1,
+  target_qty_per_hr: 1,
+  cost_per_qty: 1,
+  target_cost: 1,
+  act_reg_cost: 0,
+  act_ot_cost: 0
+});
+
+// Rebuild entity objects from raw tables when you need up-to-date collections
+xer.refreshEntities();
+
+// Validate referential integrity and basic structure
+const issues = xer.validate();
+if (issues.length) {
+  console.warn('XER has validation issues:', issues);
+}
+
+// Finally, serialize back to XER text
 const out = xer.toXERString();
-await Bun.write('path/to/output.xer', out);
 ```
+
+### Common issues reported by validate()
+
+The validator returns human-readable strings. Here are frequent messages, what they mean, and typical fixes:
+
+| Example message | Meaning | How to fix |
+| --- | --- | --- |
+| `Task TK-002 references missing proj_id 999` | Task points to a non-existent project | Insert a PROJECT row with `proj_id=999` or update the task's `proj_id` to an existing one |
+| `Task TK-002 references missing clndr_id 10` | Task calendar not found | Insert a CALENDAR with `clndr_id=10` or update the task's `clndr_id` |
+| `Task TK-002 references missing wbs_id 1` | Task WBS node not found | Insert a PROJWBS row with `wbs_id=1` or update the task's `wbs_id` |
+| `TASKRSRC references missing task_id 2` | Task assignment references missing task | Insert the TASK or remove/fix the TASKRSRC row |
+| `TASKRSRC references missing rsrc_id 50` | Task assignment references missing resource | Insert the RSRC or update `rsrc_id` |
+| `TASKPRED references missing pred_task_id 3` | Predecessor task does not exist | Insert the predecessor TASK or remove/fix the TASKPRED row |
+| `RSRCRATE 400 references missing rsrc_id 1` | Resource rate row references missing resource | Insert RSRC `rsrc_id=1` or update the rate's `rsrc_id` |
+| `RSRCROLE 500 references missing role_id 7` | Resource-role mapping references missing role | Insert ROLES `role_id=7` or update the RSRCROLE row |
+| `ROLERATE 11 references missing role_id 999` | Role-rate row references missing role | Insert ROLES `role_id=999` or update the rate's `role_id` |
+| `RSRCLEVELLIST 300 references missing schedoptions_id 200` | Leveling list references missing schedule options | Insert SCHEDOPTIONS `schedoptions_id=200` or update the list row |
+| `SCHEDOPTIONS 200 references missing proj_id 999` | Schedule options point to a missing project | Insert PROJECT `proj_id=999` or fix the options row |
+| `ACTVCODE 123 missing actv_code_type_id 5` | Activity code type missing | Insert ACTVTYPE `actv_code_type_id=5` or update the ACTVCODE row |
+| `ACTVCODE 124 missing parent_actv_code_id 100` | Activity code parent missing | Insert parent ACTVCODE `actv_code_id=100` or clear the parent reference |
+| `UDFVALUE missing udf_type_id 7` | UDF value type missing | Insert UDFTYPE `udf_type_id=7` or update/remove the UDFVALUE row |
+| `Duplicate TASK.task_id: 1, 2` | Duplicate task IDs in TASK table | Ensure each `task_id` is unique |
+| `TASK missing column: task_name` | Required header not present | Add the missing column to the `%F` header of the TASK table |
+
+Notes:
+- After using write-back helpers, call `refreshEntities()` if you rely on entity-based collections (e.g., roles/resources) for validation. Some checks (like TASK orphan checks) read raw tables and don’t require a refresh.
+
+### Gotchas: refreshEntities() vs raw-table reads
+
+- Source of truth: raw tables. Write-back helpers mutate raw tables immediately.
+- Serialization: `toXERString()` uses raw tables; you can save without calling `refreshEntities()`.
+- Entity-dependent validation: checks that rely on entity arrays (e.g., ROLES/RSRC/ACTVCODE/UDFTYPE) require `refreshEntities()` after edits to be reflected in `validate()`.
+- Raw-table validation: some checks read tables directly (e.g., TASK orphans), so they reflect write-backs without a refresh.
+- Performance tip: for many edits, batch your updates, then call `refreshEntities()` once.
+
+## API overview
+
+Core class: `XER`
+
+- `new XER(text: string)` — parse from a full string
+- `static fromStream(source: AsyncIterable<string | Uint8Array>)` — parse from a stream
+- `toXERString(options?: { version?: number; lineEnding?: '\\r\\n' | '\\n' })` — serialize back to XER text
+- Entity properties (arrays unless stated): `projects`, `tasks` (Tasks collection), `calendars`, `resources`, `activityCodeTypes`, `activityCodes`, `taskResources`, `taskPredecessors`, `taskMemos`, `taskActivityCodes`, `udfTypes`, `udfValues`, etc.
+
+Write-back helpers (subset):
+
+- Tasks: `updateTaskRow`, `insertTaskRow`, `deleteTaskRow`
+- Projects/Calendars: `updateProjectRow`, `insertProjectRow`, ..., `updateCalendarRow`, ...
+- Resources: `updateResourceRow`, `insertResourceRow`, `deleteResourceRow`
+- Task links: `updateTaskResourceRow`, `insertTaskResourceRow`, `deleteTaskResourceRow`
+- Activity codes: `updateActivityCodeRow`, `insertActivityCodeRow`, `deleteActivityCodeRow`
+- UDFs: `updateUdfValueRow`, `insertUdfValueRow`, `deleteUdfValueRows`, `updateUdfTypeRow`, ...
+- Roles and rates: `updateRoleRow`, `insertRoleRow`, `updateRoleRateRow`, `insertRoleRateRow`, `updateResourceRoleRow`, ...
+- Leveling/schedule: `updateResourceLevelListRow`, `updateScheduleOptionRow`, ...
+
+Other:
+
+- `refreshEntities()` — rebuilds entity arrays from raw tables
+- `validate(): string[]` — returns a list of issues, empty if ok
+
+Tasks collection: `Tasks extends Array<Task>`
+
+- Filters: `milestoneTasks`, `normalTasks`, `levelOfEffortTasks`, `completed`, `inProgress`, `notStarted`
+- Date ranges: `getMinDate(key)`, `getMaxDate(key)`
+- Diff/compare: `compareTasks(other)`, `addedTasks(other)`, `removedTasks(other)`, `overlaps(other)`
+
+Calendar utilities: `Calendar`
+
+- `isWorkingDay(date)`, `isWorkingHour(date)`
+- `getWorkingShifts(date)` → intervals for the day
+- `duration(from, to)` → working-hours `Duration`
+- `addToDate(from, qty, unit)` — working-time add with exceptions/shifts
+- `workingHoursBetween(from, to, precision)` — hours or minutes (sign-aware)
+- `nextWorkingMoment(date, inclusive)`, `clampToWorking(date, mode)`
+- `unitConvert(from, to, value)` — calendar-specific conversion
+
+## Schema registry and type safety
+
+The loader uses a strongly-typed registry (`src/schemas/schema-registry.ts`) to wire XER tables to entity classes. This enforces constructor and property alignment at compile time.
+
+Adding a schema:
+
+1) Create `src/schemas/MySchema.ts` with constructor `(xer, header, row)`
+2) Add its collection to `XERData` if needed (`src/types/schema.ts`)
+3) Register it in `schema-registry.ts`: `{ table, key, ctor, wrap? }`
+
+## Compatibility
+
+- Module format: ESM only
+- Node: 18+ recommended
+- Browsers: modern (supports ES2020 and ReadableStream if streaming)
 
 ## Contributing
 
-Contributions are welcome! Please open an issue or submit a pull request on GitHub.
+Issues and PRs are welcome. Please include a minimal XER sample (scrub sensitive data) when reporting parser issues.
 
 ## License
 
-This project is licensed under the MIT License.
-
-Feel free to adjust the content as needed to better fit your project.
+MIT

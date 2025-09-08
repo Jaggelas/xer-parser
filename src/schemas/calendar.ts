@@ -317,49 +317,40 @@ export class Calendar {
 	 */
 	public addToDate(from: Moment, qty: number, unit: Unit): Moment {
 		if (qty <= 0) return from.clone(); // No shift needed
-		
-		const exceptionStrings = this.properties.exceptions.map((exception) => exception.date.format("YYYY-MM-DD"));
-		let currentDate = from.clone();
-		let timeAdded = 0;
 
-		// Convert the quantity to hours consistently
-		const qtyInHours = this.unitConvert(unit, 'h', qty);
+		// Convert desired quantity to minutes to minimize precision drift
+		const qtyInMinutes = this.unitConvert(unit, 'm', qty);
+		let added = 0; // minutes accumulated
+		let cursor = from.clone();
 
-		while (timeAdded < qtyInHours) {
-			// Use 0..6 index based on moment().day()
-			const currentDay = currentDate.day();
-			const shifts = this.properties.weekdays[currentDay] || [];
+		// Safety guard to avoid infinite loops (e.g., calendars with no shifts)
+		let dayGuard = 0;
+		const maxDays = 366 * 10; // 10 years
 
-			if (!exceptionStrings.includes(currentDate.format("YYYY-MM-DD"))) {
-				for (const shift of shifts) {
-					const shiftStart = shift.shiftStart(currentDate);
-					const shiftFinish = shift.shiftFinish(currentDate);
-
-					if (timeAdded >= qtyInHours) {
-						break;
+		while (added < qtyInMinutes && dayGuard < maxDays) {
+			const shifts = this.getWorkingShifts(cursor);
+			for (const { start, end } of shifts) {
+				if (added >= qtyInMinutes) break;
+				if (cursor.isBefore(end)) {
+					const intervalStart = moment.max(start, cursor);
+					const available = end.diff(intervalStart, 'minutes');
+					const need = qtyInMinutes - added;
+					if (available >= need) {
+						return intervalStart.clone().add(need, 'minutes');
 					}
-
-					if (currentDate.isBefore(shiftFinish)) {
-						const overlapStart = moment.max(shiftStart, currentDate);
-						const remainingShiftTime = Math.min(shiftFinish.diff(overlapStart, 'hours', true), qtyInHours - timeAdded);
-						timeAdded += remainingShiftTime;
-						currentDate = overlapStart.clone().add(remainingShiftTime, 'hours');
-						if (timeAdded >= qtyInHours) {
-							break;
-						}
-					}
-
+					// consume whole interval
+					added += available;
+					cursor = end.clone();
 				}
-
 			}
-
-			if (timeAdded < qtyInHours) {
-				currentDate.add(1, 'days').startOf('day');
+			if (added < qtyInMinutes) {
+				cursor = cursor.add(1, 'day').startOf('day');
+				dayGuard++;
 			}
-
 		}
 
-		return currentDate;
+		// If we exit due to guard, return the best-effort cursor
+		return cursor;
 	}
 	  
 

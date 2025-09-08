@@ -1,8 +1,5 @@
-import {
-	optionalDate,
-	optionalNumber,
-	optionalString
-} from '../utilities/string-convert';
+import { optionalDate, optionalNumber, optionalString } from '../utilities/string-convert';
+import { getColumnIndex } from '../utilities/header';
 import { XER } from '../xer';
 import { TaskResource } from './task-resource';
 import { TaskPredecessor } from './task-predecessor';
@@ -291,7 +288,10 @@ export class Task {
 		this.statusCode = row[header.indexOf('status_code')] as TaskStatusCode;
 		this.taskCode = row[header.indexOf('task_code')];
 		this.taskName = row[header.indexOf('task_name')];
-		this.rsrcId = optionalNumber(row[header.indexOf('rsrc_id')]);
+		{
+			const idx = getColumnIndex(header, 'rsrc_id');
+			this.rsrcId = idx >= 0 ? optionalNumber(row[idx]) : undefined;
+		}
 		this.totalFloat = new Duration(
 			row[header.indexOf('total_float_hr_cnt')],
 			this.calendar,
@@ -340,18 +340,30 @@ export class Task {
 		this.remLateEndDate = moment(
 			row[header.indexOf('rem_late_end_date')]
 		);
-		this.cstrType = optionalString(row[header.indexOf('cstr_type')]);
+		{
+			const idx = getColumnIndex(header, 'cstr_type');
+			this.cstrType = idx >= 0 ? optionalString(row[idx]) : undefined;
+		}
 		this.priorityType = row[header.indexOf('priority_type')];
-		this.suspendDate = optionalDate(row[header.indexOf('suspend_date')]);
-		this.resumeDate = optionalDate(row[header.indexOf('resume_date')]);
+		{
+			const sIdx = getColumnIndex(header, 'suspend_date');
+			const rIdx = getColumnIndex(header, 'resume_date');
+			this.suspendDate = sIdx >= 0 ? optionalDate(row[sIdx]) : undefined;
+			this.resumeDate = rIdx >= 0 ? optionalDate(row[rIdx]) : undefined;
+		}
 		this.floatPath = optionalNumber(row[header.indexOf('float_path')]);
 		this.floatPathOrder = optionalNumber(
 			row[header.indexOf('float_path_order')]
 		);
 		this.guid = row[header.indexOf('guid')];
-		this.tmplGuid = optionalString(row[header.indexOf('tmpl_guid')]);
-		this.cstrDate2 = optionalDate(row[header.indexOf('cstr_date2')]);
-		this.cstrType2 = optionalString(row[header.indexOf('cstr_type2')]);
+		{
+			const tIdx = getColumnIndex(header, 'tmpl_guid');
+			const d2Idx = getColumnIndex(header, 'cstr_date2');
+			const t2Idx = getColumnIndex(header, 'cstr_type2');
+			this.tmplGuid = tIdx >= 0 ? optionalString(row[tIdx]) : undefined;
+			this.cstrDate2 = d2Idx >= 0 ? optionalDate(row[d2Idx]) : undefined;
+			this.cstrType2 = t2Idx >= 0 ? optionalString(row[t2Idx]) : undefined;
+		}
 		this.drivingPath = row[header.indexOf('driving_path_flag')] === 'Y';
 		this.actThisPerWorkQty = Number(
 			row[header.indexOf('act_this_per_work_qty')]
@@ -359,18 +371,22 @@ export class Task {
 		this.actThisPerEquipQty = Number(
 			row[header.indexOf('act_this_per_equip_qty')]
 		);
-		this.externalEarlyStartDate = optionalDate(
-			row[header.indexOf('external_early_start_date')]
-		);
-		this.externalLateEndDate = optionalDate(
-			row[header.indexOf('external_late_end_date')]
-		);
+		{
+			const eeIdx = getColumnIndex(header, 'external_early_start_date');
+			const elIdx = getColumnIndex(header, 'external_late_end_date');
+			this.externalEarlyStartDate = eeIdx >= 0 ? optionalDate(row[eeIdx]) : undefined;
+			this.externalLateEndDate = elIdx >= 0 ? optionalDate(row[elIdx]) : undefined;
+		}
 		this.createDate = moment(row[header.indexOf('create_date')]);
 		this.updateDate = moment(row[header.indexOf('update_date')]);
 		this.createUser = row[header.indexOf('create_user')];
 		this.updateUser = row[header.indexOf('update_user')];
-		this.locationId = optionalNumber(row[header.indexOf('location_id')]);
-		this.crtPathNum = optionalNumber(row[header.indexOf('crt_path_num')]);
+		{
+			const locIdx = getColumnIndex(header, 'location_id');
+			const crtIdx = getColumnIndex(header, 'crt_path_num');
+			this.locationId = locIdx >= 0 ? optionalNumber(row[locIdx]) : undefined;
+			this.crtPathNum = crtIdx >= 0 ? optionalNumber(row[crtIdx]) : undefined;
+		}
 	}
 
 	public get project(): Project {

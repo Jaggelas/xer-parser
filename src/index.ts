@@ -30,6 +30,7 @@ export { UdfValue } from './schemas/udf-value';
 export { readableStreamToAsyncIterable } from './utilities/stream';
 export { nodeReadableToAsyncIterable } from './utilities/node-stream';
 export { serializeXER } from './utilities/serializer';
+export * as HeaderUtils from './utilities/header';
 
 // const file = Bun.file(
 // 	'C:\\Users\\jvandermerwe\\OneDrive - Base Toliara SARL\\Desktop\\Primavera Migrate\\10001_2025-01-15.xer'
